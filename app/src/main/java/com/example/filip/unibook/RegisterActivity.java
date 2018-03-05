@@ -41,7 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                 boolean isInserted = myDb.insertUser(namn, surname, email, pass);
 
-                if(isInserted = true){
+                if(isInserted == true){
                     Toast.makeText(RegisterActivity.this,"Data Inserted", Toast.LENGTH_LONG).show();
                 }
                 else {

@@ -19,8 +19,9 @@ public class MainActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
 
-        final EditText username = (EditText) findViewById(R.id.editTxtUsername);
-        EditText password = (EditText) findViewById(R.id.editTxtPassword);
+
+        //EditText username = (EditText) findViewById(R.id.editTxtUsername);
+        //EditText password = (EditText) findViewById(R.id.editTxtPassword);
         Button login = (Button) findViewById(R.id.loginBtn);
         Button registerBtn = (Button) findViewById(R.id.registreraBtn);
 
