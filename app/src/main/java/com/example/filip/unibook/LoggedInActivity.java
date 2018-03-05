@@ -14,5 +14,6 @@ public class LoggedInActivity extends AppCompatActivity {
         String username = getIntent().getStringExtra("Welcome");
         TextView tv = (TextView) findViewById(R.id.txtUser);
         tv.setText(username);
+
     }
 }
