@@ -1,6 +1,8 @@
 package com.example.filip.unibook;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -40,8 +42,85 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         String sqlUsers = "DROP TABLE IF EXISTS users";
+        String sqlAdds = "DROP TABLE IF EXISTS adds";
+        String sqlBooks = "DROP TABLE IF EXISTS books";
+        String sqlProgram = "DROP TABLE IF EXISTS program";
+        String sqlCourses = "DROP TABLE IF EXISTS courses";
+        String sqlFavourites = "DROP TABLE IF EXISTS favourites";
+        String sqlChats = "DROP TABLE IF EXISTS chats";
+        String sqlMessages = "DROP TABLE IF EXISTS users";
 
         db.execSQL(sqlUsers);
+        db.execSQL(sqlAdds);
+        db.execSQL(sqlProgram);
+        db.execSQL(sqlCourses);
+        db.execSQL(sqlFavourites);
+        db.execSQL(sqlChats);
+        db.execSQL(sqlMessages);
 
     }
+
+    public boolean insertUser(String name, String surname, String mail, String password){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, name);
+        contentValues.put(COL_3, surname);
+        contentValues.put(COL_4, mail);
+        contentValues.put(COL_5, password);
+
+
+        long result = db.insert(TABLE_NAME, null, contentValues);
+        if(result == -1) {
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    public String searchPass(String user){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select mail, password from " + TABLE_NAME;
+        Cursor cursor = db.rawQuery(query, null);
+
+        String anvandarNamn, losenord;
+        losenord = "not found";
+        if(cursor.moveToFirst()){
+            do{
+                anvandarNamn = cursor.getString(0);
+
+                if(anvandarNamn.equals(user)){
+                    losenord = cursor.getString(1);
+                    break;
+                }
+            }
+            while(cursor.moveToNext());
+        }
+        return losenord;
+    }
+
+    public String getName(String user){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        String namn = "";
+        String efternamn = "";
+
+
+        if(cursor.moveToFirst()){
+            do{
+                namn = cursor.getString(0);
+                efternamn = cursor.getString(1);
+            }
+
+            while (cursor.moveToNext());
+        }
+
+        String name = namn + " " + efternamn;
+
+        return name;
+    }
+
 }
