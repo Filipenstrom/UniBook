@@ -10,6 +10,8 @@ public class ProfilePageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_page);
         DatabaseHelper db = new DatabaseHelper(this);
+        SharedPreferences sp = new SharedPreferences(this);
+        String username = sp.getusername();
 
     }
 }
