@@ -20,7 +20,7 @@ public class LoggedInActivity extends AppCompatActivity {
     }
 
     public void goToProfile(View view){
-        Intent intent = new Intent(LoggedInActivity.this, AddProfilePictureActivity.class);
+        Intent intent = new Intent(LoggedInActivity.this, ProfilePageActivity.class);
         startActivity(intent);
     }
 }

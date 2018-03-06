@@ -13,6 +13,7 @@ import android.widget.ImageView;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 
 /**
  * Created by filip on 2018-03-05.
@@ -53,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password){
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes){
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -61,6 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put(COL_3, surname);
         contentValues.put(COL_4, mail);
         contentValues.put(COL_5, password);
+        contentValues.put(COL_6, imageBytes);
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
@@ -144,22 +146,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         return fullUser;
     }
+    
 
-    public boolean uploadImg(byte[] imageBytes){
+    //Hämta bild från databasen och retunera den som en byte[].
+    public byte[] getProfileImg(String user) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        Cursor cursor = db.rawQuery(query, null);
 
-        SQLiteDatabase db = this.getWritableDatabase();
+        byte[] blob = new byte[1];
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(COL_6, imageBytes);
-
-
-        long result = db.insert(TABLE_NAME, null, contentValues);
-        if(result == -1) {
-            return false;
+        if(cursor.moveToFirst()){
+            do{
+                blob = cursor.getBlob(0);
+            }
+            while(cursor.moveToNext());
         }
-        else {
-            return true;
-        }
+        return blob;
     }
 
 

@@ -29,33 +29,33 @@ public class AddProfilePictureActivity extends AppCompatActivity {
         button = (Button) findViewById(R.id.btnImage);
         imageView = (ImageView) findViewById(R.id.ivProfile);
 
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                choseImg();
-            }
-        });
+      //  button.setOnClickListener(new View.OnClickListener() {
+      //      @Override
+      //      public void onClick(View view) {
+      //          choseImg();
+      //      }
+      //  });
     }
 
-    public void choseImg(){
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(photoPickerIntent, PICK_IMAGE);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == RESULT_OK && requestCode == PICK_IMAGE){
-            imageUri = data.getData();
-            imageView.setImageURI(imageUri);
-            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageInByte = baos.toByteArray();
-
-            DatabaseHelper db = new DatabaseHelper(this);
-            db.uploadImg(imageInByte);
-        }
-    }
+  //  public void choseImg(){
+  //      Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
+  //      startActivityForResult(photoPickerIntent, PICK_IMAGE);
+  //  }
+//
+  //  @Override
+  //  protected void onActivityResult(int requestCode, int resultCode, Intent data){
+  //      super.onActivityResult(requestCode, resultCode, data);
+//
+  //      if(resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+  //          imageUri = data.getData();
+  //          imageView.setImageURI(imageUri);
+  //          Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+  //          ByteArrayOutputStream baos = new ByteArrayOutputStream();
+  //          bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+  //          byte[] imageInByte = baos.toByteArray();
+//
+  //          DatabaseHelper db = new DatabaseHelper(this);
+  //          db.uploadImg(imageInByte);
+  //      }
+  //  }
 }
