@@ -12,9 +12,9 @@ public class LoggedInActivity extends AppCompatActivity {
         setContentView(R.layout.activity_logged_in);
 
         String username = getIntent().getStringExtra("Welcome");
-        //
+
         //textView tv = (TextView) findViewById(R.id.txtUser);
         //tv.setText(username);
-        //
+
     }
 }
