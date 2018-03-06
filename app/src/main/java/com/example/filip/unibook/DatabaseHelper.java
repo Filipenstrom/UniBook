@@ -44,6 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         onCreate(db);
     }
 
+    //Metod som lägger in användare i databasen
     public boolean insertUser(String name, String surname, String mail, String password){
 
         SQLiteDatabase db = this.getWritableDatabase();
@@ -64,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     }
 
+    //Metod som kollar om användarens email och lösenord stämmer överens
     public String searchPass(String user){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select mail, password from " + TABLE_NAME;
@@ -85,6 +87,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return losenord;
     }
 
+    //Metod som hämtar användarens namn och efternamn
     public String getName(String user){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
