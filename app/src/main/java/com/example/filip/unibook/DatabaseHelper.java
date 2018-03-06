@@ -111,4 +111,31 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
 
+    //Hämta all information om en användare, INTE HELT KLAR
+    public String[] getUser(String user){
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        String name = "";
+        String surname = "";
+        String mail = "";
+
+        if (cursor.moveToFirst()){
+            do{
+                name = cursor.getString(1);
+                surname = cursor.getString(2);
+                mail = cursor.getString(3);
+            }
+            while(cursor.moveToNext());
+        }
+
+        String[] fullUser = new String[3];
+        fullUser[0] = name;
+        fullUser[1] = surname;
+        fullUser[2] = mail;
+
+        return fullUser;
+    }
+
+
 }

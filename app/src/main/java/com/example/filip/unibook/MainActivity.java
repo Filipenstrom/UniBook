@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
                     String namn = myDb.getName(user);
                     Intent inloggadInt = new Intent(MainActivity.this, LoggedInActivity.class);
                     inloggadInt.putExtra("Welcome", namn);
+                    //Kör metoden för att spara ner username.
+                    saveUserInformation();
                     startActivity(inloggadInt);
                 }
                 else {
@@ -57,6 +60,13 @@ public class MainActivity extends AppCompatActivity {
             }
 
         });
-
     }
+
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = (EditText) findViewById(R.id.editTxtUsername);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
+    }
+
 }

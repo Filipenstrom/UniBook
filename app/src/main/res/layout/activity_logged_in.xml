@@ -22,6 +22,7 @@
         android:id="@+id/btnProfil"
         android:layout_width="170dp"
         android:layout_height="132dp"
+        android:onClick="goToProfile"
         android:text="Profil"
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="77dp" />
