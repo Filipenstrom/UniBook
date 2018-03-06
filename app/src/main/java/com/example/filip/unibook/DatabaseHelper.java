@@ -5,6 +5,14 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 
 /**
  * Created by filip on 2018-03-05.
@@ -135,6 +143,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         fullUser[2] = mail;
 
         return fullUser;
+    }
+
+    public boolean uploadImg(byte[] imageBytes){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("PIC", imageBytes);
+
+
+        long result = db.insert(TABLE_NAME, null, contentValues);
+        if(result == -1) {
+            return false;
+        }
+        else {
+            return true;
+        }
     }
 
 
