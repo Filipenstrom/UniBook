@@ -10,7 +10,59 @@
         android:id="@+id/txtUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:text="TextView"
-        tools:layout_editor_absoluteX="107dp"
-        tools:layout_editor_absoluteY="151dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/btnProfil"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Profil"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="77dp" />
+
+    <Button
+        android:id="@+id/btnSok"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Sök"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="218dp" />
+
+    <Button
+        android:id="@+id/btnAnnons"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Mina Annonser"
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="357dp" />
+
+    <Button
+        android:id="@+id/btnSettings"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Inställningar"
+        tools:layout_editor_absoluteX="198dp"
+        tools:layout_editor_absoluteY="77dp" />
+
+    <Button
+        android:id="@+id/btnMeddelande"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Meddelande"
+        tools:layout_editor_absoluteX="198dp"
+        tools:layout_editor_absoluteY="218dp" />
+
+    <Button
+        android:id="@+id/btnFavoriter"
+        android:layout_width="170dp"
+        android:layout_height="132dp"
+        android:text="Favoriter"
+        tools:layout_editor_absoluteX="198dp"
+        tools:layout_editor_absoluteY="357dp" />
 </android.support.constraint.ConstraintLayout>
