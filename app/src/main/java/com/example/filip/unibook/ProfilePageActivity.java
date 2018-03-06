@@ -3,11 +3,12 @@ package com.example.filip.unibook;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class ProfilSidaActivity extends AppCompatActivity {
+public class ProfilePageActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profil_sida);
+        setContentView(R.layout.activity_profile_page);
+
     }
 }
