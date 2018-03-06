@@ -122,9 +122,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         if (cursor.moveToFirst()){
             do{
-                name = cursor.getString(0);
-                surname = cursor.getString(1);
-                mail = cursor.getString(2);
+                name = cursor.getString(1);
+                surname = cursor.getString(2);
+                mail = cursor.getString(3);
             }
             while(cursor.moveToNext());
         }

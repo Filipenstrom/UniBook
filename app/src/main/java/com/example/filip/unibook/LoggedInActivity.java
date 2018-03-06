@@ -1,7 +1,9 @@
 package com.example.filip.unibook;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
 
 public class LoggedInActivity extends AppCompatActivity {
@@ -15,5 +17,10 @@ public class LoggedInActivity extends AppCompatActivity {
         TextView tv = (TextView) findViewById(R.id.txtUser);
         tv.setText(username);
 
+    }
+
+    public void goToProfile(View view){
+        Intent intent = new Intent(LoggedInActivity.this, ProfilePageActivity.class);
+        startActivity(intent);
     }
 }
