@@ -150,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues contentValues = new ContentValues();
-        contentValues.put("PIC", imageBytes);
+        contentValues.put(COL_6, imageBytes);
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
