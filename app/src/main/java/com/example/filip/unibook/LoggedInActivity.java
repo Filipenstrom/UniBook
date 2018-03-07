@@ -15,8 +15,6 @@ public class LoggedInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
 
-        String username = getIntent().getStringExtra("Welcome");
-
         goToProfile();
     }
 

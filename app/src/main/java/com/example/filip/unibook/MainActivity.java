@@ -44,10 +44,8 @@ public class MainActivity extends AppCompatActivity {
                 String pass = myDb.searchPass(user);
                 if(losenord.equals(pass)){
 
-                    String namn = myDb.getName(user);
-                    Intent inloggadInt = new Intent(MainActivity.this, LoggedInActivity.class);
-                    inloggadInt.putExtra("Welcome", namn);
-                    startActivity(inloggadInt);
+                    Intent loggedIn = new Intent(MainActivity.this, LoggedInActivity.class);
+                    startActivity(loggedIn);
                 }
                 else {
                     Toast.makeText(MainActivity.this,"Username och password don't match!", Toast.LENGTH_LONG).show();
