@@ -27,4 +27,13 @@ public class SharedPreferences {
         //new GetUrlContentTask().execute(usename);
         return usename;
     }
+
+    public void setUserID(String userID){
+        prefs.edit().putString("id", userID).commit();
+    }
+
+    public String getUserID(){
+        String id = prefs.getString("id", "");
+        return id;
+    }
 }

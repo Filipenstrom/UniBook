@@ -21,6 +21,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
+
     <LinearLayout
         android:id="@+id/profileLinearLayout"
         style="@android:style/Widget.Button"
@@ -182,4 +183,5 @@
             android:text="FAVORITER"
             android:textColor="#ffffff" />
     </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>
