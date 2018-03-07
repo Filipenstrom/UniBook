@@ -39,7 +39,7 @@ public class ProfilePageActivity extends AppCompatActivity {
 
         name.setText(userInformation[1] + " " + userInformation[2]);
         surname.setText(userInformation[2]);
-        imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
+        //imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
     }
 
     public void goToEditProfile(View view){
