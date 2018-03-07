@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -45,13 +46,22 @@ public class MainActivity extends AppCompatActivity {
                 if(losenord.equals(pass)){
 
                     Intent loggedIn = new Intent(MainActivity.this, LoggedInActivity.class);
+                    
+                    //Kör metoden för att spara ner username.
+                    saveUserInformation();
                     startActivity(loggedIn);
                 }
                 else {
                     Toast.makeText(MainActivity.this,"Username och password don't match!", Toast.LENGTH_LONG).show();
                 }
             }
-
         });
+    }
+
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = (EditText) findViewById(R.id.editTxtUsername);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
     }
 }
