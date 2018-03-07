@@ -29,7 +29,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB)");
         //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
-        //  String sqlAdds = "CREATE TABLE adds (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
+        String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
+        db.execSQL(sqlAds);
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCED courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
@@ -41,6 +42,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+        String sqlAds = "drop table if exists ads";
+        db.execSQL(sqlAds);
         onCreate(db);
     }
 
@@ -116,12 +119,14 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
         Cursor cursor = sq.rawQuery(query, null);
+        String id = "";
         String name = "";
         String surname = "";
         String mail = "";
 
         if (cursor.moveToFirst()){
             do{
+                id = cursor.getString(0);
                 name = cursor.getString(1);
                 surname = cursor.getString(2);
                 mail = cursor.getString(3);
@@ -129,12 +134,49 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             while(cursor.moveToNext());
         }
 
-        String[] fullUser = new String[3];
-        fullUser[0] = name;
-        fullUser[1] = surname;
-        fullUser[2] = mail;
+        String[] fullUser = new String[4];
+        fullUser[0] = id;
+        fullUser[1] = name;
+        fullUser[2] = surname;
+        fullUser[3] = mail;
 
         return fullUser;
+    }
+
+    public String getUserID(String user) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select id from " + TABLE_NAME + " where mail = " + "'" + user + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        String id = "";
+        if (cursor.moveToFirst()) {
+            do {
+                id = cursor.getString(0);
+
+            }
+
+            while (cursor.moveToNext());
+        }
+
+
+        return id;
+    }
+
+
+
+    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("title", titel);
+        contentValues.put("price", pris);
+        contentValues.put("description", info);
+        contentValues.put("isdn", isdn);
+        contentValues.put("program", program);
+        contentValues.put("course", kurs);
+        contentValues.put("userid",userid);
+        db.insert("ads", null, contentValues);
+
+        return true;
     }
 
 
