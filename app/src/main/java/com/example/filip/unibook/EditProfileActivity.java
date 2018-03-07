@@ -19,6 +19,6 @@ public class EditProfileActivity extends AppCompatActivity {
         editSurname = (EditText) findViewById(R.id.editTxtSurname);
         editEmail = (EditText) findViewById(R.id.editTxtMail);
         editPassword = (EditText) findViewById(R.id.editTxtPass);
-        imageView = (ImageView) findViewById(R.id.ivProfile);
+       // imageView = (ImageView) findViewById(R.id.ivProfile);
     }
 }
