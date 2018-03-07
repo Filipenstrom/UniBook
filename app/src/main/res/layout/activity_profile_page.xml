@@ -112,15 +112,16 @@
         app:srcCompat="@drawable/pin" />
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btnedit"
         android:layout_width="411dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:background="@color/colorOrange"
+        android:onClick="goToEditProfile"
         android:text="Redigera profil"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="555dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

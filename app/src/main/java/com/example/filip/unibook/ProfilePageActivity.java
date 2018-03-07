@@ -1,8 +1,11 @@
 package com.example.filip.unibook;
 
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -37,7 +40,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         name.setText(userInformation[0] + " " + userInformation[1]);
         surname.setText(userInformation[2]);
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
+    }
 
+    public void goToEditProfile(View view){
+        Intent intent = new Intent(ProfilePageActivity.this, EditProfileActivity.class);
+        startActivity(intent);
 
     }
 }
