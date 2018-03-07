@@ -37,9 +37,9 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB)");
-        //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
-        String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
-        db.execSQL(sqlAds);
+        String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
+        String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
+      //  db.execSQL(sqlAds);
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCED courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
@@ -190,8 +190,8 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
 
-
-    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid){
+    //Metod som skapar en annons för den inloggade användaren
+    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid,byte[] imageBytes ){
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -202,6 +202,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put("program", program);
         contentValues.put("course", kurs);
         contentValues.put("userid",userid);
+        contentValues.put("pic", imageBytes);
         db.insert("ads", null, contentValues);
 
         return true;
