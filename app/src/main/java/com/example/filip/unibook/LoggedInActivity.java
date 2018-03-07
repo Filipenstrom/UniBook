@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class LoggedInActivity extends AppCompatActivity {
@@ -15,17 +18,26 @@ public class LoggedInActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
 
-        String username = getIntent().getStringExtra("Welcome");
-        TextView tv = (TextView) findViewById(R.id.txtUser);
-        tv.setText(username);
+
+    
 
         goToAdds();
+        goToProfile();
+
     }
 
-    public void goToProfile(View view){
-        Intent intent = new Intent(LoggedInActivity.this, ProfilePageActivity.class);
-        startActivity(intent);
+    public void goToProfile() {
+        LinearLayout profileBtn = findViewById(R.id.profileLinearLayout);
+
+        profileBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent profilePage = new Intent(LoggedInActivity.this, ProfilePageActivity.class);
+                startActivity(profilePage);
+            }
+        });
     }
+
 
     public void goToAdds(){
         Button addBtn = (Button) findViewById(R.id.btnAnnons);
@@ -37,6 +49,7 @@ public class LoggedInActivity extends AppCompatActivity {
             }
         });
     }
+
 
 
 }

@@ -4,74 +4,184 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.filip.unibook.LoggedInActivity">
+    android:background="#ffffff"
+    tools:context="com.example.filip.unibook.LoggedInActivity"
+    tools:layout_editor_absoluteY="81dp">
 
-    <TextView
-        android:id="@+id/txtUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
+        android:id="@+id/uniBook"
+        android:layout_width="211dp"
+        android:layout_height="52dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="TextView"
+        android:src="@drawable/unibook"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/btnProfil"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginStart="8dp"
-        android:onClick="goToProfile"
-        android:text="Profil"
+
+
+    <LinearLayout
+        android:id="@+id/profileLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="77dp" />
+        app:layout_constraintTop_toBottomOf="@+id/uniBook">
 
-    <Button
-        android:id="@+id/btnSok"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginStart="8dp"
-        android:text="Sök"
+        <ImageView
+            android:id="@+id/imgProfile"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/profile" />
+
+        <TextView
+            android:id="@+id/txtProfile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PROFIL"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/settingsLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/uniBook">
+
+        <ImageView
+            android:id="@+id/imgSettings"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/settings" />
+
+        <TextView
+            android:id="@+id/txtSettings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="INSTÄLLNINGAR"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/messagesLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/settingsLinearLayout">
+
+        <ImageView
+            android:id="@+id/imgMessages"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/messages" />
+
+        <TextView
+            android:id="@+id/txtMessages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MEDDELANDEN"
+            android:textColor="#ffffff"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/searchLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="218dp" />
+        app:layout_constraintTop_toBottomOf="@+id/profileLinearLayout">
 
-    <Button
-        android:id="@+id/btnAnnons"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Mina Annonser"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:id="@+id/imgSearch"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/search" />
 
-    <Button
-        android:id="@+id/btnSettings"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginEnd="8dp"
-        android:text="Inställningar"
+        <TextView
+            android:id="@+id/txtSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SÖK"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/adsLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchLinearLayout">
+
+        <ImageView
+            android:id="@+id/imgAds"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/ads" />
+
+        <TextView
+            android:id="@+id/txtAds"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MINA ANNONSER"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/favouritesLinearLayout"
+        style="@android:style/Widget.Button"
+        android:layout_width="175dp"
+        android:layout_height="160dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/mybutton"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="77dp" />
+        app:layout_constraintTop_toBottomOf="@+id/messagesLinearLayout">
 
-    <Button
-        android:id="@+id/btnMeddelande"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginEnd="8dp"
-        android:text="Meddelande"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:layout_editor_absoluteY="218dp" />
+        <ImageView
+            android:id="@+id/imgFavourites"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/favourites" />
 
-    <Button
-        android:id="@+id/btnFavoriter"
-        android:layout_width="170dp"
-        android:layout_height="132dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="Favoriter"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/txtFavourites"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="FAVORITER"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>

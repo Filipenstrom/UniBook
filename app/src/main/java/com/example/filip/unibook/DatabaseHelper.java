@@ -5,6 +5,15 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.sql.Blob;
 
 /**
  * Created by filip on 2018-03-05.
@@ -48,7 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password){
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes){
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -56,6 +65,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put(COL_3, surname);
         contentValues.put(COL_4, mail);
         contentValues.put(COL_5, password);
+        contentValues.put(COL_6, imageBytes);
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
@@ -141,6 +151,24 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         fullUser[3] = mail;
 
         return fullUser;
+    }
+    
+
+    //Hämta bild från databasen och retunera den som en byte[].
+    public byte[] getProfileImg(String user) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        byte[] blob = new byte[1];
+
+        if(cursor.moveToFirst()){
+            do{
+                blob = cursor.getBlob(0);
+            }
+            while(cursor.moveToNext());
+        }
+        return blob;
     }
 
     public String getUserID(String user) {
