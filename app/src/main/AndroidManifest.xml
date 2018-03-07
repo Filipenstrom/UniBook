@@ -19,8 +19,13 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoggedInActivity" />
         <activity android:name=".ProfilePageActivity" />
+
+        <activity android:name=".CreateNewAdActivity" />
+        <activity android:name=".MyAdsActivity"></activity>
+
         <activity android:name=".AddProfilePictureActivity" />
         <activity android:name=".EditProfileActivity"></activity>
+
     </application>
 
 </manifest>
