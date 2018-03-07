@@ -34,13 +34,15 @@ public class EditProfileActivity extends AppCompatActivity {
         editName = findViewById(R.id.etFirstname);
         editSurname =  findViewById(R.id.etSurname);
         editEmail =  findViewById(R.id.etMail);
-
         button = findViewById(R.id.btnSpara);
         changePic = findViewById(R.id.btnChangePic);
+
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         String[] user = db.getUser(sp.getusername());
         insertUserInformation(user[3]);
+
+        setByteIfUserDontChangePic();
 
         changePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +72,15 @@ public class EditProfileActivity extends AppCompatActivity {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         String[] id = db.getUser(sp.getusername());
-        db.updateUser(id[0], editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+        //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
+        if(editEmail.getText().toString().equals(id[3])) {
+            db.updateUser(id[0], editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+        }
+        else{
+            saveUserInformation();
+            db.updateUser(id[0], editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+        }
         Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
         startActivity(intent);
     }
@@ -94,6 +104,21 @@ public class EditProfileActivity extends AppCompatActivity {
             bytes = imageInByte;
 
         }
+    }
+
+    public void saveUserInformation(){
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(editEmail.getText().toString());
+    }
+
+    //Så det inte krachar om anvndaren inte byter profilbild.
+    public void setByteIfUserDontChangePic(){
+        imageView.setImageURI(imageUri);
+        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] imageInByte = baos.toByteArray();
+        bytes = imageInByte;
     }
 
 }
