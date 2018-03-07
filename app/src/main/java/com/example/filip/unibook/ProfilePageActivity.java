@@ -37,7 +37,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         TextView surname = (TextView) findViewById(R.id.txtMail);
         ImageView imageView = findViewById(R.id.profil);
 
-        name.setText(userInformation[0] + " " + userInformation[1]);
+        name.setText(userInformation[1] + " " + userInformation[2]);
         surname.setText(userInformation[2]);
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
     }
