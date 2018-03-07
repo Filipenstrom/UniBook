@@ -75,6 +75,17 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         else {
             return true;
         }
+    }
+
+    public void updateUser(String id, String name, String surname, String mail, byte[] bytes){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, name);
+        contentValues.put(COL_3, surname);
+        contentValues.put(COL_4, mail);
+        contentValues.put(COL_6, bytes);
+
+        db.update(TABLE_NAME, contentValues, "id="+id, null);
 
     }
 
