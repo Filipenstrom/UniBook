@@ -40,7 +40,7 @@ public class LoggedInActivity extends AppCompatActivity {
 
 
     public void goToAdds(){
-        Button addBtn = (Button) findViewById(R.id.btnAnnons);
+        LinearLayout addBtn =  findViewById(R.id.adsLinearLayout);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
