@@ -27,7 +27,7 @@ public class MyAdsActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
         goToCreateAd();
-        getAllMyAds();
+        //getAllMyAds();
 
     }
 
@@ -43,7 +43,7 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
-    public void getAllMyAds(){
+  /*  public void getAllMyAds(){
 
         SharedPreferences prefs = new SharedPreferences(context);
         String [] id = myDb.getUser(prefs.getusername());
@@ -55,5 +55,5 @@ public class MyAdsActivity extends AppCompatActivity {
         minaAnnonser.setAdapter(adapter);
 
 
-    }
+    }*/
 }
