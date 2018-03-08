@@ -199,6 +199,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public String getAd(String user) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select titel from ads where userid = " + "'" + user + "'";
+        Cursor cursor = db.rawQuery(query, null);
+        String titel = "";
+
+
+        if (cursor.moveToFirst()) {
+            do {
+                titel = cursor.getString(0);
+            }
+
+            while (cursor.moveToNext());
+        }
+
+        return titel;
+    }
+
     public ArrayList getMyAds(String user) {
 
 
