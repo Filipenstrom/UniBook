@@ -30,6 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_4 = "MAIL";
     public static final String COL_5 = "PASSWORD";
     public static final String COL_6 = "PIC";
+    public static final String TABLE_ADS = "ads";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -40,8 +41,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB)");
         //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
         //String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(userid) REFERENCES users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
-          db.execSQL("create table " + "ads" + "(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(userid) REFERENCES users(id))");
-        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCED courses(id));";
+         db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
+        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         //  String sqlFavourites = "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, FOREIGN KEY(adds_id) REFERENCED adds(id), userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
@@ -52,8 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-        String sqlAds = "drop table if exists ads";
-        db.execSQL(sqlAds);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         onCreate(db);
     }
 
@@ -120,6 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         String name = namn + " " + efternamn;
 
+
         return name;
     }
 
@@ -179,18 +180,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("title", titel);
-        contentValues.put("price", pris);
-        contentValues.put("description", info);
-        contentValues.put("isdn", isdn);
-        contentValues.put("program", program);
-        contentValues.put("course", kurs);
-        contentValues.put("userid", userid);
-        contentValues.put("pic", imageBytes);
-        db.insert("ads", null, contentValues);
+        contentValues.put("TITLE", titel);
+        contentValues.put("PRICE", pris);
+        contentValues.put("DESCRIPTION", info);
+        contentValues.put("ISDN", isdn);
+        contentValues.put("PROGRAM", program);
+        contentValues.put("COURSE", kurs);
+        contentValues.put("USERID", userid);
+        contentValues.put("PIC", imageBytes);
+        long result = db.insert(TABLE_ADS, null, contentValues);
         db.close();
 
-        return true;
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+
     }
 
     public ArrayList getMyAds(String user) {
