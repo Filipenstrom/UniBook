@@ -14,12 +14,13 @@ import android.widget.ImageView;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
+import java.util.ArrayList;
 
 /**
  * Created by filip on 2018-03-05.
  */
 
-public class DatabaseHelper extends SQLiteOpenHelper{
+public class DatabaseHelper extends SQLiteOpenHelper {
 
     public static final String DATABASE_NAME = "users.db";
     public static final String TABLE_NAME = "users_table";
@@ -39,7 +40,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB)");
         String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
         String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
-      //  db.execSQL(sqlAds);
+          db.execSQL(sqlAds);
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCED courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
@@ -57,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     }
 
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes){
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -69,48 +70,47 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 
         long result = db.insert(TABLE_NAME, null, contentValues);
-        if(result == -1) {
+        if (result == -1) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
 
     }
 
     //Metod som kollar om användarens email och lösenord stämmer överens
-    public String searchPass(String user){
+    public String searchPass(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select mail, password from " + TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
 
         String anvandarNamn, losenord;
         losenord = "not found";
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 anvandarNamn = cursor.getString(0);
 
-                if(anvandarNamn.equals(user)){
+                if (anvandarNamn.equals(user)) {
                     losenord = cursor.getString(1);
                     break;
                 }
             }
-            while(cursor.moveToNext());
+            while (cursor.moveToNext());
         }
         return losenord;
     }
 
     //Metod som hämtar användarens namn och efternamn
-    public String getName(String user){
+    public String getName(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user + "'";
         Cursor cursor = db.rawQuery(query, null);
         String namn = "";
         String efternamn = "";
 
 
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 namn = cursor.getString(0);
                 efternamn = cursor.getString(1);
             }
@@ -125,23 +125,23 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
 
     //Hämta all information om en användare, INTE HELT KLAR
-    public String[] getUser(String user){
+    public String[] getUser(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user + "'";
         Cursor cursor = sq.rawQuery(query, null);
         String id = "";
         String name = "";
         String surname = "";
         String mail = "";
 
-        if (cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 id = cursor.getString(0);
                 name = cursor.getString(1);
                 surname = cursor.getString(2);
                 mail = cursor.getString(3);
             }
-            while(cursor.moveToNext());
+            while (cursor.moveToNext());
         }
 
         String[] fullUser = new String[4];
@@ -152,46 +152,30 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
         return fullUser;
     }
-    
+
 
     //Hämta bild från databasen och retunera den som en byte[].
     public byte[] getProfileImg(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user  + "'";
+        String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user + "'";
         Cursor cursor = db.rawQuery(query, null);
 
         byte[] blob = new byte[1];
 
-        if(cursor.moveToFirst()){
-            do{
+        if (cursor.moveToFirst()) {
+            do {
                 blob = cursor.getBlob(0);
             }
-            while(cursor.moveToNext());
+            while (cursor.moveToNext());
         }
         return blob;
     }
 
-    public String getUserID(String user) {
-        SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select id from " + TABLE_NAME + " where mail = " + "'" + user + "'";
-        Cursor cursor = sq.rawQuery(query, null);
-        String id = "";
-        if (cursor.moveToFirst()) {
-            do {
-                id = cursor.getString(0);
 
-            }
-
-            while (cursor.moveToNext());
-        }
-
-
-        return id;
-    }
 
 
     //Metod som skapar en annons för den inloggade användaren
-    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid,byte[] imageBytes ){
+    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
 
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -201,12 +185,44 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         contentValues.put("isdn", isdn);
         contentValues.put("program", program);
         contentValues.put("course", kurs);
-        contentValues.put("userid",userid);
+        contentValues.put("userid", userid);
         contentValues.put("pic", imageBytes);
         db.insert("ads", null, contentValues);
 
         return true;
     }
 
+    public ArrayList getMyAds(String user) {
 
+
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select * from ads join users on ads.userid = users.id where users.mail =" + "'" + user + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+
+        ArrayList annonsInnehall = new ArrayList();
+
+        if (cursor.moveToFirst())
+
+        {
+            do {
+                ArrayList annonser = new ArrayList();
+                annonser.add(cursor.getString(0));
+                annonser.add(cursor.getString(1));
+                annonser.add(cursor.getString(2));
+                annonser.add(cursor.getString(3));
+                annonser.add(cursor.getString(4));
+                annonser.add(cursor.getString(5));
+                annonser.add(cursor.getString(6));
+                annonser.add(cursor.getString(7));
+                annonser.add(cursor.getString(8));
+                annonsInnehall.add(annonser);
+
+            }
+            while (cursor.moveToNext());
+
+        }
+
+        return annonsInnehall;
+
+    }
 }

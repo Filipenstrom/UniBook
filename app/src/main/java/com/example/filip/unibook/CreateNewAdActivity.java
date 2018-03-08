@@ -54,6 +54,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
     }
 
+    //Metod som skapar en ny annons för den inloggade
     public void createAd(){
 
         Button bildKnapp = (Button) findViewById(R.id.btnSpara);
