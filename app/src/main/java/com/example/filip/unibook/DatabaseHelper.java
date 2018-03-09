@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by filip on 2018-03-05.
@@ -217,39 +218,45 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return titel;
     }
 
-    public ArrayList getMyAds(String user) {
+    public List<List<String>> getMyAds(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
-<<<<<<< HEAD
-        String query = "select * from ads join users on ads.userid = users_table.id where users_table.mail =" + "'" + user + "'";
-=======
-        String query = "select title, price, description, isdn, course, program, userid from ads join users_table on ads.userid = users_table.id where users_table.mail =" + "'" + user + "'";
->>>>>>> efaf03703aa4e3eeafd585918612485752aad769
+        String query = "select title, price, description, program, course, isdn from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
         Cursor cursor = sq.rawQuery(query, null);
-
-        ArrayList annonsInnehall = new ArrayList();
+        List<List<String>> annonsInnehall = new ArrayList<List<String>>();
 
         if (cursor.moveToFirst())
-
         {
             do {
-                ArrayList annonser = new ArrayList();
+                List<String> annonser = new ArrayList<String>();
                 annonser.add(cursor.getString(0));
                 annonser.add(cursor.getString(1));
                 annonser.add(cursor.getString(2));
                 annonser.add(cursor.getString(3));
                 annonser.add(cursor.getString(4));
                 annonser.add(cursor.getString(5));
-                annonser.add(cursor.getString(6));
-                annonser.add(cursor.getString(7));
+                //annonser.add(cursor.getString(6));
+                //annonser.add(cursor.getString(7));
                // annonser.add(cursor.getString(8));
                 annonsInnehall.add(annonser);
-
             }
             while (cursor.moveToNext());
-
         }
-
         return annonsInnehall;
+    }
 
+    public byte[] getAdsImg(String user) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select PIC from ads where userid = " + "'" + user + "'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        byte[] blob = new byte[1];
+
+        if (cursor.moveToFirst()) {
+            do {
+                blob = cursor.getBlob(0);
+            }
+            while (cursor.moveToNext());
+        }
+        return blob;
     }
 }
