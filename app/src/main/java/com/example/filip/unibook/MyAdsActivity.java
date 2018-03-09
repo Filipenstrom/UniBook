@@ -27,7 +27,7 @@ public class MyAdsActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
         goToCreateAd();
-        //getAllMyAds();
+        getAllMyAds();
 
     }
 
@@ -49,7 +49,7 @@ public class MyAdsActivity extends AppCompatActivity {
         String [] id = myDb.getUser(prefs.getusername());
         ListView minaAnnonser = (ListView) findViewById(R.id.listViewMyAds);
 
-        ArrayList annonser = myDb.getMyAds(id[0]);
+        ArrayList annonser = myDb.getMyAds(id[3]);
         ArrayList myAds = new ArrayList(Arrays.asList(annonser));
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,myAds);
         minaAnnonser.setAdapter(adapter);
