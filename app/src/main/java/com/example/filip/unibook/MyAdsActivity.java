@@ -62,33 +62,33 @@ public class MyAdsActivity extends AppCompatActivity {
 
     public void getAllMyAds(){
 
-        SharedPreferences prefs = new SharedPreferences(context);
-        String[] id = myDb.getUser(prefs.getusername());
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sharedPreferences = new SharedPreferences(this);
-        String[] user = db.getUser(sharedPreferences.getusername());
-        ListView listView = findViewById(R.id.listViewMyAds);
+    SharedPreferences prefs = new SharedPreferences(context);
+    String[] mail = myDb.getUser(prefs.getusername());
+    DatabaseHelper db = new DatabaseHelper(this);
+    SharedPreferences sharedPreferences = new SharedPreferences(this);
+    String[] user = db.getUser(sharedPreferences.getusername());
+    ListView listView = findViewById(R.id.listViewMyAds);
 
 
-        List<List<String>> annonser = myDb.getMyAds(id[3]);
-        int numberOfAds = annonser.size();
-        String[] items = new String[numberOfAds];
-        String[] prices = new String[numberOfAds];
+    List<List<String>> annonser = myDb.getMyAds(mail[3]);
+    int numberOfAds = annonser.size();
+    String[] items = new String[numberOfAds];
+    String[] prices = new String[numberOfAds];
 
-        //Hämtar alla bilder tills annonserna
-        List<byte[]> bytes = db.getAdsImg(user[0]);
+    //Hämtar alla bilder tills annonserna
+    List<byte[]> bytes = db.getAdsImg(user[0]);
 
 
-        //Hämtar all data om annonserna, exkluderat tillhörande bilder.
-        for(int i = 0;i<annonser.size();i++) {
-            List<String> annons = annonser.get(i);
+    //Hämtar all data om annonserna, exkluderat tillhörande bilder.
+    for(int i = 0;i<annonser.size();i++) {
+        List<String> annons = annonser.get(i);
 
-            for(int i2 = 0; i2<annons.size();i2++)
+        for(int i2 = 0; i2<annons.size();i2++)
             items[i] = annons.get(1).toString();
-            prices[i] = annons.get(2).toString();
-        }
-
-        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
-        listView.setAdapter(itemAdapter);
+        prices[i] = annons.get(2).toString();
     }
+
+    ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
+    listView.setAdapter(itemAdapter);
+}
 }

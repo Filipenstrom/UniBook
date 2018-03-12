@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -14,11 +15,25 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
     List<String> chosenAd;
     byte[] bytepic;
+    TextView title;
+    TextView pris;
+    TextView ISDN;
+    TextView info;
+    TextView program;
+    TextView kurs;
+    ImageView pic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chosen_ad_page);
+        title = findViewById(R.id.etchosenAdTitle);
+        pris = findViewById(R.id.etchosenAdPris);
+        ISDN = findViewById(R.id.etchosenAdISDN);
+        info = findViewById(R.id.etchosenAdInfo);
+        program = findViewById(R.id.etchosenAdProgram);
+        kurs = findViewById(R.id.etchosenAdCourse);
+        pic = findViewById(R.id.ivchosenAdImage);
         Intent intent = getIntent();
         int index = intent.getIntExtra("com.example.filip.unibook.ITEM_INDEX", -1);
         Log.d("Index", "Index är " + index);
@@ -46,14 +61,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         }
 
         public void fillAdInformation(){
-            TextView title = findViewById(R.id.etchosenAdTitle);
-            TextView pris = findViewById(R.id.etchosenAdPris);
-            TextView ISDN = findViewById(R.id.etchosenAdISDN);
-            TextView info = findViewById(R.id.etchosenAdInfo);
-            TextView program = findViewById(R.id.etchosenAdProgram);
-            TextView kurs = findViewById(R.id.etchosenAdCourse);
-            ImageView pic = findViewById(R.id.ivchosenAdImage);
-
             title.setText(chosenAd.get(1));
             pris.setText(chosenAd.get(2));
             ISDN.setText(chosenAd.get(3));
@@ -61,6 +68,14 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             program.setText(chosenAd.get(5));
             kurs.setText(chosenAd.get(6));
             pic.setImageBitmap(BitmapFactory.decodeByteArray(bytepic, 0, bytepic.length));
+        }
+
+        public void updateData(View view){
+            DatabaseHelper db = new DatabaseHelper(this);
+            SharedPreferences sharedPreferences = new SharedPreferences(this);
+            String[] user = db.getUser(sharedPreferences.getusername());
+
+            db.updateAd(chosenAd.get(0), title.getText().toString(), pris.getText().toString(), ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, user[0]);
         }
 
 }
