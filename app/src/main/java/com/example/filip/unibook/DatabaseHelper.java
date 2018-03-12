@@ -260,10 +260,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return blob;
     }
 
-    public void updateAd(String id, String title, String pris, String info, String ISDN, String program, String course, byte[] bytes, String userid){
+    public void updateAd(int id, String title, int pris, String info, String ISDN, String program, String course, byte[] bytes, int userid){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("id", title);
         contentValues.put("title", title);
         contentValues.put("price", pris);
         contentValues.put("description", info);

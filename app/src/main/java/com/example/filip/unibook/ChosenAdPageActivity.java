@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -74,8 +75,12 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             DatabaseHelper db = new DatabaseHelper(this);
             SharedPreferences sharedPreferences = new SharedPreferences(this);
             String[] user = db.getUser(sharedPreferences.getusername());
+            int id = Integer.parseInt(chosenAd.get(0));
+            int prisInt = Integer.parseInt(pris.getText().toString());
+            int userid = Integer.parseInt(user[0]);
 
-            db.updateAd(chosenAd.get(0), title.getText().toString(), pris.getText().toString(), ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, user[0]);
+            db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
+            Toast.makeText(ChosenAdPageActivity.this,"Update successful, gå tillbaka till huvudmeny för att refresha!", Toast.LENGTH_LONG).show();
         }
 
 }
