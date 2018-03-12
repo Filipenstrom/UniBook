@@ -11,6 +11,8 @@ import com.example.filip.unibook.R;
 
 import org.w3c.dom.Text;
 
+import java.util.List;
+
 /**
  * Created by Ludvig on 2018-03-12.
  */
@@ -18,25 +20,23 @@ import org.w3c.dom.Text;
 public class ItemAdapter extends BaseAdapter {
 
     LayoutInflater mInflator;
-    String[] items;
-    String[] prices;
-    String[] descriptions;
+    List<String> items;
+    List<String> prices;
 
-    public ItemAdapter(Context c, String[] i, String[] p, String[] d){
+    public ItemAdapter(Context c, List<String> i, List<String> p){
         items = i;
         prices = p;
-        descriptions = d;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Override
     public int getCount() {
-        return items.length;
+        return items.size();
     }
 
     @Override
     public Object getItem(int i) {
-        return items[i];
+        return items;
     }
 
     @Override
@@ -48,14 +48,13 @@ public class ItemAdapter extends BaseAdapter {
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = mInflator.inflate(R.layout.my_listview_ad, null);
         TextView nameTextView = (TextView) v.findViewById(R.id.txtAdTitle);
-        TextView priceeTextView = (TextView) v.findViewById(R.id.txtAdPris);
+        TextView priceTextView = (TextView) v.findViewById(R.id.txtAdPris);
 
-        String name = items[i];
-        String desc = descriptions[i];
-        String cost = prices[i];
+        String name = items.get(i);
+        String cost = prices.get(i);
 
         nameTextView.setText(name);
-        priceeTextView.setText(cost);
+        priceTextView.setText(cost);
 
         return v;
     }
