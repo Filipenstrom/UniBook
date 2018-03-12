@@ -72,7 +72,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_5, password);
         contentValues.put(COL_6, imageBytes);
 
-
         long result = db.insert(TABLE_NAME, null, contentValues);
         if (result == -1) {
             return false;
@@ -122,8 +121,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         String name = namn + " " + efternamn;
-
-
         return name;
     }
 
