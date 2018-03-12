@@ -244,16 +244,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return annonsInnehall;
     }
 
-    public byte[] getAdsImg(String user) {
+    public List<byte[]> getAdsImg(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select PIC from ads where userid = " + "'" + user + "'";
         Cursor cursor = db.rawQuery(query, null);
 
-        byte[] blob = new byte[1];
+        List<byte[]> blob = new ArrayList<>();
 
         if (cursor.moveToFirst()) {
             do {
-                blob = cursor.getBlob(0);
+                blob.add(cursor.getBlob(0));
             }
             while (cursor.moveToNext());
         }

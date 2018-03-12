@@ -53,7 +53,7 @@ public class MyAdsActivity extends AppCompatActivity {
         String[] id = myDb.getUser(prefs.getusername());
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
-
+        String[] user = db.getUser(sharedPreferences.getusername());
         ListView listView = findViewById(R.id.listViewMyAds);
 
 
@@ -62,16 +62,20 @@ public class MyAdsActivity extends AppCompatActivity {
         String[] items = new String[numberOfAds];
         String[] prices = new String[numberOfAds];
 
+        //Hämtar alla bilder tills annonserna
+        List<byte[]> bytes = db.getAdsImg(user[0]);
+
+
+        //Hämtar all data om annonserna, exkluderat tillhörande bilder.
         for(int i = 0;i<annonser.size();i++) {
             List<String> annons = annonser.get(i);
+
             for(int i2 = 0; i2<annons.size();i2++)
-            //textView.setText(annons.get(0).toString() + " " + annons.get(1).toString() + " " + annons.get(2).toString() + " " + annons.get(3).toString() + " " + annons.get(4).toString());
-            //imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getAdsImg(user[0]), 0, db.getAdsImg(user[0]).length));
             items[i] = annons.get(0).toString();
             prices[i] = annons.get(1).toString();
         }
 
-        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices);
+        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
         listView.setAdapter(itemAdapter);
     }
 }
