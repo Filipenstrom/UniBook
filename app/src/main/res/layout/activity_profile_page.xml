@@ -13,8 +13,11 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="Namn"
+        android:textColor="@android:color/black"
+        android:textSize="20dp"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profil" />
@@ -23,9 +26,10 @@
         android:id="@+id/txtAdress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="24dp"
         android:text="Adress"
+        android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/imageView11"
         app:layout_constraintTop_toBottomOf="@+id/txtNamn" />
 
@@ -33,9 +37,10 @@
         android:id="@+id/txtTele"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="32dp"
         android:text="Telefonnummer"
+        android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/imageView10"
         app:layout_constraintTop_toBottomOf="@+id/txtAdress" />
 
@@ -43,9 +48,10 @@
         android:id="@+id/txtSkola"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="40dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="36dp"
         android:text="Skola"
+        android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/imageView8"
         app:layout_constraintTop_toBottomOf="@+id/txtTele" />
 
@@ -53,11 +59,22 @@
         android:id="@+id/txtMail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginTop="30dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="8dp"
         android:text="Mail"
+        android:textSize="18dp"
         app:layout_constraintStart_toEndOf="@+id/imageView7"
         app:layout_constraintTop_toBottomOf="@+id/txtSkola" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="0dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        app:srcCompat="@color/colorOrange" />
 
     <ImageView
         android:id="@+id/profil"
@@ -65,8 +82,9 @@
         android:layout_height="150dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="84dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@mipmap/ic_launcher" />
@@ -75,8 +93,8 @@
         android:id="@+id/imageView7"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView8"
         app:srcCompat="@drawable/mesasges" />
@@ -85,8 +103,8 @@
         android:id="@+id/imageView8"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView10"
         app:srcCompat="@drawable/schjool" />
@@ -95,8 +113,8 @@
         android:id="@+id/imageView10"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageView11"
         app:srcCompat="@drawable/tele" />
@@ -105,8 +123,8 @@
         android:id="@+id/imageView11"
         android:layout_width="60dp"
         android:layout_height="40dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginTop="56dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="44dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profil"
         app:srcCompat="@drawable/pin" />
@@ -120,8 +138,23 @@
         android:background="@color/colorOrange"
         android:onClick="goToEditProfile"
         android:text="Redigera profil"
+        android:textColor="@android:color/background_light"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="80dp"
+        android:layout_height="34dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/unibook" />
+
 
 </android.support.constraint.ConstraintLayout>

@@ -62,7 +62,7 @@ public class ItemAdapter extends BaseAdapter {
 
 
         nameTextView.setText(name);
-        priceTextView.setText(cost);
+        priceTextView.setText(cost + ":-");
         adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
 
         return v;
