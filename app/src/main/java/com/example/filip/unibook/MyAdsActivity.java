@@ -41,7 +41,7 @@ public class MyAdsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
-                showDetailActivity.putExtra("com.example.ludvig.listapp.ITEM_INDEX", i);
+                showDetailActivity.putExtra("com.example.filip.unibook.ITEM_INDEX", i);
                 startActivity(showDetailActivity);
             }
         });

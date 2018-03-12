@@ -220,7 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<List<String>> getMyAds(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select title, price, description, program, course, isdn from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
+        String query = "select ads.id, title, price, description, program, course, isdn from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
         Cursor cursor = sq.rawQuery(query, null);
         List<List<String>> annonsInnehall = new ArrayList<List<String>>();
 
@@ -234,7 +234,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 annonser.add(cursor.getString(3));
                 annonser.add(cursor.getString(4));
                 annonser.add(cursor.getString(5));
-                //annonser.add(cursor.getString(6));
+                annonser.add(cursor.getString(6));
                 //annonser.add(cursor.getString(7));
                // annonser.add(cursor.getString(8));
                 annonsInnehall.add(annonser);
