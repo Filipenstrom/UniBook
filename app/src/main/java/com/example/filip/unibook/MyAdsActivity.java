@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
@@ -23,6 +24,7 @@ public class MyAdsActivity extends AppCompatActivity {
 
     Context context = this;
     DatabaseHelper myDb;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +32,19 @@ public class MyAdsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_ads);
 
         myDb = new DatabaseHelper(this);
+        listView = findViewById(R.id.listViewMyAds);
         goToCreateAd();
         getAllMyAds();
+
+        //Gå till vald annons och skicka med item index.
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
+                showDetailActivity.putExtra("com.example.ludvig.listapp.ITEM_INDEX", i);
+                startActivity(showDetailActivity);
+            }
+        });
 
     }
 
@@ -71,8 +84,8 @@ public class MyAdsActivity extends AppCompatActivity {
             List<String> annons = annonser.get(i);
 
             for(int i2 = 0; i2<annons.size();i2++)
-            items[i] = annons.get(0).toString();
-            prices[i] = annons.get(1).toString();
+            items[i] = annons.get(1).toString();
+            prices[i] = annons.get(2).toString();
         }
 
         ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
