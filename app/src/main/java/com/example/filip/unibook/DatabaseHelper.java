@@ -32,6 +32,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String COL_5 = "PASSWORD";
     public static final String COL_6 = "PIC";
     public static final String TABLE_ADS = "ads";
+    public static final String TABLE_PROGRAMS = "programs_table";
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -45,6 +46,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
          db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
+        db.execSQL("create table " + TABLE_PROGRAMS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, CODE TEXT, DESCRIPTION TEXT)");
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         //  String sqlFavourites = "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, FOREIGN KEY(adds_id) REFERENCED adds(id), userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
@@ -55,6 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAMS);
         onCreate(db);
     }
 
@@ -76,7 +79,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return true;
         }
-
     }
 
     //Metod som kollar om användarens email och lösenord stämmer överens
@@ -124,7 +126,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return name;
     }
-
 
     //Hämta all information om en användare, INTE HELT KLAR
     public String[] getUser(String user) {
@@ -174,8 +175,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     //Metod som skapar en annons för den inloggade användaren
     public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
 
@@ -197,7 +196,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return true;
         }
-
     }
 
     public String getAd(String user) {
@@ -214,7 +212,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
             while (cursor.moveToNext());
         }
-
         return titel;
     }
 
@@ -258,5 +255,39 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext());
         }
         return blob;
+    }
+
+    public ArrayList<String> getAllPrograms() {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select name from programs_table";
+        Cursor cursor = sq.rawQuery(query, null);
+        ArrayList<String> allPrograms = new ArrayList<String>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                allPrograms.add(cursor.getString(0));
+            }
+            while (cursor.moveToNext());
+        }
+        return allPrograms;
+    }
+
+    //Metod som lägger till exempelprogram
+    public boolean insertExampleProgram() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("NAME", "EKONOMI");
+        contentValues.put("CODE", "12334");
+        contentValues.put("DESCRIPTION", "Det här är ett bra program");
+        long result = db.insert(TABLE_PROGRAMS, null, contentValues);
+        db.close();
+
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
