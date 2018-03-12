@@ -23,8 +23,6 @@ public class MyAdsActivity extends AppCompatActivity {
 
     Context context = this;
     DatabaseHelper myDb;
-    List<String> items = new ArrayList<>();
-    List<String> prices = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,29 +58,20 @@ public class MyAdsActivity extends AppCompatActivity {
 
 
         List<List<String>> annonser = myDb.getMyAds(id[3]);
-        //ArrayList myAds = new ArrayList(Arrays.asList(annonser));
-        //adapter = new ArrayAdapter<String>(this, android.R.layout.simple_expandable_list_item_1,myAds);
-        //minaAnnonser.setAdapter(adapter);
+        int numberOfAds = annonser.size();
+        String[] items = new String[numberOfAds];
+        String[] prices = new String[numberOfAds];
 
         for(int i = 0;i<annonser.size();i++) {
             List<String> annons = annonser.get(i);
             for(int i2 = 0; i2<annons.size();i2++)
             //textView.setText(annons.get(0).toString() + " " + annons.get(1).toString() + " " + annons.get(2).toString() + " " + annons.get(3).toString() + " " + annons.get(4).toString());
             //imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getAdsImg(user[0]), 0, db.getAdsImg(user[0]).length));
-            items.add(annons.get(0).toString());
-            prices.add(annons.get(1).toString());
+            items[i] = annons.get(0).toString();
+            prices[i] = annons.get(1).toString();
         }
 
         ItemAdapter itemAdapter = new ItemAdapter(this, items, prices);
         listView.setAdapter(itemAdapter);
-
-     //   myListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-     //       @Override
-     //       public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-     //           Intent showDetailActivity = new Intent(getApplicationContext(), DetailActivity.class);
-     //           showDetailActivity.putExtra("com.example.ludvig.listapp.ITEM_INDEX", i);
-     //           startActivity(showDetailActivity);
-     //       }
-     //   });
     }
 }

@@ -11,6 +11,7 @@ import com.example.filip.unibook.R;
 
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -20,10 +21,10 @@ import java.util.List;
 public class ItemAdapter extends BaseAdapter {
 
     LayoutInflater mInflator;
-    List<String> items;
-    List<String> prices;
+    String[] items;
+    String[] prices;
 
-    public ItemAdapter(Context c, List<String> i, List<String> p){
+    public ItemAdapter(Context c, String[] i, String[] p){
         items = i;
         prices = p;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -31,7 +32,7 @@ public class ItemAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return items.size();
+        return items.length;
     }
 
     @Override
@@ -50,8 +51,8 @@ public class ItemAdapter extends BaseAdapter {
         TextView nameTextView = (TextView) v.findViewById(R.id.txtAdTitle);
         TextView priceTextView = (TextView) v.findViewById(R.id.txtAdPris);
 
-        String name = items.get(i);
-        String cost = prices.get(i);
+        String name = items[i];
+        String cost = prices[i];
 
         nameTextView.setText(name);
         priceTextView.setText(cost);
