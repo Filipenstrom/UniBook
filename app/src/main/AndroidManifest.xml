@@ -23,6 +23,7 @@
         <activity android:name=".MyAdsActivity" />
         <activity android:name=".AddProfilePictureActivity" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ChosenAdPageActivity"></activity>
         <activity android:name=".SearchActivity"></activity>
     </application>
 
