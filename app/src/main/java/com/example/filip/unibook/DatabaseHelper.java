@@ -102,6 +102,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Metod som hämtar användarens namn och efternamn
+    //KAN VI DELETA DENNA?
     public String getName(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user + "'";
@@ -156,7 +157,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-    //Hämta bild från databasen och retunera den som en byte[].
+    //Hämta profilbild från databasen och retunera den som en byte[].
     public byte[] getProfileImg(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user + "'";
@@ -200,6 +201,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    //Skit i denna, kan nog ta bort den.
     public String getAd(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select title from ads where userid = " + "'" + user + "'";
@@ -218,6 +220,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return titel;
     }
 
+    //Hämtar all information förutom bild som tillhör en annons som en specifik användare lagt upp.
     public List<List<String>> getMyAds(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select ads.id, title, price, description, program, course, isdn from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
@@ -244,6 +247,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return annonsInnehall;
     }
 
+    //Hämtar alla bilder som tillhör annonser som en användare gjort. Fick göra det separat då det är en blob och kan inte konvertaras om till en string.
+    //För att hämta all annan info använd istället getMyAds().
     public List<byte[]> getAdsImg(String user) {
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select PIC from ads where userid = " + "'" + user + "'";
@@ -260,6 +265,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return blob;
     }
 
+    //Uppdatera informationen om en annons..
     public void updateAd(int id, String title, int pris, String info, String ISDN, String program, String course, byte[] bytes, int userid){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
