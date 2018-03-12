@@ -92,7 +92,7 @@
         app:layout_constraintVertical_bias="0.863" />
 
     <Button
-        android:id="@+id/btnBildPicker"
+        android:id="@+id/btnBildKnapp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
@@ -107,7 +107,7 @@
         app:layout_constraintVertical_bias="0.017" />
 
     <ImageView
-        android:id="@+id/imageView"
+        android:id="@+id/imgViewBokbild"
         android:layout_width="113dp"
         android:layout_height="76dp"
         android:layout_marginBottom="8dp"
