@@ -78,6 +78,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
         }
 
+        //Metod som uppdaterar ens valda annons
         public void updateData(View view){
             DatabaseHelper db = new DatabaseHelper(this);
             SharedPreferences sharedPreferences = new SharedPreferences(this);
@@ -91,6 +92,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
             startActivity(intent);
         }
+
+        //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
 
         public void deleteAd(){
             Button deleteBtn = (Button) findViewById(R.id.btnDelete);
