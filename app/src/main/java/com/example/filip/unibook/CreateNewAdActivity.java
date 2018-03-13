@@ -70,9 +70,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokTillhorKurs = kurs.getText().toString();
 
                 SharedPreferences prefs = new SharedPreferences(context);
-                String[] id = myDb.getUser(prefs.getusername());
+                User id = myDb.getUser(prefs.getusername());
 
-                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id[0], bytes);
+                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
 
 
                 if(isInserted == true){

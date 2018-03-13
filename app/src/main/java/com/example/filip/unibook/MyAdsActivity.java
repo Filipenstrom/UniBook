@@ -64,14 +64,11 @@ public class MyAdsActivity extends AppCompatActivity {
     //Hämta data om alla annonser som en användare lagt upp och skicka de till ItemAdapter.
     public void getAllMyAds() {
         SharedPreferences prefs = new SharedPreferences(context);
-        String[] mail = myDb.getUser(prefs.getusername());
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sharedPreferences = new SharedPreferences(this);
-        String[] user = db.getUser(sharedPreferences.getusername());
+        User mail = myDb.getUser(prefs.getusername());
         ListView listView = findViewById(R.id.listViewMyAds);
 
 
-        List<Ad> annonser = myDb.getMyAds(mail[3]);
+        List<Ad> annonser = myDb.getMyAds(mail.getMail());
         int numberOfAds = annonser.size();
         String[] items = new String[numberOfAds];
         String[] prices = new String[numberOfAds];

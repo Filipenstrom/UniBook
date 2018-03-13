@@ -48,9 +48,9 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
-        String[] user = db.getUser(sharedPreferences.getusername());
+        User user = db.getUser(sharedPreferences.getusername());
 
-        List<Ad> ads = db.getMyAds(user[3]);
+        List<Ad> ads = db.getMyAds(user.getMail());
 
         //Sök igenom alla annonser tills en matchning sker på index = id på annons.
         for(int i = 0;i<ads.size();i++){
@@ -82,10 +82,10 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         public void updateData(View view){
             DatabaseHelper db = new DatabaseHelper(this);
             SharedPreferences sharedPreferences = new SharedPreferences(this);
-            String[] user = db.getUser(sharedPreferences.getusername());
+            User user = db.getUser(sharedPreferences.getusername());
             int id = Integer.parseInt(chosenAd.getId());
             int prisInt = Integer.parseInt(pris.getText().toString());
-            int userid = Integer.parseInt(user[0]);
+            int userid = Integer.parseInt(user.getId());
 
             db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
             Toast.makeText(ChosenAdPageActivity.this,"Update successful", Toast.LENGTH_LONG).show();
@@ -102,7 +102,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     SharedPreferences sharedPreferences = new SharedPreferences(context);
-                    String[] user = db.getUser(sharedPreferences.getusername());
+                    User user = db.getUser(sharedPreferences.getusername());
                     int adId = Integer.parseInt(chosenAd.getId());
 
                     db.deleteAd(adId);
