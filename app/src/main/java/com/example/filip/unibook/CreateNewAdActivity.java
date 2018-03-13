@@ -93,6 +93,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, PICK_IMAGE);
     }
 
+    //Metod som fäster ens valda bild i en imageView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
