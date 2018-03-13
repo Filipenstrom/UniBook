@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,12 +18,9 @@ public class LoggedInActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_logged_in);
-
-
-    
-
         goToAdds();
         goToProfile();
+        goToSettings();
         goToSearch();
     }
 
@@ -61,6 +59,14 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-
-
+    public void goToSettings(){
+        LinearLayout settingsBtn =  findViewById(R.id.settingsLinearLayout);
+        settingsBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoggedInActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
 }

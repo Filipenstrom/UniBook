@@ -49,6 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         register();
     }
 
+    //Metod för att registrera sig som användare
     public void register() {
 
         Button registerBtn = (Button) findViewById(R.id.registerBtn);
@@ -64,22 +65,24 @@ public class RegisterActivity extends AppCompatActivity {
                 boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes);
 
                 if (isInserted == true) {
-                    Toast.makeText(RegisterActivity.this, "Data Inserted", Toast.LENGTH_LONG).show();
-                  // Intent intent = new Intent(RegisterActivity.this, AddProfilePictureActivity.class);
-                  // startActivity(intent);
+
+                    Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                    startActivity(intent);
+                    myDb.createProgram();
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Data not inserted", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, "Något gick fel!", Toast.LENGTH_LONG).show();
                 }
             }
         });
     }
 
-
+        //Metod för att välja profilbild
         public void choseImg(){
             Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
             startActivityForResult(photoPickerIntent, PICK_IMAGE);
         }
 
+        //Metod som fäster den valda bilden i en imageview
         @Override
         protected void onActivityResult(int requestCode, int resultCode, Intent data){
             super.onActivityResult(requestCode, resultCode, data);

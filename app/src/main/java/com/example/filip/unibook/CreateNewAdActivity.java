@@ -70,9 +70,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokTillhorKurs = kurs.getText().toString();
 
                 SharedPreferences prefs = new SharedPreferences(context);
-                String[] id = myDb.getUser(prefs.getusername());
+                User id = myDb.getUser(prefs.getusername());
 
-                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id[0], bytes);
+                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
 
 
                 if(isInserted == true){
@@ -93,6 +93,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         startActivityForResult(photoPickerIntent, PICK_IMAGE);
     }
 
+    //Metod som fäster ens valda bild i en imageView
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data){
         super.onActivityResult(requestCode, resultCode, data);
