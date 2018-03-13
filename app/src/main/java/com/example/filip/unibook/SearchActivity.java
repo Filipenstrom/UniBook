@@ -53,6 +53,7 @@ public class SearchActivity extends AppCompatActivity {
         String[] titles = new String[numberOfAds];
         String[] prices = new String[numberOfAds];
         List<byte[]> bytes = new ArrayList<>();
+        String[] ids = new String[numberOfAds];
 
         for(int i = 0;i < annonser.size();i++){
             titles[i] = annonser.get(i).getTitle();
@@ -60,7 +61,7 @@ public class SearchActivity extends AppCompatActivity {
             bytes.add(annonser.get(i).getPic());
          }
 
-        ItemAdapter itemAdapter = new ItemAdapter(this, titles, prices, bytes);
+        ItemAdapter itemAdapter = new ItemAdapter(this, titles, prices, bytes, ids);
         listView.setAdapter(itemAdapter);
     }
 }
