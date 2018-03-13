@@ -33,62 +33,60 @@ public class MyAdsActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
         listView = findViewById(R.id.listViewMyAds);
+
         goToCreateAd();
         getAllMyAds();
 
-        //Gå till vald annons och skicka med item index.
+        //Gå till vald annons och skicka med id på vald annons från ett osynligt textfält som ligger i my_listview_ad.
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
-                showDetailActivity.putExtra("com.example.ludvig.listapp.ITEM_INDEX", i);
+                TextView id = view.findViewById(R.id.txtAdID);
+                showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
                 startActivity(showDetailActivity);
             }
         });
 
     }
 
-    public void goToCreateAd(){
+    public void goToCreateAd() {
         Button button = (Button) findViewById(R.id.btnSkapaAnnons);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent intent = new Intent(MyAdsActivity.this, CreateNewAdActivity.class);
                 startActivity(intent);
             }
         });
     }
 
-    public void getAllMyAds(){
-
+    //Hämta data om alla annonser som en användare lagt upp och skicka de till ItemAdapter.
+    public void getAllMyAds() {
         SharedPreferences prefs = new SharedPreferences(context);
-        String[] id = myDb.getUser(prefs.getusername());
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sharedPreferences = new SharedPreferences(this);
-        String[] user = db.getUser(sharedPreferences.getusername());
+        User mail = myDb.getUser(prefs.getusername());
         ListView listView = findViewById(R.id.listViewMyAds);
 
 
-        List<List<String>> annonser = myDb.getMyAds(id[3]);
+        List<Ad> annonser = myDb.getMyAds(mail.getMail());
         int numberOfAds = annonser.size();
         String[] items = new String[numberOfAds];
         String[] prices = new String[numberOfAds];
-
-        //Hämtar alla bilder tills annonserna
-        List<byte[]> bytes = db.getAdsImg(user[0]);
+        String[] ids = new String[numberOfAds];
+        List<byte[]> bytes = new ArrayList<>();
 
 
         //Hämtar all data om annonserna, exkluderat tillhörande bilder.
-        for(int i = 0;i<annonser.size();i++) {
-            List<String> annons = annonser.get(i);
-
-            for(int i2 = 0; i2<annons.size();i2++)
-            items[i] = annons.get(1).toString();
-            prices[i] = annons.get(2).toString();
+        for (int i = 0; i < annonser.size(); i++) {
+            Ad annons = annonser.get(i);
+            ids[i] = annons.getId();
+            items[i] = annons.getTitle();
+            prices[i] = annons.getPrice();
+            bytes.add(annons.getPic());
         }
 
-        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
-        listView.setAdapter(itemAdapter);
+            ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes, ids);
+            listView.setAdapter(itemAdapter);
+
     }
 }
