@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
@@ -20,10 +21,10 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
 
         String fakeInput = "";
+        
+        fillUpAds(fakeInput);
 
         SearchView search = findViewById(R.id.searchViewBooks);
-        search.setQueryHint("Sök efter böcker");
-        fillUpAds(fakeInput);
 
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -59,6 +60,7 @@ public class SearchActivity extends AppCompatActivity {
             titles[i] = annonser.get(i).getTitle();
             prices[i] = annonser.get(i).getPrice();
             bytes.add(annonser.get(i).getPic());
+            ids[i] = annonser.get(i).getId();
          }
 
         ItemAdapter itemAdapter = new ItemAdapter(this, titles, prices, bytes, ids);
