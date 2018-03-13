@@ -60,7 +60,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Metod som lägger in användare i databasen
     public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -69,14 +68,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_5, password);
         contentValues.put(COL_6, imageBytes);
 
-
         long result = db.insert(TABLE_NAME, null, contentValues);
         if (result == -1) {
             return false;
         } else {
             return true;
         }
-
     }
 
     //Metod som kollar om användarens email och lösenord stämmer överens
@@ -110,7 +107,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         String namn = "";
         String efternamn = "";
 
-
         if (cursor.moveToFirst()) {
             do {
                 namn = cursor.getString(0);
@@ -121,7 +117,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         String name = namn + " " + efternamn;
-
 
         return name;
     }
@@ -179,7 +174,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     //Metod som skapar en annons för den inloggade användaren
     public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
-
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("TITLE", titel);
@@ -198,7 +192,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return true;
         }
-
     }
 
     //Skit i denna, kan nog ta bort den.
@@ -221,26 +214,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Hämtar all information förutom bild som tillhör en annons som en specifik användare lagt upp.
-    public List<List<String>> getMyAds(String user) {
+    public List<Ad> getMyAds(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select ads.id, title, price, description, program, course, isdn from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
+        String query = "select ads.id, title, price, description, program, course, isdn, ads.pic from ads join users_table on ads.userid = users_table.ID where users_table.mail =" + "'" + user + "'";
         Cursor cursor = sq.rawQuery(query, null);
-        List<List<String>> annonsInnehall = new ArrayList<List<String>>();
+        List<Ad> annonsInnehall = new ArrayList<Ad>();
 
         if (cursor.moveToFirst())
         {
             do {
-                List<String> annonser = new ArrayList<String>();
-                annonser.add(cursor.getString(0));
-                annonser.add(cursor.getString(1));
-                annonser.add(cursor.getString(2));
-                annonser.add(cursor.getString(3));
-                annonser.add(cursor.getString(4));
-                annonser.add(cursor.getString(5));
-                annonser.add(cursor.getString(6));
-                //annonser.add(cursor.getString(7));
+                Ad ad = new Ad();
+                ad.setId(cursor.getString(0));
+                ad.setTitle(cursor.getString(1));
+                ad.setPrice(cursor.getString(2));
+                ad.setinfo(cursor.getString(3));
+                ad.setProgram(cursor.getString(4));
+                ad.setCourse(cursor.getString(5));
+                ad.setISDN(cursor.getString(6));
+                ad.setPic(cursor.getBlob(7));
                // annonser.add(cursor.getString(8));
-                annonsInnehall.add(annonser);
+                annonsInnehall.add(ad);
             }
             while (cursor.moveToNext());
         }
@@ -279,11 +272,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("userid", userid);
 
         db.update(TABLE_ADS, contentValues, "id="+id, null);
-
     }
 
     public void deleteAd(int id){
-
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ADS,"id="+id, null);
     }

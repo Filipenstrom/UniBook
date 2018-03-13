@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ChosenAdPageActivity extends AppCompatActivity {
 
-    List<String> chosenAd;
+    Ad chosenAd;
     byte[] bytepic;
     TextView title;
     TextView pris;
@@ -49,20 +49,18 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
         String[] user = db.getUser(sharedPreferences.getusername());
-        List<byte[]> bytes = db.getAdsImg(user[0]);
 
-        List<List<String>> ads = db.getMyAds(user[3]);
+        List<Ad> ads = db.getMyAds(user[3]);
 
         //Sök igenom alla annonser tills en matchning sker på index = id på annons.
         for(int i = 0;i<ads.size();i++){
-            List<String> annons = ads.get(i);
-                 for(int i2 = 0; i2<annons.size();i2++) {
-                     int adid = Integer.parseInt(annons.get(0));
+            Ad annons = ads.get(i);
+
+                     int adid = Integer.parseInt(annons.getId());
                      if(id == (adid)){
                          chosenAd = annons;
-                         bytepic = bytes.get(i);
+                         bytepic = annons.getPic();
                          fillAdInformation();
-                     }
                  }
             }
 
@@ -71,20 +69,20 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         //Hämtar data om den valda annonsen från listan.
         public void fillAdInformation(){
-            title.setText(chosenAd.get(1));
-            pris.setText(chosenAd.get(2));
-            ISDN.setText(chosenAd.get(3));
-            info.setText(chosenAd.get(4));
-            program.setText(chosenAd.get(5));
-            kurs.setText(chosenAd.get(6));
-            pic.setImageBitmap(BitmapFactory.decodeByteArray(bytepic, 0, bytepic.length));
+            title.setText(chosenAd.getTitle());
+            pris.setText(chosenAd.getPrice());
+            ISDN.setText(chosenAd.getISDN());
+            info.setText(chosenAd.getInfo());
+            program.setText(chosenAd.getProgram());
+            kurs.setText(chosenAd.getCourse());
+            pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
         }
 
         public void updateData(View view){
             DatabaseHelper db = new DatabaseHelper(this);
             SharedPreferences sharedPreferences = new SharedPreferences(this);
             String[] user = db.getUser(sharedPreferences.getusername());
-            int id = Integer.parseInt(chosenAd.get(0));
+            int id = Integer.parseInt(chosenAd.getId());
             int prisInt = Integer.parseInt(pris.getText().toString());
             int userid = Integer.parseInt(user[0]);
 
@@ -102,7 +100,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     SharedPreferences sharedPreferences = new SharedPreferences(context);
                     String[] user = db.getUser(sharedPreferences.getusername());
-                    int adId = Integer.parseInt(chosenAd.get(0));
+                    int adId = Integer.parseInt(chosenAd.getId());
 
                     db.deleteAd(adId);
                     Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);

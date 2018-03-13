@@ -51,6 +51,7 @@ public class ItemAdapter extends BaseAdapter {
         return i;
     }
 
+    //Fyller listview med data om annonser, körs en gång för varje listitem.
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
         View v = mInflator.inflate(R.layout.my_listview_ad, null);
