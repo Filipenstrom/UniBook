@@ -99,50 +99,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Hämta all information om en användare, INTE HELT KLAR
-    public String[] getUser(String user) {
+    public User getUser(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user + "'";
         Cursor cursor = sq.rawQuery(query, null);
-        String id = "";
-        String name = "";
-        String surname = "";
-        String mail = "";
+        User userInfo = new User();
 
         if (cursor.moveToFirst()) {
             do {
-                id = cursor.getString(0);
-                name = cursor.getString(1);
-                surname = cursor.getString(2);
-                mail = cursor.getString(3);
+                userInfo.setId(cursor.getString(0));
+                userInfo.setName(cursor.getString(1));
+                userInfo.setSurname(cursor.getString(2));
+                userInfo.setMail(cursor.getString(3));
+                userInfo.setPic(cursor.getBlob(5));
             }
             while (cursor.moveToNext());
         }
 
-        String[] fullUser = new String[4];
-        fullUser[0] = id;
-        fullUser[1] = name;
-        fullUser[2] = surname;
-        fullUser[3] = mail;
-
-        return fullUser;
-    }
-
-
-    //Hämta profilbild från databasen och retunera den som en byte[].
-    public byte[] getProfileImg(String user) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select PIC from " + TABLE_NAME + " where mail = " + "'" + user + "'";
-        Cursor cursor = db.rawQuery(query, null);
-
-        byte[] blob = new byte[1];
-
-        if (cursor.moveToFirst()) {
-            do {
-                blob = cursor.getBlob(0);
-            }
-            while (cursor.moveToNext());
-        }
-        return blob;
+        return userInfo;
     }
 
 
