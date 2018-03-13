@@ -36,8 +36,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         kurs = findViewById(R.id.etchosenAdCourse);
         pic = findViewById(R.id.ivchosenAdImage);
         Intent intent = getIntent();
-        int index = intent.getIntExtra("com.example.filip.unibook.ITEM_INDEX", -1);
-        Log.d("Index", "Index är " + index);
+        int id = intent.getIntExtra("id", -1);
+        Log.d("Index", "Index är " + id);
 
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
@@ -46,21 +46,22 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         List<List<String>> ads = db.getMyAds(user[3]);
 
+        //Sök igenom alla annonser tills en matchning sker på index = id på annons.
         for(int i = 0;i<ads.size();i++){
             List<String> annons = ads.get(i);
                  for(int i2 = 0; i2<annons.size();i2++) {
-                     int id = Integer.parseInt(annons.get(0));
-                     if(index == (id-1)){
+                     int adid = Integer.parseInt(annons.get(0));
+                     if(id == (adid-1)){
                          chosenAd = annons;
                          bytepic = bytes.get(i);
                          fillAdInformation();
-                         Log.d("Balle", "Det fungerade");
                      }
                  }
             }
 
         }
 
+        //Hämtar data om den valda annonsen från listan.
         public void fillAdInformation(){
             title.setText(chosenAd.get(1));
             pris.setText(chosenAd.get(2));
@@ -80,7 +81,9 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             int userid = Integer.parseInt(user[0]);
 
             db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
-            Toast.makeText(ChosenAdPageActivity.this,"Update successful, gå tillbaka till huvudmeny för att refresha!", Toast.LENGTH_LONG).show();
+            Toast.makeText(ChosenAdPageActivity.this,"Update successful", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+            startActivity(intent);
         }
 
 }

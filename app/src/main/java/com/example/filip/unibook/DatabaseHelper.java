@@ -265,7 +265,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return blob;
     }
 
-    //Uppdatera informationen om en annons..
+    //Uppdatera informationen om en annons.
     public void updateAd(int id, String title, int pris, String info, String ISDN, String program, String course, byte[] bytes, int userid){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();

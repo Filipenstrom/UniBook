@@ -41,14 +41,15 @@ public class MyAdsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
-                showDetailActivity.putExtra("com.example.filip.unibook.ITEM_INDEX", i);
+                TextView id = view.findViewById(R.id.txtAdID);
+                showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
                 startActivity(showDetailActivity);
             }
         });
 
     }
 
-    public void goToCreateAd(){
+    public void goToCreateAd() {
         Button button = (Button) findViewById(R.id.btnSkapaAnnons);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,35 +61,38 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
-    public void getAllMyAds(){
+    public void getAllMyAds() {
 
-    SharedPreferences prefs = new SharedPreferences(context);
-    String[] mail = myDb.getUser(prefs.getusername());
-    DatabaseHelper db = new DatabaseHelper(this);
-    SharedPreferences sharedPreferences = new SharedPreferences(this);
-    String[] user = db.getUser(sharedPreferences.getusername());
-    ListView listView = findViewById(R.id.listViewMyAds);
-
-
-    List<List<String>> annonser = myDb.getMyAds(mail[3]);
-    int numberOfAds = annonser.size();
-    String[] items = new String[numberOfAds];
-    String[] prices = new String[numberOfAds];
-
-    //Hämtar alla bilder tills annonserna
-    List<byte[]> bytes = db.getAdsImg(user[0]);
+        SharedPreferences prefs = new SharedPreferences(context);
+        String[] mail = myDb.getUser(prefs.getusername());
+        DatabaseHelper db = new DatabaseHelper(this);
+        SharedPreferences sharedPreferences = new SharedPreferences(this);
+        String[] user = db.getUser(sharedPreferences.getusername());
+        ListView listView = findViewById(R.id.listViewMyAds);
 
 
-    //Hämtar all data om annonserna, exkluderat tillhörande bilder.
-    for(int i = 0;i<annonser.size();i++) {
-        List<String> annons = annonser.get(i);
+        List<List<String>> annonser = myDb.getMyAds(mail[3]);
+        int numberOfAds = annonser.size();
+        String[] items = new String[numberOfAds];
+        String[] prices = new String[numberOfAds];
+        String[] ids = new String[numberOfAds];
 
-        for(int i2 = 0; i2<annons.size();i2++)
-            items[i] = annons.get(1).toString();
-        prices[i] = annons.get(2).toString();
+        //Hämtar alla bilder tills annonserna
+        List<byte[]> bytes = db.getAdsImg(user[0]);
+
+
+        //Hämtar all data om annonserna, exkluderat tillhörande bilder.
+        for (int i = 0; i < annonser.size(); i++) {
+            List<String> annons = annonser.get(i);
+
+            for (int i2 = 0; i2 < annons.size(); i2++) {
+                ids[i] = annons.get(0).toString();
+                items[i] = annons.get(1).toString();
+                prices[i] = annons.get(2).toString();
+            }
+
+            ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes, ids);
+            listView.setAdapter(itemAdapter);
+        }
     }
-
-    ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes);
-    listView.setAdapter(itemAdapter);
-}
 }
