@@ -21,6 +21,7 @@ public class LoggedInActivity extends AppCompatActivity {
         goToAdds();
         goToProfile();
         goToSettings();
+        goToSearch();
     }
 
     public void goToProfile() {
@@ -35,6 +36,17 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    public void goToSearch(){
+        LinearLayout searchBtn = findViewById(R.id.searchLinearLayout);
+
+        searchBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent searchPage = new Intent(LoggedInActivity.this, SearchActivity.class);
+                startActivity(searchPage);
+            }
+        });
+    }
 
     public void goToAdds(){
         LinearLayout addBtn =  findViewById(R.id.adsLinearLayout);
