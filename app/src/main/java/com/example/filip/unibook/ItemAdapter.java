@@ -56,15 +56,18 @@ public class ItemAdapter extends BaseAdapter {
         View v = mInflator.inflate(R.layout.my_listview_ad, null);
         TextView nameTextView = (TextView) v.findViewById(R.id.txtAdTitle);
         TextView priceTextView = (TextView) v.findViewById(R.id.txtAdPris);
+        TextView idsTextView = (TextView) v.findViewById(R.id.txtAdID);
         ImageView adsPic = (ImageView) v.findViewById(R.id.ivAdsListPicture);
 
         String name = items[i];
         String cost = prices[i];
         byte[] pics = bytes.get(i);
-
+        String adid = id[i];
 
         nameTextView.setText(name);
         priceTextView.setText(cost + ":-");
+        idsTextView.setText(adid);
+
         adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
 
         return v;

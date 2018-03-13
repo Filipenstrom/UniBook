@@ -58,7 +58,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             List<String> annons = ads.get(i);
                  for(int i2 = 0; i2<annons.size();i2++) {
                      int adid = Integer.parseInt(annons.get(0));
-                     if(id == (adid-1)){
+                     if(id == (adid)){
                          chosenAd = annons;
                          bytepic = bytes.get(i);
                          fillAdInformation();
@@ -95,14 +95,11 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         }
 
         public void deleteAd(){
-
-
             Button deleteBtn = (Button) findViewById(R.id.btnDelete);
 
             deleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     SharedPreferences sharedPreferences = new SharedPreferences(context);
                     String[] user = db.getUser(sharedPreferences.getusername());
                     int adId = Integer.parseInt(chosenAd.get(0));
@@ -112,8 +109,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                     startActivity(intent);
                 }
             });
-
         }
-
 }
 
