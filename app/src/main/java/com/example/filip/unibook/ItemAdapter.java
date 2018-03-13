@@ -25,12 +25,14 @@ public class ItemAdapter extends BaseAdapter {
     LayoutInflater mInflator;
     String[] items;
     String[] prices;
+    String[] id;
     List<byte[]> bytes;
 
-    public ItemAdapter(Context c, String[] i, String[] p, List<byte[]> b){
+    public ItemAdapter(Context c, String[] i, String[] p, List<byte[]> b, String[] id){
         items = i;
         prices = p;
         bytes = b;
+        this.id = id;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
