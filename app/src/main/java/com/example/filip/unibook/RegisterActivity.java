@@ -68,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
                     startActivity(intent);
+                    myDb.createProgram();
                 } else {
                     Toast.makeText(RegisterActivity.this, "Något gick fel!", Toast.LENGTH_LONG).show();
                 }
