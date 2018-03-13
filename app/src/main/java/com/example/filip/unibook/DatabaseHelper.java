@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
@@ -236,6 +235,49 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext());
         }
         return annonsInnehall;
+    }
+
+    public List<Ad> getAllAds() {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select title, price, pic from ads";
+        Cursor cursor = sq.rawQuery(query, null);
+
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                adsContent.add(ad);
+            }
+            while (cursor.moveToNext());
+        }
+        return adsContent;
+    }
+
+    public List<Ad> getSearchedAd(CharSequence newQuery){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select title, price, pic from ads where title = " + newQuery;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                adsContent.add(ad);
+            }
+            while (cursor.moveToNext());
+        }
+        return adsContent;
     }
 
     public List<byte[]> getAdsImg(String user) {
