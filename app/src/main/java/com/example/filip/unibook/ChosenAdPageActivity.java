@@ -1,11 +1,13 @@
 package com.example.filip.unibook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,11 +25,14 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     TextView program;
     TextView kurs;
     ImageView pic;
+    Context context = this;
+    final DatabaseHelper db = new DatabaseHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chosen_ad_page);
+
         title = findViewById(R.id.etchosenAdTitle);
         pris = findViewById(R.id.etchosenAdPris);
         ISDN = findViewById(R.id.etchosenAdISDN);
@@ -35,6 +40,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         program = findViewById(R.id.etchosenAdProgram);
         kurs = findViewById(R.id.etchosenAdCourse);
         pic = findViewById(R.id.ivchosenAdImage);
+
+
         Intent intent = getIntent();
         int index = intent.getIntExtra("com.example.filip.unibook.ITEM_INDEX", -1);
         Log.d("Index", "Index är " + index);
@@ -59,6 +66,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                  }
             }
 
+            deleteAd();
         }
 
         public void fillAdInformation(){
@@ -81,6 +89,27 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
             db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
             Toast.makeText(ChosenAdPageActivity.this,"Update successful, gå tillbaka till huvudmeny för att refresha!", Toast.LENGTH_LONG).show();
+        }
+
+        public void deleteAd(){
+
+
+            Button deleteBtn = (Button) findViewById(R.id.btnDelete);
+
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    SharedPreferences sharedPreferences = new SharedPreferences(context);
+                    String[] user = db.getUser(sharedPreferences.getusername());
+                    int adId = Integer.parseInt(chosenAd.get(0));
+
+                    db.deleteAd(adId);
+                    Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+                    startActivity(intent);
+                }
+            });
+
         }
 
 }

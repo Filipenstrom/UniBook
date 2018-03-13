@@ -33,6 +33,7 @@ public class MyAdsActivity extends AppCompatActivity {
 
         myDb = new DatabaseHelper(this);
         listView = findViewById(R.id.listViewMyAds);
+
         goToCreateAd();
         getAllMyAds();
 
