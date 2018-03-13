@@ -19,16 +19,26 @@ public class SearchActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        fillUpAds();
+        String fakeInput = "";
+
+        fillUpAds(fakeInput);
 
         Button btn = findViewById(R.id.buttonSearch);
-        
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchView search = findViewById(R.id.searchViewBooks);
+                String input = search.getQuery().toString();
+                fillUpAds(input);
+            }
+        });
     }
 
-    public void fillUpAds(){
+    public void fillUpAds(String input){
         ListView listView = findViewById(R.id.listViewAllAds);
 
-        List<Ad> annonser = myDb.getAllAds();
+        List<Ad> annonser = myDb.getAllAds(input);
         int numberOfAds = annonser.size();
         String[] titles = new String[numberOfAds];
         String[] prices = new String[numberOfAds];

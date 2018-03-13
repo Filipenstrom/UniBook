@@ -237,32 +237,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return annonsInnehall;
     }
 
-    public List<Ad> getAllAds() {
+    public List<Ad> getAllAds(String inputQuery) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select title, price, pic from ads";
+        String query;
+
+        if(inputQuery == "")
+            query = "select title, price, pic from ads";
+        else
+            query = "select title, price, pic from ads where title like " + "'%" + inputQuery + "%'";
+
         Cursor cursor = sq.rawQuery(query, null);
-
-        List<Ad> adsContent = new ArrayList<Ad>();
-
-        if (cursor.moveToFirst())
-        {
-            do {
-                Ad ad = new Ad();
-                ad.setTitle(cursor.getString(0));
-                ad.setPrice(cursor.getString(1));
-                ad.setPic(cursor.getBlob(2));
-                adsContent.add(ad);
-            }
-            while (cursor.moveToNext());
-        }
-        return adsContent;
-    }
-
-    public List<Ad> getSearchedAd(CharSequence newQuery){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select title, price, pic from ads where title = " + newQuery;
-
-        Cursor cursor = db.rawQuery(query, null);
 
         List<Ad> adsContent = new ArrayList<Ad>();
 
