@@ -98,30 +98,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return losenord;
     }
 
-    //Metod som hämtar användarens namn och efternamn
-    //KAN VI DELETA DENNA?
-    public String getName(String user) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select name, surname from " + TABLE_NAME + " where mail = " + "'" + user + "'";
-        Cursor cursor = db.rawQuery(query, null);
-        String namn = "";
-        String efternamn = "";
-
-        if (cursor.moveToFirst()) {
-            do {
-                namn = cursor.getString(0);
-                efternamn = cursor.getString(1);
-            }
-
-            while (cursor.moveToNext());
-        }
-
-        String name = namn + " " + efternamn;
-
-        return name;
-    }
-
-
     //Hämta all information om en användare, INTE HELT KLAR
     public String[] getUser(String user) {
         SQLiteDatabase sq = this.getReadableDatabase();
@@ -170,8 +146,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
 
-
-
     //Metod som skapar en annons för den inloggade användaren
     public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -194,24 +168,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
     }
 
-    //Skit i denna, kan nog ta bort den.
-    public String getAd(String user) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select title from ads where userid = " + "'" + user + "'";
-        Cursor cursor = db.rawQuery(query, null);
-        String titel = "";
-
-
-        if (cursor.moveToFirst()) {
-            do {
-                titel = cursor.getString(0);
-            }
-
-            while (cursor.moveToNext());
-        }
-
-        return titel;
-    }
 
     //Hämtar all information förutom bild som tillhör en annons som en specifik användare lagt upp.
     public List<Ad> getMyAds(String user) {
@@ -232,30 +188,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ad.setCourse(cursor.getString(5));
                 ad.setISDN(cursor.getString(6));
                 ad.setPic(cursor.getBlob(7));
-               // annonser.add(cursor.getString(8));
                 annonsInnehall.add(ad);
             }
             while (cursor.moveToNext());
         }
         return annonsInnehall;
-    }
-
-    //Hämtar alla bilder som tillhör annonser som en användare gjort. Fick göra det separat då det är en blob och kan inte konvertaras om till en string.
-    //För att hämta all annan info använd istället getMyAds().
-    public List<byte[]> getAdsImg(String user) {
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select PIC from ads where userid = " + "'" + user + "'";
-        Cursor cursor = db.rawQuery(query, null);
-
-        List<byte[]> blob = new ArrayList<>();
-
-        if (cursor.moveToFirst()) {
-            do {
-                blob.add(cursor.getBlob(0));
-            }
-            while (cursor.moveToNext());
-        }
-        return blob;
     }
 
     //Uppdatera informationen om en annons.
