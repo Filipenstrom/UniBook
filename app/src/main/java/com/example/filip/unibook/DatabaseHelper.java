@@ -281,4 +281,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update(TABLE_ADS, contentValues, "id="+id, null);
 
     }
+
+    public void deleteAd(int id){
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_ADS,"id="+id, null);
+    }
 }
