@@ -21,16 +21,25 @@ public class SearchActivity extends AppCompatActivity {
 
         String fakeInput = "";
 
+        SearchView search = findViewById(R.id.searchViewBooks);
+        search.setQueryHint("Sök efter böcker");
         fillUpAds(fakeInput);
 
-        Button btn = findViewById(R.id.buttonSearch);
-
-        btn.setOnClickListener(new View.OnClickListener() {
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onQueryTextSubmit(String query) {
                 SearchView search = findViewById(R.id.searchViewBooks);
                 String input = search.getQuery().toString();
                 fillUpAds(input);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                SearchView search = findViewById(R.id.searchViewBooks);
+                String input = search.getQuery().toString();
+                fillUpAds(input);
+                return false;
             }
         });
     }
