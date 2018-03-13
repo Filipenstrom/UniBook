@@ -44,6 +44,7 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    //Fyller upp listan med annonser baserat på användarens input
     public void fillUpAds(String input){
         ListView listView = findViewById(R.id.listViewAllAds);
 
