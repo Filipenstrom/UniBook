@@ -31,12 +31,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-<<<<<<< HEAD
-    byte[] bytes;
     ListView listView;
-=======
     byte[] bytes = null;
->>>>>>> e007cca15cecbfb49cf5475438917dc68526fa59
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
