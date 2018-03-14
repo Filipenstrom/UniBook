@@ -4,25 +4,36 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.filip.unibook.SettingsActivity">
+    tools:context="com.example.filip.unibook.NotificationActivity">
 
-    <Button
-        android:id="@+id/btnlogOut"
+    <EditText
+        android:id="@+id/etnotisAd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Logga ut"
+        android:ems="10"
+        android:inputType="textPersonName"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
-        android:id="@+id/btnnotiser"
+        android:id="@+id/btnaddNotis"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        android:text="Notiser"
+        android:text="Add notis"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnlogOut" />
+        app:layout_constraintTop_toBottomOf="@+id/etnotisAd" />
+
+    <TextView
+        android:id="@+id/txtnotisText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="TextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnaddNotis" />
 </android.support.constraint.ConstraintLayout>

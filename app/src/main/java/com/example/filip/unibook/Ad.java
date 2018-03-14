@@ -29,7 +29,7 @@ public class Ad {
     {
         this.id = value;
     }
-
+  
     public String getTitle()
     {
         return this.title;

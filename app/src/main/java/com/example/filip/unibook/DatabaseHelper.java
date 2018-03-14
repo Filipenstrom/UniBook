@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
@@ -34,6 +33,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_ADS = "ads";
     public static final String TABLE_PROGRAM = "program";
     public static final String TABLE_COURSES = "courses";
+    public static final String TABLE_FAVORITES = "favorites";
+    public static final String TABLE_NOTIFICATIONS = "notifications";
+
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -51,7 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
-        //  String sqlFavourites = "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, FOREIGN KEY(adds_id) REFERENCED adds(id), userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
+        db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
+        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlMessages = "CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, content VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), chatid INTEGER, FOREIGN KEY(chat_id) REFERENCED chats(id));";
     }
@@ -62,7 +66,41 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
+
         onCreate(db);
+    }
+
+    public void addFavorite(String adid, String userid){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adid", adid);
+        contentValues.put("userid", userid);
+        db.insert(TABLE_FAVORITES, null, contentValues);
+
+    }
+
+    public void addNotis(String notisText, String userid){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adnoti", notisText);
+        contentValues.put("userid", userid);
+        db.insert(TABLE_NOTIFICATIONS, null, contentValues);
+    }
+
+    public List<String> getNotis(int userid) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select adnoti from " + TABLE_NOTIFICATIONS + " where userid = " + "'" + userid + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        List<String> notisText = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                notisText.add(cursor.getString(0));
+            }
+            while (cursor.moveToNext());
+        }
+
+        return notisText;
     }
 
     //Metod som lägger in användare i databasen
@@ -126,7 +164,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userInfo;
     }
 
-
     //Metod som skapar en annons för den inloggade användaren
     public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -148,7 +185,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
         }
     }
-
 
     //Hämtar all information förutom bild som tillhör en annons som en specifik användare lagt upp.
     public List<Ad> getMyAds(String user) {
@@ -196,6 +232,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ADS,"id="+id, null);
     }
+  
+    public List<Ad> getAllAds(String inputQuery) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query;
+
+        if(inputQuery == "")
+            query = "select title, price, pic, id, description, program, course from ads";
+        else
+            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+
+        Cursor cursor = sq.rawQuery(query, null);
+
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setId(cursor.getString(3));
+                ad.setinfo(cursor.getString(4));
+                ad.setProgram(cursor.getString(5));
+                ad.setCourse(cursor.getString(6));
+                adsContent.add(ad);
+            }
+            while (cursor.moveToNext());
+        }
+        return adsContent;
+    }
 
     public void createProgram() {
 
@@ -206,6 +273,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         long result = db.insert("program", null, contentValues);
         db.close();
+    }
+
+    public Ad getAd(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select title, price, pic, description, program, course from ads where ads.id = " + id;
+
+        Cursor cursor = db.rawQuery(query, null);
+        Ad ad = new Ad();
+        if (cursor.moveToFirst()) {
+            do {
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setinfo(cursor.getString(3));
+                ad.setProgram(cursor.getString(4));
+                ad.setCourse(cursor.getString(5));
+            }
+            while(cursor.moveToNext());
+        }
+        return ad;
     }
 
     public List<Program> getPrograms(){
@@ -228,6 +316,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return programs;
     }
-
-
 }

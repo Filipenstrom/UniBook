@@ -63,7 +63,5 @@ public class MainActivity extends AppCompatActivity {
         EditText username = (EditText) findViewById(R.id.editTxtUsername);
         SharedPreferences sp = new SharedPreferences(this);
         sp.setusername(username.getText().toString());
-
-
     }
 }

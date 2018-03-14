@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.provider.ContactsContract;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -47,7 +48,6 @@ public class MyAdsActivity extends AppCompatActivity {
                 startActivity(showDetailActivity);
             }
         });
-
     }
 
     public void goToCreateAd() {
@@ -67,7 +67,6 @@ public class MyAdsActivity extends AppCompatActivity {
         User mail = myDb.getUser(prefs.getusername());
         ListView listView = findViewById(R.id.listViewMyAds);
 
-
         List<Ad> annonser = myDb.getMyAds(mail.getMail());
         int numberOfAds = annonser.size();
         String[] items = new String[numberOfAds];
@@ -75,8 +74,6 @@ public class MyAdsActivity extends AppCompatActivity {
         String[] ids = new String[numberOfAds];
         List<byte[]> bytes = new ArrayList<>();
 
-
-        //Hämtar all data om annonserna, exkluderat tillhörande bilder.
         for (int i = 0; i < annonser.size(); i++) {
             Ad annons = annonser.get(i);
             ids[i] = annons.getId();
@@ -87,6 +84,5 @@ public class MyAdsActivity extends AppCompatActivity {
 
             ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes, ids);
             listView.setAdapter(itemAdapter);
-
     }
 }
