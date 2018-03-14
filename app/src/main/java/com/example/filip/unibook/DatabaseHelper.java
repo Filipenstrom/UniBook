@@ -272,7 +272,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             while(cursor.moveToNext());
         }
-
         return ad;
     }
 }

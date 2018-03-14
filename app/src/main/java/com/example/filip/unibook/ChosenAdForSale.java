@@ -36,31 +36,14 @@ public class ChosenAdForSale extends AppCompatActivity {
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
-        Log.d("Index", "Index är " + id);
 
         chosenAd = db.getAd(id);
 
         fillAdInformation();
-
-       // String fakeInput = "";
-//
-       // List<Ad> ads = db.getAllAds(fakeInput);
-//
-       // //Sök igenom alla annonser tills en matchning sker på index = id på annons.
-       // for (int i = 0; i < ads.size(); i++) {
-       //     Ad annons = ads.get(i);
-//
-       //     int adid = Integer.parseInt(annons.getId());
-       //     if (id == (adid)) {
-       //         chosenAd = annons;
-       //         fillAdInformation();
-       //     }
-       // }
     }
 
         //Hämtar data om den valda annonsen från listan.
     public void fillAdInformation(){
-
         title.setText(chosenAd.getTitle());
         pris.setText(chosenAd.getPrice() + ":-");
         info.setText(chosenAd.getInfo());
