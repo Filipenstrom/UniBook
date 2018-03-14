@@ -45,12 +45,6 @@ public class MyAdsActivity extends AppCompatActivity {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
                 TextView id = view.findViewById(R.id.txtAdID);
                 showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
-
-
-                Notification notification = new Notification(context);
-                // notificationId is a unique int for each notification that you must define
-                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-
                 startActivity(showDetailActivity);
             }
         });

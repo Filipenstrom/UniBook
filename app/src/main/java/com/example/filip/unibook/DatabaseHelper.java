@@ -78,6 +78,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    public void addNotis(String notisText, String userid){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adnoti", notisText);
+        contentValues.put("userid", userid);
+        db.insert(TABLE_NOTIFICATIONS, null, contentValues);
+    }
+
+    public List<String> getNotis(int userid) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select adnoti from " + TABLE_NOTIFICATIONS + " where userid = " + "'" + userid + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        List<String> notisText = new ArrayList<>();
+
+        if (cursor.moveToFirst()) {
+            do {
+                notisText.add(cursor.getString(0));
+            }
+            while (cursor.moveToNext());
+        }
+
+        return notisText;
+    }
+
     //Metod som lägger in användare i databasen
     public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();

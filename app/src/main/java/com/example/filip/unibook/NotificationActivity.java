@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -7,10 +8,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.List;
+
 public class NotificationActivity extends AppCompatActivity {
 
     TextView addedNotis;
     TextView newNotis;
+    DatabaseHelper db;
+    SharedPreferences sp;
+    User user;
+    Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,6 +25,9 @@ public class NotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notification);
         addedNotis = findViewById(R.id.txtnotisText);
         newNotis = findViewById(R.id.etnotisAd);
+        db = new DatabaseHelper(this);
+        sp = new SharedPreferences(this);
+        user = db.getUser(sp.getusername());
         setNotis();
     }
 
@@ -26,7 +36,12 @@ public class NotificationActivity extends AppCompatActivity {
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                addedNotis.setText(newNotis.getText().toString());
+                db.addNotis(newNotis.getText().toString(), user.getId().toString());
+                List<String> notisText = db.getNotis(Integer.parseInt(user.getId()));
+                addedNotis.setText(notisText.get(0));
+
+                Notification notification = new Notification(context);
+                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
             }
         });
     }
