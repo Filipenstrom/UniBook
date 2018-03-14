@@ -11,37 +11,27 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 
 public class CreateNewAdActivity extends AppCompatActivity {
     Context context = this;
     DatabaseHelper myDb;
     EditText titel, pris, info, isdn, program, kurs;
-    Button button;
+    Button button, listProgramBtn, listCourseBtn;
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-<<<<<<< HEAD
-    ListView listView;
-    byte[] bytes = null;
-
-=======
-
 
     ListView listView;
 
     byte[] bytes = null;
->>>>>>> 96dd7cad2e699e7ce6ee25adb4768e145b4437ea
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,21 +43,38 @@ public class CreateNewAdActivity extends AppCompatActivity {
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-        program = (EditText) findViewById(R.id.editTxtProgram);
+
          kurs = (EditText) findViewById(R.id.editTxtKurs);
          button = (Button) findViewById(R.id.btnBildKnapp);
+         listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
+         listCourseBtn = (Button) findViewById(R.id.btnKurs);
          imageView = (ImageView) findViewById(R.id.imgViewBokbild);
+
          button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
                  choseImg();
              }
          });
-         listView = (ListView) findViewById(R.id.programListView);
+
+        listProgramBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CreateNewAdActivity.this, ListAllProgramsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        Intent intent = getIntent();
+        String programNamn = intent.getStringExtra("programNamn");
+        TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
+        txtProgram.setText(programNamn);
+        txtProgram.setVisibility(View.VISIBLE);
+
 
 
         createAd();
-        getAllPrograms();
+
 
     }
 
@@ -83,11 +90,15 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokPris = pris.getText().toString();
                 String bokInfo = info.getText().toString();
                 String bokISDN = isdn.getText().toString();
+                TextView program = (TextView) findViewById(R.id.txtProgram);
+                String bokTillhorProgram = program.toString();
+                TextView kurs = (TextView) findViewById(R.id.editTxtKurs);
+                String bokTillhorKurs = kurs.toString();
 
 
 
-                String bokTillhorProgram = program.getText().toString();
-                String bokTillhorKurs = kurs.getText().toString();
+
+
 
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
@@ -109,24 +120,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
         });
     }
 
-    public void getAllPrograms() {
-        List<Program> programLista = myDb.getPrograms();
-        int numberOfPrograms = programLista.size();
-        String[] items = new String[numberOfPrograms];
-        String[] ids = new String[numberOfPrograms];
-        String[] codes = new String[numberOfPrograms];
 
-        for (int i = 0; i < programLista.size(); i++) {
-            Program program = programLista.get(i);
-            ids[i] = program.getId();
-            items[i] = program.getName();
-            codes[i] = program.getProgramCode();
 
-        }
 
-        ProgramAdapter programAdapter = new ProgramAdapter(this, items, ids);
-        listView.setAdapter(programAdapter);
-    }
 
 
     public void choseImg(){

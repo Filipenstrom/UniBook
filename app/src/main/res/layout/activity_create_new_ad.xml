@@ -11,19 +11,22 @@
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:layout_marginBottom="24dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:ems="10"
         android:hint="Titel"
         android:inputType="textPersonName"
         app:layout_constraintBottom_toTopOf="@+id/editTxtPris"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnBildKnapp"
+        app:layout_constraintVertical_bias="1.0" />
 
     <EditText
         android:id="@+id/editTxtPris"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Pris"
         android:inputType="number"
@@ -34,8 +37,8 @@
         android:id="@+id/editTxtInfo"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="24dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Info (Max 500 tecken)"
         android:inputType="textPersonName"
@@ -86,33 +89,66 @@
         android:id="@+id/editTxtKurs"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
-        android:layout_marginBottom="124dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="Kurs"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/btnSpara"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoToProgram"
         app:layout_constraintStart_toStartOf="parent" />
 
     <EditText
         android:id="@+id/editTxtISDN"
         android:layout_width="wrap_content"
         android:layout_height="46dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
         android:ems="10"
         android:hint="ISDN"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/programListView"
+        app:layout_constraintBottom_toTopOf="@+id/editTxtKurs"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ListView
-        android:id="@+id/programListView"
-        android:layout_width="395dp"
-        android:layout_height="89dp"
-        android:layout_marginBottom="16dp"
+    <Button
+        android:id="@+id/btnGoToProgram"
+        android:layout_width="213dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/editTxtKurs"
+        android:text="Välj Program"
+        app:layout_constraintBottom_toTopOf="@+id/txtViewProgram"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtViewProgram"
+        android:layout_width="309dp"
+        android:layout_height="24dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="16dp"
+        android:text="TextView"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btnKurs"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnKurs"
+        android:layout_width="213dp"
+        android:layout_height="40dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Välj Kurs"
+        app:layout_constraintBottom_toTopOf="@+id/txtViewCourses"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtViewCourses"
+        android:layout_width="307dp"
+        android:layout_height="29dp"
+        android:layout_marginBottom="92dp"
+        android:layout_marginStart="16dp"
+        android:text="TextView"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/btnSpara"
         app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>
