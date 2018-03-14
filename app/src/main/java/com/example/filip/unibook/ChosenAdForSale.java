@@ -35,7 +35,8 @@ public class ChosenAdForSale extends AppCompatActivity {
         pic = findViewById(R.id.chosenAdImg);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", 5);
+        int id = intent.getIntExtra("id", -1);
+        Log.d("Index", "Index är " + id);
 
         chosenAd = db.getAd(id);
 
