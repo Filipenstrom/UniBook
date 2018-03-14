@@ -257,18 +257,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Ad getAd(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select title, price, pic, description, program, course from ads where id = " + id;
+        String query = "select title, price, pic, description, program, course from ads where ads.id = " + id;
 
         Cursor cursor = db.rawQuery(query, null);
-
         Ad ad = new Ad();
-
-        ad.setTitle(cursor.getString(0));
-        ad.setPrice(cursor.getString(1));
-        ad.setPic(cursor.getBlob(2));
-        ad.setinfo(cursor.getString(3));
-        ad.setProgram(cursor.getString(4));
-        ad.setCourse(cursor.getString(5));
+        if (cursor.moveToFirst()) {
+            do {
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setinfo(cursor.getString(3));
+                ad.setProgram(cursor.getString(4));
+                ad.setCourse(cursor.getString(5));
+            }
+            while(cursor.moveToNext());
+        }
 
         return ad;
     }
