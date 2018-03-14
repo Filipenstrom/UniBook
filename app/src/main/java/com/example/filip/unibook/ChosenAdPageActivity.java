@@ -63,7 +63,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                          fillAdInformation();
                  }
             }
-
             deleteAd();
         }
 

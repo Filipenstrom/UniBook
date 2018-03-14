@@ -43,6 +43,19 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
+
+        ListView listView = findViewById(R.id.listViewAllAds);
+
+        //Gå till vald annons och skicka med id på vald annons från ett osynligt textfält som ligger i my_listview_ad.
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdForSale.class);
+                TextView id = view.findViewById(R.id.txtAdID);
+                showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
+                startActivity(showDetailActivity);
+            }
+        });
     }
 
     //Fyller upp listan med annonser baserat på användarens input
