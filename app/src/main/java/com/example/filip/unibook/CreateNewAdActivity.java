@@ -31,17 +31,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-<<<<<<< HEAD
     ListView listView;
     byte[] bytes = null;
 
-=======
-
-
-    ListView listView;
-
-    byte[] bytes = null;
->>>>>>> 96dd7cad2e699e7ce6ee25adb4768e145b4437ea
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +45,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-        program = (EditText) findViewById(R.id.editTxtProgram);
+        //program = (EditText) findViewById(R.id.editTxtProgram);
          kurs = (EditText) findViewById(R.id.editTxtKurs);
          button = (Button) findViewById(R.id.btnBildKnapp);
          imageView = (ImageView) findViewById(R.id.imgViewBokbild);

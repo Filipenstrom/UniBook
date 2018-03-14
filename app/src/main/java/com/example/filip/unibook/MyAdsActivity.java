@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.provider.ContactsContract;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -44,6 +45,12 @@ public class MyAdsActivity extends AppCompatActivity {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
                 TextView id = view.findViewById(R.id.txtAdID);
                 showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
+
+
+                Notification notification = new Notification(context);
+                // notificationId is a unique int for each notification that you must define
+                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+
                 startActivity(showDetailActivity);
             }
         });

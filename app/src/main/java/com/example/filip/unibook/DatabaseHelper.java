@@ -34,6 +34,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_ADS = "ads";
     public static final String TABLE_PROGRAM = "program";
     public static final String TABLE_COURSES = "courses";
+    public static final String TABLE_FAVORITES = "favorites";
+    public static final String TABLE_NOTIFICATIONS = "notifications";
+
 
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
@@ -51,7 +54,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
-        //  String sqlFavourites = "CREATE TABLE favourites (id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, FOREIGN KEY(adds_id) REFERENCED adds(id), userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
+        db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
+        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlMessages = "CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, content VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), chatid INTEGER, FOREIGN KEY(chat_id) REFERENCED chats(id));";
     }
@@ -63,6 +67,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
         onCreate(db);
+    }
+
+    public void addFavorite(String adid, String userid){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adid", adid);
+        contentValues.put("userid", userid);
+        db.insert(TABLE_FAVORITES, null, contentValues);
+
     }
 
     //Metod som lägger in användare i databasen
