@@ -27,7 +27,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-    byte[] bytes;
+    byte[] bytes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,19 +72,21 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
 
-                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
-
-
-                if(isInserted == true){
-                    Toast.makeText(CreateNewAdActivity.this,"Data Inserted", Toast.LENGTH_LONG).show();
+                if(boktitel.trim().equals("") || bokPris.trim().equals("") || bokInfo.trim().equals("") || bokISDN.trim().equals("") || bokTillhorProgram.trim().equals("") || bokTillhorKurs.trim().equals("") || bytes == null) {
+                    Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
-                else {
-                    Toast.makeText(CreateNewAdActivity.this, "Data not inserted", Toast.LENGTH_LONG).show();
+                else{
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
+
+                    if(isInserted == true){
+                        Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
-
-
     }
 
 
@@ -106,11 +108,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageInByte = baos.toByteArray();
             bytes = imageInByte;
-
         }
     }
-
-
-
-
 }

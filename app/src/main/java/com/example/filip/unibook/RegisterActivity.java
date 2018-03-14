@@ -70,7 +70,7 @@ public class RegisterActivity extends AppCompatActivity {
                     startActivity(intent);
                     myDb.createProgram();
                 } else {
-                    Toast.makeText(RegisterActivity.this, "Något gick fel!", Toast.LENGTH_LONG).show();
+                    Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad", Toast.LENGTH_LONG).show();
                 }
             }
         });
