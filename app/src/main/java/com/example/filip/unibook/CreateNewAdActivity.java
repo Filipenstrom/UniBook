@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 
@@ -27,7 +31,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-    byte[] bytes;
+    ListView listView;
+    byte[] bytes = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +45,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-        program = (EditText) findViewById(R.id.editTxtProgram);
+        //program = (EditText) findViewById(R.id.editTxtProgram);
          kurs = (EditText) findViewById(R.id.editTxtKurs);
          button = (Button) findViewById(R.id.btnBildKnapp);
          imageView = (ImageView) findViewById(R.id.imgViewBokbild);
@@ -49,8 +55,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
                  choseImg();
              }
          });
+         listView = (ListView) findViewById(R.id.programListView);
+
 
         createAd();
+        getAllPrograms();
 
     }
 
@@ -66,25 +75,49 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokPris = pris.getText().toString();
                 String bokInfo = info.getText().toString();
                 String bokISDN = isdn.getText().toString();
+
+
+
                 String bokTillhorProgram = program.getText().toString();
                 String bokTillhorKurs = kurs.getText().toString();
 
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
 
-                boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
-
-
-                if(isInserted == true){
-                    Toast.makeText(CreateNewAdActivity.this,"Data Inserted", Toast.LENGTH_LONG).show();
+                if(boktitel.trim().equals("") || bokPris.trim().equals("") || bokInfo.trim().equals("") || bokISDN.trim().equals("") || bokTillhorProgram.trim().equals("") || bokTillhorKurs.trim().equals("") || bytes == null) {
+                    Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
-                else {
-                    Toast.makeText(CreateNewAdActivity.this, "Data not inserted", Toast.LENGTH_LONG).show();
+                else{
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
+
+                    if(isInserted == true){
+                        Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                    }
+                    else {
+                        Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
+    }
 
+    public void getAllPrograms() {
+        List<Program> programLista = myDb.getPrograms();
+        int numberOfPrograms = programLista.size();
+        String[] items = new String[numberOfPrograms];
+        String[] ids = new String[numberOfPrograms];
+        String[] codes = new String[numberOfPrograms];
 
+        for (int i = 0; i < programLista.size(); i++) {
+            Program program = programLista.get(i);
+            ids[i] = program.getId();
+            items[i] = program.getName();
+            codes[i] = program.getProgramCode();
+
+        }
+
+        ProgramAdapter programAdapter = new ProgramAdapter(this, items, ids);
+        listView.setAdapter(programAdapter);
     }
 
 
@@ -106,11 +139,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageInByte = baos.toByteArray();
             bytes = imageInByte;
-
         }
     }
-
-
-
-
 }
