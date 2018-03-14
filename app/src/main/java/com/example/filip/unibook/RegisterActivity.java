@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
     Uri imageUri;
     ImageView imageView;
     Button button;
-    byte[] bytes;
+    byte[] bytes = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,15 +62,20 @@ public class RegisterActivity extends AppCompatActivity {
                 String email = editEmail.getText().toString();
                 String pass = editPassword.getText().toString();
 
-                boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes);
+                if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || pass.trim().equals("") || bytes == null) {
+                    Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes);
 
-                if (isInserted == true) {
-
-                    Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
-                    startActivity(intent);
-                    myDb.createProgram();
-                } else {
-                    Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad", Toast.LENGTH_LONG).show();
+                    if (isInserted == true) {
+                        Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                        startActivity(intent);
+                        myDb.createProgram();
+                    }
+                    else {
+                        Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad", Toast.LENGTH_LONG).show();
+                    }
                 }
             }
         });
