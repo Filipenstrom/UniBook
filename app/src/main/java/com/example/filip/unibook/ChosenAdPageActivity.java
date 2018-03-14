@@ -44,7 +44,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
-        Log.d("Index", "Index är " + id);
 
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
@@ -82,9 +81,9 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             DatabaseHelper db = new DatabaseHelper(this);
             SharedPreferences sharedPreferences = new SharedPreferences(this);
             User user = db.getUser(sharedPreferences.getusername());
-            int id = Integer.parseInt(chosenAd.getId());
-            int prisInt = Integer.parseInt(pris.getText().toString());
-            int userid = Integer.parseInt(user.getId());
+           int id = Integer.parseInt(chosenAd.getId());
+           int prisInt = Integer.parseInt(pris.getText().toString());
+           int userid = Integer.parseInt(user.getId());
 
             db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
             Toast.makeText(ChosenAdPageActivity.this,"Update successful", Toast.LENGTH_LONG).show();
