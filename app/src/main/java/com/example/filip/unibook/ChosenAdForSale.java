@@ -35,35 +35,39 @@ public class ChosenAdForSale extends AppCompatActivity {
         kurs = findViewById(R.id.chosenAdCourseName);
         pic = findViewById(R.id.chosenAdImg);
 
-
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
 
+        fillAdInformation(id);
+
         String fakeInput = "";
 
-        List<Ad> ads = db.getAllAds(fakeInput);
-
-        //Sök igenom alla annonser tills en matchning sker på index = id på annons.
-        for (int i = 0; i < ads.size(); i++) {
-            Ad annons = ads.get(i);
-
-            int adid = Integer.parseInt(annons.getId());
-            if (id == (adid)) {
-                chosenAd = annons;
-                bytepic = annons.getPic();
-                fillAdInformation();
-            }
-        }
+        //List<Ad> ads = db.getAllAds(fakeInput);
+        //
+        ////Sök igenom alla annonser tills en matchning sker på index = id på annons.
+        //for (int i = 0; i < ads.size(); i++) {
+        //    Ad annons = ads.get(i);
+//
+        //    int adid = Integer.parseInt(annons.getId());
+        //    if (id == (adid)) {
+        //        chosenAd = annons;
+        //        bytepic = annons.getPic();
+        //        fillAdInformation();
+        //    }
+        //}
     }
 
         //Hämtar data om den valda annonsen från listan.
-    public void fillAdInformation(){
-        title.setText(chosenAd.getTitle());
-        pris.setText(chosenAd.getPrice());
-        info.setText(chosenAd.getInfo());
-        program.setText(chosenAd.getProgram());
-        kurs.setText(chosenAd.getCourse());
-        pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
+    public void fillAdInformation(int id){
+
+        Ad ad = db.getAd(id);
+
+        title.setText(ad.getTitle());
+        pris.setText(ad.getPrice() + ":-");
+        info.setText(ad.getInfo());
+        program.setText(ad.getProgram());
+        kurs.setText(ad.getCourse());
+        pic.setImageBitmap(BitmapFactory.decodeByteArray(ad.getPic(), 0, ad.getPic().length));
     }
 }
 
