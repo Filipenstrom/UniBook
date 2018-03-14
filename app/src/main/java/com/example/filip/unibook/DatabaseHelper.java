@@ -203,7 +203,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         if(inputQuery == "")
             query = "select title, price, pic, id, description, program, course from ads";
         else
-            query = "select title, price, pic, id, description, program, course from ads where title like " + "'%" + inputQuery + "%'";
+            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
 
         Cursor cursor = sq.rawQuery(query, null);
 
@@ -252,5 +252,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while (cursor.moveToNext());
         }
         return allPrograms;
+    }
+
+    public Ad getAd(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select title, price, pic, description, program, course from ads where id = " + id;
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        Ad ad = new Ad();
+
+        ad.setTitle(cursor.getString(0));
+        ad.setPrice(cursor.getString(1));
+        ad.setPic(cursor.getBlob(2));
+        ad.setinfo(cursor.getString(3));
+        ad.setProgram(cursor.getString(4));
+        ad.setCourse(cursor.getString(5));
+
+        return ad;
     }
 }

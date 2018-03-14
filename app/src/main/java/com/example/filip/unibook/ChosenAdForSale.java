@@ -14,7 +14,6 @@ import java.util.List;
 public class ChosenAdForSale extends AppCompatActivity {
 
     Ad chosenAd;
-    byte[] bytepic;
     TextView title;
     TextView pris;
     TextView info;
@@ -36,38 +35,37 @@ public class ChosenAdForSale extends AppCompatActivity {
         pic = findViewById(R.id.chosenAdImg);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", -1);
+        int id = intent.getIntExtra("id", 5);
 
-        fillAdInformation(id);
+        chosenAd = db.getAd(id);
 
-        String fakeInput = "";
+        fillAdInformation();
 
-        //List<Ad> ads = db.getAllAds(fakeInput);
-        //
-        ////Sök igenom alla annonser tills en matchning sker på index = id på annons.
-        //for (int i = 0; i < ads.size(); i++) {
-        //    Ad annons = ads.get(i);
+       // String fakeInput = "";
 //
-        //    int adid = Integer.parseInt(annons.getId());
-        //    if (id == (adid)) {
-        //        chosenAd = annons;
-        //        bytepic = annons.getPic();
-        //        fillAdInformation();
-        //    }
-        //}
+       // List<Ad> ads = db.getAllAds(fakeInput);
+//
+       // //Sök igenom alla annonser tills en matchning sker på index = id på annons.
+       // for (int i = 0; i < ads.size(); i++) {
+       //     Ad annons = ads.get(i);
+//
+       //     int adid = Integer.parseInt(annons.getId());
+       //     if (id == (adid)) {
+       //         chosenAd = annons;
+       //         fillAdInformation();
+       //     }
+       // }
     }
 
         //Hämtar data om den valda annonsen från listan.
-    public void fillAdInformation(int id){
+    public void fillAdInformation(){
 
-        Ad ad = db.getAd(id);
-
-        title.setText(ad.getTitle());
-        pris.setText(ad.getPrice() + ":-");
-        info.setText(ad.getInfo());
-        program.setText(ad.getProgram());
-        kurs.setText(ad.getCourse());
-        pic.setImageBitmap(BitmapFactory.decodeByteArray(ad.getPic(), 0, ad.getPic().length));
+        title.setText(chosenAd.getTitle());
+        pris.setText(chosenAd.getPrice() + ":-");
+        info.setText(chosenAd.getInfo());
+        program.setText(chosenAd.getProgram());
+        kurs.setText(chosenAd.getCourse());
+        pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
     }
 }
 
