@@ -208,4 +208,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    public List<Program> getPrograms(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select * from program";
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<Program> programs = new ArrayList<Program>();
+        if (cursor.moveToFirst())
+        {
+            do {
+                Program program = new Program();
+                program.setId(cursor.getString(0));
+                program.setName(cursor.getString(1));
+                program.setProgramCode(cursor.getString(2));
+                programs.add(program);
+            }
+            while(cursor.moveToNext());
+        }
+
+        return programs;
+    }
+
+
 }

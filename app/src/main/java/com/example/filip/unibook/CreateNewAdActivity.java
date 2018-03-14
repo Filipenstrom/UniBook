@@ -11,11 +11,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ExpandableListView;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 
@@ -28,6 +32,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
     ImageView imageView;
     Uri imageUri;
     byte[] bytes;
+    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +54,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
                  choseImg();
              }
          });
+         listView = (ListView) findViewById(R.id.programListView);
+
 
         createAd();
+        getAllPrograms();
 
     }
 
@@ -66,6 +74,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokPris = pris.getText().toString();
                 String bokInfo = info.getText().toString();
                 String bokISDN = isdn.getText().toString();
+
+
+
                 String bokTillhorProgram = program.getText().toString();
                 String bokTillhorKurs = kurs.getText().toString();
 
@@ -85,6 +96,25 @@ public class CreateNewAdActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    public void getAllPrograms() {
+        List<Program> programLista = myDb.getPrograms();
+        int numberOfPrograms = programLista.size();
+        String[] items = new String[numberOfPrograms];
+        String[] ids = new String[numberOfPrograms];
+        String[] codes = new String[numberOfPrograms];
+
+        for (int i = 0; i < programLista.size(); i++) {
+            Program program = programLista.get(i);
+            ids[i] = program.getId();
+            items[i] = program.getName();
+            codes[i] = program.getProgramCode();
+
+        }
+
+        ProgramAdapter programAdapter = new ProgramAdapter(this, items, ids);
+        listView.setAdapter(programAdapter);
     }
 
 
