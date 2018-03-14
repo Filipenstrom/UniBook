@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
@@ -36,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_COURSES = "courses";
     public static final String TABLE_FAVORITES = "favorites";
     public static final String TABLE_NOTIFICATIONS = "notifications";
+
 
 
     public DatabaseHelper(Context context) {
@@ -66,6 +66,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
+
         onCreate(db);
     }
 
@@ -163,7 +164,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return userInfo;
     }
 
-
     //Metod som skapar en annons för den inloggade användaren
     public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -185,7 +185,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             return true;
         }
     }
-
 
     //Hämtar all information förutom bild som tillhör en annons som en specifik användare lagt upp.
     public List<Ad> getMyAds(String user) {
@@ -233,6 +232,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ADS,"id="+id, null);
     }
+  
+    public List<Ad> getAllAds(String inputQuery) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query;
+
+        if(inputQuery == "")
+            query = "select title, price, pic, id, description, program, course from ads";
+        else
+            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+
+        Cursor cursor = sq.rawQuery(query, null);
+
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setId(cursor.getString(3));
+                ad.setinfo(cursor.getString(4));
+                ad.setProgram(cursor.getString(5));
+                ad.setCourse(cursor.getString(6));
+                adsContent.add(ad);
+            }
+            while (cursor.moveToNext());
+        }
+        return adsContent;
+    }
 
     public void createProgram() {
 
@@ -243,6 +273,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         long result = db.insert("program", null, contentValues);
         db.close();
+    }
+
+    public Ad getAd(int id)
+    {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select title, price, pic, description, program, course from ads where ads.id = " + id;
+
+        Cursor cursor = db.rawQuery(query, null);
+        Ad ad = new Ad();
+        if (cursor.moveToFirst()) {
+            do {
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setinfo(cursor.getString(3));
+                ad.setProgram(cursor.getString(4));
+                ad.setCourse(cursor.getString(5));
+            }
+            while(cursor.moveToNext());
+        }
+        return ad;
     }
 
     public List<Program> getPrograms(){
@@ -265,6 +316,4 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return programs;
     }
-
-
 }

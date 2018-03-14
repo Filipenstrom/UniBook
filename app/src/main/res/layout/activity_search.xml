@@ -5,46 +5,31 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    tools:context="com.example.filip.unibook.SearchActivity">
+    tools:context="com.example.filip.unibook.SearchActivity"
+    tools:layout_editor_absoluteY="81dp">
 
     <SearchView
         android:id="@+id/searchViewBooks"
-        android:layout_width="411dp"
-        android:layout_height="55dp"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
         android:background="@drawable/white_rounded_corners"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+        android:clickable="false"
+        android:queryHint="Sök efter böcker"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.859"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:orientation="horizontal"
+    <ListView
+        android:id="@+id/listViewAllAds"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchViewBooks">
-
-        <Button
-            android:id="@+id/btnFilterProgram"
-            android:layout_width="206dp"
-            android:layout_height="48dp"
-            android:background="@drawable/white_rounded_corners"
-            android:text="PROGRAM" />
-
-        <Button
-            android:id="@+id/btnFilterCourse"
-            android:layout_width="204dp"
-            android:layout_height="47dp"
-            android:background="@drawable/white_rounded_corners"
-            android:text="KURS"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0" />
-
-    </LinearLayout>
+        app:layout_constraintHorizontal_bias="0.488"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchViewBooks" />
 
 
 </android.support.constraint.ConstraintLayout>
