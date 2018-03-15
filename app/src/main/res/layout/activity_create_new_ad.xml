@@ -86,18 +86,6 @@
         app:srcCompat="@mipmap/ic_launcher" />
 
     <EditText
-        android:id="@+id/editTxtKurs"
-        android:layout_width="wrap_content"
-        android:layout_height="40dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:ems="10"
-        android:hint="Kurs"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/btnGoToProgram"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <EditText
         android:id="@+id/editTxtISDN"
         android:layout_width="wrap_content"
         android:layout_height="46dp"
@@ -106,7 +94,7 @@
         android:ems="10"
         android:hint="ISDN"
         android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/editTxtKurs"
+        app:layout_constraintBottom_toTopOf="@+id/btnGoToProgram"
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button

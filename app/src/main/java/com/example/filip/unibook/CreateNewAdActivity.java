@@ -22,7 +22,8 @@ import java.io.ByteArrayOutputStream;
 public class CreateNewAdActivity extends AppCompatActivity {
     Context context = this;
     DatabaseHelper myDb;
-    EditText titel, pris, info, isdn, kurs;
+    EditText titel, pris, info, isdn;
+    TextView kurs, program;
     Button button, listProgramBtn, listCourseBtn;
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
@@ -41,14 +42,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-
-
-
-
-        //program = (EditText) findViewById(R.id.editTxtProgram);
-
-
-         kurs = (EditText) findViewById(R.id.editTxtKurs);
+         program = findViewById(R.id.txtViewProgram);
+         kurs = findViewById(R.id.textViewCourses);
          button = (Button) findViewById(R.id.btnBildKnapp);
          listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
          listCourseBtn = (Button) findViewById(R.id.btnKurs);
@@ -111,10 +106,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokPris = pris.getText().toString();
                 String bokInfo = info.getText().toString();
                 String bokISDN = isdn.getText().toString();
-                TextView program = (TextView) findViewById(R.id.txtProgram);
-                String bokTillhorProgram = program.toString();
-                TextView kurs = (TextView) findViewById(R.id.editTxtKurs);
-                String bokTillhorKurs = kurs.toString();
+                TextView program = (TextView) findViewById(R.id.txtViewProgram);
+                String bokTillhorProgram = program.getText().toString();
+                //TextView kurs = (TextView) findViewById(R.id.editTxtKurs);
+                String bokTillhorKurs = kurs.getText().toString();
 
 
 
