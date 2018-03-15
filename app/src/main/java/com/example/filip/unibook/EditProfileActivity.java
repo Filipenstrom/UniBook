@@ -71,12 +71,29 @@ public class EditProfileActivity extends AppCompatActivity {
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 
-    public void save(View view){
+    public void save(View view) {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         User id = db.getUser(sp.getusername());
 
         //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
+<<<<<<< HEAD
+
+        if (editEmail.getText().toString().equals(id)) {
+
+            if (editEmail.getText().toString().equals(id.getMail())) {
+                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+            } else {
+                saveUserInformation();
+
+                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+                //db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+            }
+            Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+            startActivity(intent);
+=======
         if(editEmail.getText().toString().equals(id.getMail())) {
 
             db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
@@ -84,9 +101,8 @@ public class EditProfileActivity extends AppCompatActivity {
         else{
             saveUserInformation();
             db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+>>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
         }
-        Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-        startActivity(intent);
     }
 
     public void choseImg(){
