@@ -299,7 +299,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Ad getAd(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select title, price, pic, description, program, course, userid from ads where ads.id = " + id;
+        String query = "select title, price, pic, description, program, course, userid, id from ads where ads.id = " + id;
 
         Cursor cursor = db.rawQuery(query, null);
         Ad ad = new Ad();
@@ -312,6 +312,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ad.setProgram(cursor.getString(4));
                 ad.setCourse(cursor.getString(5));
                 ad.setUserId(cursor.getInt(6));
+                int adId = cursor.getInt(7);
+                String stringId = Integer.toString(adId);
+                ad.setId(stringId);
             }
             while(cursor.moveToNext());
         }

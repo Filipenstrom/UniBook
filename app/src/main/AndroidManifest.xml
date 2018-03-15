@@ -26,8 +26,9 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ChosenAdPageActivity" />
         <activity android:name=".SearchActivity" />
-        <activity android:name=".ChosenAdForSale"></activity>
-        <activity android:name=".NotificationActivity"></activity>
+        <activity android:name=".ChosenAdForSale" />
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".ReportAd"></activity>
     </application>
 
 </manifest>
