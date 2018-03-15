@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 
 public class EditProfileActivity extends AppCompatActivity {
 
-    EditText editName, editSurname, editEmail, editPassword;
+    EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     ImageView imageView;
     Button button;
     Button changePic;
@@ -34,6 +34,9 @@ public class EditProfileActivity extends AppCompatActivity {
         editName = findViewById(R.id.etFirstname);
         editSurname =  findViewById(R.id.etSurname);
         editEmail =  findViewById(R.id.etMail);
+        editPhone =  findViewById(R.id.etphonenumber);
+        editSchool = findViewById(R.id.etSchool);
+        editAdress =  findViewById(R.id.etAdress);
         button = findViewById(R.id.btnSpara);
         changePic = findViewById(R.id.btnChangePic);
 
@@ -57,14 +60,14 @@ public class EditProfileActivity extends AppCompatActivity {
         User userInformation = db.getUser(username);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
 
-        TextView name = (TextView) findViewById(R.id.etFirstname);
-        TextView surname = (TextView) findViewById(R.id.etSurname);
-        TextView mail = (TextView) findViewById(R.id.etMail);
         imageView = findViewById(R.id.ivProfile);
 
-        name.setText(userInformation.getName());
-        surname.setText(userInformation.getSurname());
-        mail.setText(userInformation.getMail());
+        editName.setText(userInformation.getName());
+        editSurname.setText(userInformation.getSurname());
+        editEmail.setText(userInformation.getMail());
+        editAdress.setText(userInformation.getAdress());
+        editSchool.setText(userInformation.getSchool());
+        editPhone.setText(Integer.toString(userInformation.getPhone()));
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 
