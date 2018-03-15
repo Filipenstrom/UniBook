@@ -52,6 +52,7 @@ public class ChosenAdForSale extends AppCompatActivity {
 
         Button btnReportAd = findViewById(R.id.btnReportAd);
 
+
         btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

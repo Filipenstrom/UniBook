@@ -28,7 +28,7 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".ChosenAdForSale" />
         <activity android:name=".NotificationActivity" />
-        <activity android:name=".ReportAd"></activity>
+        <activity android:name=".ReportAd" />
     </application>
 
 </manifest>
