@@ -10,6 +10,9 @@ public class User {
     private String surname;
     private String mail;
     private byte[] pic;
+    private String adress;
+    private int phone;
+    private String school;
 
     public User(){}
 
@@ -47,6 +50,33 @@ public class User {
     public void setMail(String value)
     {
         this.mail = value;
+    }
+
+    public String getAdress()
+    {
+        return this.adress;
+    }
+    public void setAdress(String value)
+    {
+        this.adress = value;
+    }
+
+    public int getPhone()
+    {
+        return this.phone;
+    }
+    public void setPhone(int value)
+    {
+        this.phone = value;
+    }
+
+    public String getSchool()
+    {
+        return this.school;
+    }
+    public void setSchool(String value)
+    {
+        this.school = value;
     }
 
     public byte[] getPic()
