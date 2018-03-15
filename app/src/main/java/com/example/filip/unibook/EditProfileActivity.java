@@ -68,29 +68,28 @@ public class EditProfileActivity extends AppCompatActivity {
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 
-    public void save(View view){
+    public void save(View view) {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         User id = db.getUser(sp.getusername());
 
         //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
-<<<<<<< HEAD
-        if(editEmail.getText().toString().equals(id)) {
-=======
-        if(editEmail.getText().toString().equals(id.getMail())) {
->>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
-            db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+        if (editEmail.getText().toString().equals(id)) {
+
+            if (editEmail.getText().toString().equals(id.getMail())) {
+                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+            } else {
+                saveUserInformation();
+
+                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+                //db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+            }
+            Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+            startActivity(intent);
         }
-        else{
-            saveUserInformation();
-<<<<<<< HEAD
-            db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-=======
-            db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
->>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
-        }
-        Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-        startActivity(intent);
     }
 
     public void choseImg(){

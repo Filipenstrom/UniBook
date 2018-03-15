@@ -26,16 +26,14 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ChosenAdPageActivity" />
         <activity android:name=".SearchActivity" />
-<<<<<<< HEAD
+
         <activity android:name=".ListAllProgramsActivity" />
         <activity android:name=".ChosenAdForSale" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".ListAllCoursesFromProgramActivity"></activity>
-=======
-        <activity android:name=".ListAllProgramsActivity"></activity>
-        <activity android:name=".ChosenAdForSale"></activity>
-        <activity android:name=".NotificationActivity"></activity>
->>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
+
+
+
     </application>
 
 </manifest>
