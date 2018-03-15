@@ -75,7 +75,6 @@ public class SearchActivity extends AppCompatActivity {
             bytes.add(annonser.get(i).getPic());
             ids[i] = annonser.get(i).getId();
          }
-
         ItemAdapter itemAdapter = new ItemAdapter(this, titles, prices, bytes, ids);
         listView.setAdapter(itemAdapter);
     }
