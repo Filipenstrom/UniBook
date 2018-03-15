@@ -16,6 +16,7 @@ public class Ad {
     private String course;
     private String id;
     private byte[] pic;
+    private int userid;
 
     public Ad(){
 
@@ -88,8 +89,8 @@ public class Ad {
     {
         return this.pic;
     }
-    public void setPic(byte[] value)
-    {
-        this.pic = value;
-    }
+    public void setPic(byte[] value) {this.pic = value;}
+
+    public int getUserId() {return this.userid;}
+    public void setUserId(int value) {this.userid = value;}
 }

@@ -143,10 +143,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return losenord;
     }
 
-    //Hämta all information om en användare, INTE HELT KLAR
-    public User getUser(String user) {
+    ////Hämta all information om en användare, INTE HELT KLAR
+    public User getUser(String mail) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select * from " + TABLE_NAME + " where mail = " + "'" + user + "'";
+        String query = "select * from users_table where mail = '"+ mail + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        User userInfo = new User();
+
+        if (cursor.moveToFirst()) {
+            do {
+                userInfo.setId(cursor.getString(0));
+                userInfo.setName(cursor.getString(1));
+                userInfo.setSurname(cursor.getString(2));
+                userInfo.setMail(cursor.getString(3));
+                userInfo.setPic(cursor.getBlob(5));
+            }
+            while (cursor.moveToNext());
+        }
+
+        return userInfo;
+    }
+
+    //Hämta all information om en användare, INTE HELT KLAR
+    public User getUserWithId(int id) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select * from users_table where id = " + id;
         Cursor cursor = sq.rawQuery(query, null);
         User userInfo = new User();
 
@@ -278,7 +299,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public Ad getAd(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select title, price, pic, description, program, course from ads where ads.id = " + id;
+        String query = "select title, price, pic, description, program, course, userid from ads where ads.id = " + id;
 
         Cursor cursor = db.rawQuery(query, null);
         Ad ad = new Ad();
@@ -290,6 +311,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 ad.setinfo(cursor.getString(3));
                 ad.setProgram(cursor.getString(4));
                 ad.setCourse(cursor.getString(5));
+                ad.setUserId(cursor.getInt(6));
             }
             while(cursor.moveToNext());
         }

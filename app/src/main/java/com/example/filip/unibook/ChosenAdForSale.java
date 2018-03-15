@@ -20,6 +20,8 @@ public class ChosenAdForSale extends AppCompatActivity {
     TextView program;
     TextView kurs;
     ImageView pic;
+    TextView seller;
+    User user;
     final DatabaseHelper db = new DatabaseHelper(this);
 
     @Override
@@ -33,17 +35,22 @@ public class ChosenAdForSale extends AppCompatActivity {
         program = findViewById(R.id.chosenAdProgramName);
         kurs = findViewById(R.id.chosenAdCourseName);
         pic = findViewById(R.id.chosenAdImg);
+        seller = findViewById(R.id.chosenAdSellerName);
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
 
         chosenAd = db.getAd(id);
 
+        user = db.getUserWithId(chosenAd.getUserId());
+
         fillAdInformation();
     }
 
         //Hämtar data om den valda annonsen från listan.
     public void fillAdInformation(){
+        String fullName = user.getName() + " " + user.getSurname();
+        seller.setText(fullName);
         title.setText(chosenAd.getTitle());
         pris.setText(chosenAd.getPrice() + ":-");
         info.setText(chosenAd.getInfo());
