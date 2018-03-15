@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream;
 public class RegisterActivity extends AppCompatActivity {
 
     DatabaseHelper myDb;
-    EditText editName, editSurname, editEmail, editPassword;
+    EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     private static final int PICK_IMAGE = 100;
     Uri imageUri;
     ImageView imageView;
@@ -38,6 +38,9 @@ public class RegisterActivity extends AppCompatActivity {
         editPassword = (EditText) findViewById(R.id.editTxtPass);
         button = (Button) findViewById(R.id.btnImage);
         imageView = (ImageView) findViewById(R.id.ivProfile);
+        editAdress = findViewById(R.id.edittxtAdress);
+        editPhone = findViewById(R.id.edittxtPhone);
+        editSchool = findViewById(R.id.edittxtPhone);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -61,12 +64,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String surname = editSurname.getText().toString();
                 String email = editEmail.getText().toString();
                 String pass = editPassword.getText().toString();
+                String adress = editAdress.getText().toString();
+                int phone = Integer.parseInt(editPhone.getText().toString());
+                String school = editSchool.getText().toString();
 
-                if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || pass.trim().equals("") || bytes == null) {
+                if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || pass.trim().equals("") || bytes == null || adress.trim().equals("") || phone == 0 || school.trim().equals("")) {
                     Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes);
+                    boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes, adress, phone, school);
 
                     if (isInserted == true) {
                         Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
