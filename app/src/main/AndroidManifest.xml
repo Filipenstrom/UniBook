@@ -26,14 +26,20 @@
         <activity android:name=".SettingsActivity" />
         <activity android:name=".ChosenAdPageActivity" />
         <activity android:name=".SearchActivity" />
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
         <activity android:name=".ListAllProgramsActivity" />
         <activity android:name=".ChosenAdForSale" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".ListAllCoursesFromProgramActivity"></activity>
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
     </application>
 
 </manifest>

@@ -16,3 +16,5 @@ app/src/main/java/com/example/filip/unibook/CreateNewAdActivity.java
 app/src/main/AndroidManifest.xml
 app/src/main/java/com/example/filip/unibook/CreateNewAdActivity.java
 app/src/main/java/com/example/filip/unibook/EditProfileActivity.java
+app/src/main/AndroidManifest.xml
+app/src/main/java/com/example/filip/unibook/EditProfileActivity.java

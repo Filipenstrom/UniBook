@@ -27,11 +27,15 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
+<<<<<<< HEAD
 
     ListView listView;
 
 
 
+=======
+    ListView listView;
+>>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
     byte[] bytes = null;
 
 
@@ -49,7 +53,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
         //program = (EditText) findViewById(R.id.editTxtProgram);
 
 
