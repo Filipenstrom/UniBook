@@ -42,8 +42,6 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
     }
 
     public void getAllCourses(){
-        TextView programNamn = (TextView) findViewById(R.id.txtViewProgram);
-        String namn = programNamn.getText().toString();
 
         List<Course> kursLista = myDb.showCourses();
         int numberOfCourses = kursLista.size();

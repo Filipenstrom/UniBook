@@ -27,13 +27,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-<<<<<<< HEAD
-
     ListView listView;
-
-=======
-    ListView listView;
->>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
     byte[] bytes = null;
 
 
@@ -50,11 +44,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
 
 
-<<<<<<< HEAD
-=======
+
         //program = (EditText) findViewById(R.id.editTxtProgram);
 
->>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
+
          kurs = (EditText) findViewById(R.id.editTxtKurs);
          button = (Button) findViewById(R.id.btnBildKnapp);
          listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
