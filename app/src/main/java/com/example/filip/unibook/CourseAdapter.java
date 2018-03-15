@@ -11,18 +11,20 @@ import android.widget.TextView;
  * Created by filip on 2018-03-14.
  */
 
-public class ProgramAdapter extends BaseAdapter{
+public class CourseAdapter extends BaseAdapter{
 
     LayoutInflater mInflator;
     String[] items;
-    String[] id;
+    String[] ids;
+    String[] courseCodes;
 
 
-
-    public ProgramAdapter(Context c, String[] items, String[] id){
+    public CourseAdapter(Context c,  String[] items, String[] ids, String[] courseCodes){
         this.items = items;
-        this.id = id;
+        this.ids = ids;
+        this.courseCodes = courseCodes;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
     }
 
     @Override
@@ -43,14 +45,12 @@ public class ProgramAdapter extends BaseAdapter{
     @Override
     public View getView(int i, View convertView, ViewGroup parent) {
 
-        View view = mInflator.inflate(R.layout.program_layout,null);
-        TextView program = (TextView) view.findViewById(R.id.txtProgram);
+        View view = mInflator.inflate(R.layout.courses,null);
+        TextView courseName = (TextView) view.findViewById(R.id.textViewCourses);
 
 
-        String programNamn = items[i];
-        String ids = id[i];
-        program.setText(programNamn);
-
+        String kursNamn = items[i];
+        courseName.setText(kursNamn);
         return view;
     }
 }

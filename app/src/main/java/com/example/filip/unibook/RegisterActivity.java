@@ -72,6 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
                         Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
                         startActivity(intent);
                         myDb.createProgram();
+                        myDb.createCourse();
                     }
                     else {
                         Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad", Toast.LENGTH_LONG).show();

@@ -35,6 +35,7 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                 Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
                 intent.putExtra("programNamn", txtProgram.getText().toString());
                 startActivity(intent);
+
             }
         });
 

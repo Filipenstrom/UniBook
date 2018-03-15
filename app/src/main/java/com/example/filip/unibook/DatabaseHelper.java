@@ -326,4 +326,63 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         return programs;
     }
+
+    public List<Course> getCourses(String programNamn){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select coursename, coursecode from courses join program on programid = program.id where program.name = " + programNamn;
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<Course> courses = new ArrayList<Course>();
+        if(cursor.moveToFirst())
+        {
+            do {
+                Course course = new Course();
+                course.setId(cursor.getString(0));
+                course.setName(cursor.getString(1));
+                course.setDescription(cursor.getString(2));
+                course.setCode(cursor.getString(3));
+                courses.add(course);
+
+            }
+            while(cursor.moveToNext());
+        }
+
+        return courses;
+    }
+
+    public void createCourse(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("coursename", "Informatik A");
+        contentValues.put("description", "bajs");
+        contentValues.put("coursecode", "22");
+        contentValues.put("programid", "1");
+
+
+        long result = db.insert("courses", null, contentValues);
+        db.close();
+    }
+
+    public List<Course> showCourses(){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select * from courses";
+        Cursor cursor = db.rawQuery(query, null);
+        List<Course> courses = new ArrayList<Course>();
+        if(cursor.moveToFirst())
+        {
+            do {
+                Course course = new Course();
+                course.setId(cursor.getString(0));
+                course.setName(cursor.getString(1));
+                course.setDescription(cursor.getString(2));
+                course.setCode(cursor.getString(3));
+                courses.add(course);
+
+            }
+            while(cursor.moveToNext());
+        }
+
+        return courses;
+
+    }
 }

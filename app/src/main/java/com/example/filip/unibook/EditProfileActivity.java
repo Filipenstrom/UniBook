@@ -39,8 +39,8 @@ public class EditProfileActivity extends AppCompatActivity {
 
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
-        String[] user = db.getUser(sp.getusername());
-        insertUserInformation(user[3]);
+        User user = db.getUser(sp.getusername());
+        insertUserInformation(user.getMail());
 
         setByteIfUserDontChangePic();
 
@@ -54,7 +54,7 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public void insertUserInformation(String username){
         DatabaseHelper db = new DatabaseHelper(this);
-        String[] userInformation = db.getUser(username);
+        User userInformation = db.getUser(username);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
 
         TextView name = (TextView) findViewById(R.id.etFirstname);
@@ -62,24 +62,24 @@ public class EditProfileActivity extends AppCompatActivity {
         TextView mail = (TextView) findViewById(R.id.etMail);
         imageView = findViewById(R.id.ivProfile);
 
-        name.setText(userInformation[1]);
-        surname.setText(userInformation[2]);
-        mail.setText(userInformation[3]);
-        imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
+        name.setText(userInformation.getName());
+        surname.setText(userInformation.getSurname());
+        mail.setText(userInformation.getMail());
+        imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 
     public void save(View view){
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
-        String[] id = db.getUser(sp.getusername());
+        User id = db.getUser(sp.getusername());
 
         //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
-        if(editEmail.getText().toString().equals(id[3])) {
-            db.updateUser(id[0], editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+        if(editEmail.getText().toString().equals(id)) {
+            db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
         }
         else{
             saveUserInformation();
-            db.updateUser(id[0], editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+            db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
         }
         Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
         startActivity(intent);
