@@ -22,12 +22,18 @@ import java.io.ByteArrayOutputStream;
 public class CreateNewAdActivity extends AppCompatActivity {
     Context context = this;
     DatabaseHelper myDb;
-    EditText titel, pris, info, isdn, program, kurs;
+    EditText titel, pris, info, isdn, kurs;
     Button button, listProgramBtn, listCourseBtn;
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
+<<<<<<< HEAD
+
     ListView listView;
+
+=======
+    ListView listView;
+>>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
     byte[] bytes = null;
 
 
@@ -36,7 +42,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_ad);
 
-        myDb = new DatabaseHelper(this);
+         myDb = new DatabaseHelper(this);
          titel = (EditText) findViewById(R.id.editTxtTitel);
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
@@ -44,8 +50,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
 
 
+<<<<<<< HEAD
+=======
         //program = (EditText) findViewById(R.id.editTxtProgram);
 
+>>>>>>> 44cfa709292e55154c77a3adc632054a0aa5d1bd
          kurs = (EditText) findViewById(R.id.editTxtKurs);
          button = (Button) findViewById(R.id.btnBildKnapp);
          listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
@@ -59,7 +68,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
              }
          });
 
-        listProgramBtn.setOnClickListener(new View.OnClickListener() {
+         listProgramBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllProgramsActivity.class);
@@ -67,11 +76,28 @@ public class CreateNewAdActivity extends AppCompatActivity {
             }
         });
 
+         listCourseBtn.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
+                 startActivity(intent);
+             }
+         });
+
         Intent intent = getIntent();
         String programNamn = intent.getStringExtra("programNamn");
         TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
         txtProgram.setText(programNamn);
         txtProgram.setVisibility(View.VISIBLE);
+
+        Intent kursIntent = getIntent();
+        String kursNamn = kursIntent.getStringExtra("kursNamn");
+        TextView txtKurs = (TextView) findViewById(R.id.textViewCourses) ;
+        txtKurs.setText(kursNamn);
+        txtKurs.setVisibility(View.VISIBLE);
+
+
+
 
 
 
