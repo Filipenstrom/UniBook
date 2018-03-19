@@ -18,7 +18,18 @@
         </activity>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoggedInActivity" />
-        <activity android:name=".ProfilSidaActivity"></activity>
+        <activity android:name=".ProfilePageActivity" />
+        <activity android:name=".CreateNewAdActivity" />
+        <activity android:name=".MyAdsActivity" />
+        <activity android:name=".AddProfilePictureActivity" />
+        <activity android:name=".EditProfileActivity" />
+        <activity android:name=".SettingsActivity" />
+        <activity android:name=".ChosenAdPageActivity" />
+        <activity android:name=".SearchActivity" />
+        <activity android:name=".ListAllProgramsActivity" />
+        <activity android:name=".ChosenAdForSale" />
+        <activity android:name=".NotificationActivity" />
+        <activity android:name=".ListAllCoursesFromProgramActivity"></activity>
     </application>
 
 </manifest>

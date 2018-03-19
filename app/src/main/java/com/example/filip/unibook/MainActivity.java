@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -33,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
-
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -46,17 +45,23 @@ public class MainActivity extends AppCompatActivity {
                 String pass = myDb.searchPass(user);
                 if(losenord.equals(pass)){
 
-                    String namn = myDb.getName(user);
-                    Intent inloggadInt = new Intent(MainActivity.this, LoggedInActivity.class);
-                    inloggadInt.putExtra("Welcome", namn);
-                    startActivity(inloggadInt);
+                    Intent loggedIn = new Intent(MainActivity.this, LoggedInActivity.class);
+                    
+                    //Kör metoden för att spara ner username.
+                    saveUserInformation();
+                    startActivity(loggedIn);
                 }
                 else {
                     Toast.makeText(MainActivity.this,"Username och password don't match!", Toast.LENGTH_LONG).show();
                 }
             }
-
         });
+    }
 
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = (EditText) findViewById(R.id.editTxtUsername);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
     }
 }
