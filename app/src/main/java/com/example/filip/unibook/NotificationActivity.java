@@ -36,12 +36,9 @@ public class NotificationActivity extends AppCompatActivity {
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.addNotis(newNotis.getText().toString(), user.getId().toString());
+                db.addNotis(newNotis.getText().toString(), user.getId().toString(), 0);
                 List<String> notisText = db.getNotis(Integer.parseInt(user.getId()));
                 addedNotis.setText(notisText.get(0));
-
-                Notification notification = new Notification(context);
-                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
             }
         });
     }

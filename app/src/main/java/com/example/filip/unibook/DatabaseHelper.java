@@ -54,7 +54,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
         db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
-        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
+        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, bookcounter INT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlMessages = "CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, content VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), chatid INTEGER, FOREIGN KEY(chat_id) REFERENCED chats(id));";
     }
@@ -78,11 +78,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void addNotis(String notisText, String userid){
+    public void addNotis(String notisText, String userid, int bookcounter){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("adnoti", notisText);
         contentValues.put("userid", userid);
+        contentValues.put("bookcounter", bookcounter);
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
@@ -100,6 +101,30 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return notisText;
+    }
+
+    public int getNotisCounter(String adnoti){
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select bookcounter from " + TABLE_NOTIFICATIONS + " where adnoti = " + "'" + adnoti + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        int bookcounter = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                bookcounter = cursor.getInt(0);
+            }
+            while (cursor.moveToNext());
+        }
+
+        return bookcounter;
+    }
+
+    public void setNotisCounter(String adnoti, int counter){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("bookcounter", counter);
+
+        db.update(TABLE_NOTIFICATIONS, contentValues, "adnoti='"+adnoti+"'", null);
     }
 
     //Metod som lägger in användare i databasen
@@ -336,7 +361,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("name", "Systemvetenskap");
         contentValues.put("programcode", "ik");
 
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Psykologi");
+        contentValues2.put("programcode", "Ps");
+
         long result = db.insert("program", null, contentValues);
+        long result2 = db.insert("program", null, contentValues2);
         db.close();
     }
 
@@ -389,7 +419,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("coursecode", "22");
         contentValues.put("programid", "1");
 
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Hjärnan");
+        contentValues2.put("description", "snopp");
+        contentValues2.put("coursecode", "23");
+        contentValues2.put("programid", "2");
+
         long result = db.insert("courses", null, contentValues);
+        long result2 = db.insert("courses", null, contentValues2);
         db.close();
     }
 }

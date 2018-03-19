@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
@@ -11,6 +12,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class LoggedInActivity extends AppCompatActivity {
 
@@ -22,6 +25,7 @@ public class LoggedInActivity extends AppCompatActivity {
         goToProfile();
         goToSettings();
         goToSearch();
+        checkForNotis();
     }
 
     public void goToProfile() {
@@ -68,5 +72,42 @@ public class LoggedInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    public void checkForNotis() {
+        DatabaseHelper db = new DatabaseHelper(this);
+        SharedPreferences sp = new SharedPreferences(this);
+        User user = db.getUser(sp.getusername());
+        List<String> notis = db.getNotis(Integer.parseInt(user.getId()));
+        List<Ad> ads = db.getAllAds("");
+
+        try {
+            //Loopa igenom alla ads.
+            for (int i = 0; i < ads.size(); i++) {
+                //Loopa igenom alla notiser på en ad.
+                for (int i2 = 0; i2 < notis.size(); i2++) {
+                    Ad ad;
+                    if (ads.size() == 1) {
+                        ad = ads.get(i);
+                    } else {
+                        //Gör bara kollen på de senast tillagda böckerna
+                        ad = ads.get(i + db.getNotisCounter(notis.get(i)));
+                    }
+                    //Kolla om det lagts till nya böcker sen senaste notisen visades, om inte visa ingen ny notis.
+                    if (ads.size() > db.getNotisCounter(ad.getProgram())) {
+                        String program = ad.getProgram();
+                        //Om notisen matchar ett program på en ny bok, visa notis.
+                        if (notis.get(i2).equals(program)) {
+                            Notification notification = new Notification(this);
+                            notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                            db.setNotisCounter(ad.getProgram(), ads.size());
+                        }
+                    }
+                }
+            }
+        }
+        catch(Exception e){
+            Log.d("Broken", "Index out of bounds");
+        }
     }
 }
