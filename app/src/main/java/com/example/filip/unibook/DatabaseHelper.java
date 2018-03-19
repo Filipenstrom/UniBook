@@ -38,7 +38,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_REPORTS = "reports";
 
 
-
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
@@ -46,13 +45,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE INT, SCHOOL TEXT)");
-        //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
-        //String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(userid) REFERENCES users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
          db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
-        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));";
-        //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
+        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));"
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
-        //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_REPORTS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, ADTITLE TEXT, ADID INTEGER, AUTHORNAME TEXT, AUTHORMAIL TEXT, AUTHORID INTEGER, MESSAGE TEXT, FOREIGN KEY(ADID) REFERENCES ads(ID), FOREIGN KEY(AUTHORID) REFERENCES users_table(ID))");
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
         db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
@@ -89,7 +84,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
-    public void insertReport(String adTitle, int adID, String authorName, String authorMail, String message, int authorID) {
+    //Inte klar än
+    public boolean insertReport(String adTitle, int adID, String authorName, String authorMail, String message, int authorID) {
         SQLiteDatabase sq = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("adTitle", adTitle);
@@ -99,7 +95,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("authorID", authorID);
         contentValues.put("message", message);
 
-        sq.insert(TABLE_REPORTS, null, contentValues);
+        long result = sq.insert(TABLE_REPORTS, null, contentValues);
+        sq.close();
+
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public List<String> getNotis(int userid) {

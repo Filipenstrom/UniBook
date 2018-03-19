@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class ReportAd extends AppCompatActivity {
 
@@ -38,12 +39,22 @@ public class ReportAd extends AppCompatActivity {
         authorName.setText(fullName);
         authorMail.setText(user.getMail());
 
-        Button reportBtn = findViewById(R.id.btnReportAd);
+        Button reportBtn = findViewById(R.id.btnReportSendReportAd);
 
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                db.
+                int id = Integer.parseInt(ad.getId());
+                int idInt = Integer.parseInt(user.getId());
+
+                boolean isInserted = db.insertReport(ad.getTitle(), id, authorName.getText().toString(), authorMail.getText().toString(), message.getText().toString(), idInt );
+
+                if(isInserted == true){
+                    Toast.makeText(ReportAd.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    Toast.makeText(ReportAd.this, "Något gick fel", Toast.LENGTH_LONG).show();
+                }
             }
         });
     }
