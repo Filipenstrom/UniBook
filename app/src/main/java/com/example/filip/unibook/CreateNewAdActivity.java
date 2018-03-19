@@ -107,11 +107,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
 
-                if(boktitel.trim().equals("") || bokPris.trim().equals("") || bokInfo.trim().equals("") || bokISDN.trim().equals("") || bokTillhorProgram.trim().equals("") || bokTillhorKurs.trim().equals("") || bytes == null) {
+                if(boktitel.trim().equals("") || bokPris.trim().equals("") || bokInfo.trim().equals("") || bokISDN.trim().equals("") ||  bokTillhorKurs.trim().equals("") || bytes == null) {
                     Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, null, bokTillhorKurs, id.getId(), bytes);
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();

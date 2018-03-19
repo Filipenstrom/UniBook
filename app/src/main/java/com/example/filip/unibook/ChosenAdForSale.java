@@ -6,8 +6,10 @@ import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Button;
 
 import java.util.List;
 
@@ -20,6 +22,9 @@ public class ChosenAdForSale extends AppCompatActivity {
     TextView program;
     TextView kurs;
     ImageView pic;
+    TextView seller;
+    User user;
+    TextView chosenAdId;
     final DatabaseHelper db = new DatabaseHelper(this);
 
     @Override
@@ -33,17 +38,37 @@ public class ChosenAdForSale extends AppCompatActivity {
         program = findViewById(R.id.chosenAdProgramName);
         kurs = findViewById(R.id.chosenAdCourseName);
         pic = findViewById(R.id.chosenAdImg);
+        seller = findViewById(R.id.chosenAdSellerName);
+        chosenAdId = findViewById(R.id.txtChosenAdForSale);
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
 
         chosenAd = db.getAd(id);
 
+        user = db.getUserWithId(chosenAd.getUserId());
+
         fillAdInformation();
+
+        Button btnReportAd = findViewById(R.id.btnReportAd);
+
+
+        btnReportAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdForSale.this, ReportAd.class);
+                TextView id = findViewById(R.id.txtChosenAdForSale);
+                intent.putExtra("id", Integer.parseInt(id.getText().toString()));
+                startActivity(intent);
+            }
+        });
     }
 
         //Hämtar data om den valda annonsen från listan.
     public void fillAdInformation(){
+        String fullName = user.getName() + " " + user.getSurname();
+        chosenAdId.setText(chosenAd.getId());
+        seller.setText(fullName);
         title.setText(chosenAd.getTitle());
         pris.setText(chosenAd.getPrice() + ":-");
         info.setText(chosenAd.getInfo());
