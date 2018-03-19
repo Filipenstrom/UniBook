@@ -6,28 +6,24 @@
     android:layout_height="match_parent"
     android:background="#ffffff"
     tools:context="com.example.filip.unibook.LoggedInActivity"
-    tools:layout_editor_absoluteY="81dp">
+    tools:layout_editor_absoluteY="25dp">
 
     <ImageView
         android:id="@+id/uniBook"
-        android:layout_width="211dp"
-        android:layout_height="52dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="218dp"
+        android:layout_height="76dp"
         android:src="@drawable/unibook"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
 
-
     <LinearLayout
         android:id="@+id/profileLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="16dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
@@ -36,8 +32,8 @@
 
         <ImageView
             android:id="@+id/imgProfile"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/profile" />
 
@@ -52,19 +48,21 @@
     <LinearLayout
         android:id="@+id/settingsLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginEnd="16dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/profileLinearLayout"
         app:layout_constraintTop_toBottomOf="@+id/uniBook">
 
         <ImageView
             android:id="@+id/imgSettings"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/settings" />
 
@@ -79,19 +77,21 @@
     <LinearLayout
         android:id="@+id/messagesLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/searchLinearLayout"
         app:layout_constraintTop_toBottomOf="@+id/settingsLinearLayout">
 
         <ImageView
             android:id="@+id/imgMessages"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/messages" />
 
@@ -100,16 +100,16 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MEDDELANDEN"
-            android:textColor="#ffffff"/>
+            android:textColor="#ffffff" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/searchLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
         app:layout_constraintStart_toStartOf="parent"
@@ -117,8 +117,8 @@
 
         <ImageView
             android:id="@+id/imgSearch"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/search" />
 
@@ -133,19 +133,22 @@
     <LinearLayout
         android:id="@+id/adsLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchLinearLayout">
+        app:layout_constraintTop_toBottomOf="@+id/searchLinearLayout"
+        app:layout_constraintVertical_bias="0.075">
 
         <ImageView
             android:id="@+id/imgAds"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/ads" />
 
@@ -160,19 +163,25 @@
     <LinearLayout
         android:id="@+id/favouritesLinearLayout"
         style="@android:style/Widget.Button"
-        android:layout_width="175dp"
-        android:layout_height="160dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="20dp"
+        android:layout_width="187dp"
+        android:layout_height="166dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
         android:background="@drawable/mybutton"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/messagesLinearLayout">
+        app:layout_constraintHorizontal_bias="0.384"
+        app:layout_constraintStart_toEndOf="@+id/adsLinearLayout"
+        app:layout_constraintTop_toBottomOf="@+id/messagesLinearLayout"
+        app:layout_constraintVertical_bias="0.075">
 
         <ImageView
             android:id="@+id/imgFavourites"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/favourites" />
 

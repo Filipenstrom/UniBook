@@ -111,7 +111,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
                     Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, null, bokTillhorKurs, id.getId(), bytes);
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();

@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_COURSES = "courses";
     public static final String TABLE_FAVORITES = "favorites";
     public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String TABLE_REPORTS = "reports";
 
 
 
@@ -52,6 +53,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
+        db.execSQL("create table " + TABLE_REPORTS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, ADTITLE TEXT, ADID INTEGER, AUTHORNAME TEXT, AUTHORMAIL TEXT, AUTHORID INTEGER, MESSAGE TEXT, FOREIGN KEY(ADID) REFERENCES ads(ID), FOREIGN KEY(AUTHORID) REFERENCES users_table(ID))");
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
         db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
         db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
@@ -65,6 +67,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
 
         onCreate(db);
     }
@@ -84,6 +87,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("adnoti", notisText);
         contentValues.put("userid", userid);
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
+    }
+
+    public void insertReport(String adTitle, int adID, String authorName, String authorMail, String message, int authorID) {
+        SQLiteDatabase sq = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adTitle", adTitle);
+        contentValues.put("adID", adID);
+        contentValues.put("autorName", authorName);
+        contentValues.put("authorMail", authorMail);
+        contentValues.put("authorID", authorID);
+        contentValues.put("message", message);
+
+        sq.insert(TABLE_REPORTS, null, contentValues);
     }
 
     public List<String> getNotis(int userid) {
