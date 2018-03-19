@@ -25,7 +25,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.programListView);
         myDb = new DatabaseHelper(this);
-        SharedPreferences prefs = new SharedPreferences(context);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -35,7 +34,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                 Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
                 intent.putExtra("programNamn", txtProgram.getText().toString());
                 startActivity(intent);
-
             }
         });
 

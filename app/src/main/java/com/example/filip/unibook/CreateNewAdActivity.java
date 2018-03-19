@@ -28,15 +28,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
-<<<<<<< HEAD
-
     ListView listView;
-
-
-
-=======
-    ListView listView;
->>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
     byte[] bytes = null;
 
 
@@ -50,23 +42,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-<<<<<<< HEAD
          program = findViewById(R.id.txtViewProgram);
          kurs = findViewById(R.id.textViewCourses);
-=======
-
-
-
-
-<<<<<<< HEAD
-
-=======
->>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
-        //program = (EditText) findViewById(R.id.editTxtProgram);
-
-
-         kurs = (EditText) findViewById(R.id.editTxtKurs);
->>>>>>> c5f0f1581d68798d2d5f92a27650460cbf75767e
          button = (Button) findViewById(R.id.btnBildKnapp);
          listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
          listCourseBtn = (Button) findViewById(R.id.btnKurs);
@@ -91,7 +68,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
              @Override
              public void onClick(View v) {
                  Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
-                 startActivity(intent);
+                 intent.putExtra("programNamn", program.getText().toString());
+                 startActivityForResult(intent, 2);
              }
          });
 
@@ -107,14 +85,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtKurs.setText(kursNamn);
         txtKurs.setVisibility(View.VISIBLE);
 
-
-
-
-
-
         createAd();
-
-
     }
 
     //Metod som skapar en ny annons för den inloggade
@@ -131,13 +102,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokISDN = isdn.getText().toString();
                 TextView program = (TextView) findViewById(R.id.txtViewProgram);
                 String bokTillhorProgram = program.getText().toString();
-                //TextView kurs = (TextView) findViewById(R.id.editTxtKurs);
                 String bokTillhorKurs = kurs.getText().toString();
-
-
-
-
-
 
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
@@ -150,6 +115,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(CreateNewAdActivity.this, MyAdsActivity.class);
+                        startActivity(intent);
                     }
                     else {
                         Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
@@ -158,11 +125,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
 
     public void choseImg(){
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
@@ -182,6 +144,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageInByte = baos.toByteArray();
             bytes = imageInByte;
+        }
+
+        if(resultCode == 2){
+            kurs.setText(data.getStringExtra("kursNamn"));
         }
     }
 }

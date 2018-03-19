@@ -280,17 +280,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return adsContent;
     }
 
-    public void createProgram() {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", "Systemvetenskap");
-        contentValues.put("programcode", "ik");
-
-        long result = db.insert("program", null, contentValues);
-        db.close();
-    }
-
     public Ad getAd(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -310,6 +299,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             while(cursor.moveToNext());
         }
         return ad;
+    }
+
+    public void createProgram() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", "Systemvetenskap");
+        contentValues.put("programcode", "ik");
+
+        long result = db.insert("program", null, contentValues);
+        db.close();
     }
 
     public List<Program> getPrograms(){
@@ -335,7 +335,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Course> getCourses(String programNamn){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select coursename, coursecode from courses join program on programid = program.id where program.name = " + programNamn;
+        String query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
         Cursor cursor = db.rawQuery(query, null);
 
         List<Course> courses = new ArrayList<Course>();
@@ -343,10 +343,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         {
             do {
                 Course course = new Course();
-                course.setId(cursor.getString(0));
-                course.setName(cursor.getString(1));
-                course.setDescription(cursor.getString(2));
-                course.setCode(cursor.getString(3));
+                course.setName(cursor.getString(0));
                 courses.add(course);
 
             }
@@ -359,36 +356,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void createCourse(){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("coursename", "Informatik A");
+        contentValues.put("name", "Informatik A");
         contentValues.put("description", "bajs");
         contentValues.put("coursecode", "22");
         contentValues.put("programid", "1");
 
-
         long result = db.insert("courses", null, contentValues);
         db.close();
-    }
-
-    public List<Course> showCourses(){
-        SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select * from courses";
-        Cursor cursor = db.rawQuery(query, null);
-        List<Course> courses = new ArrayList<Course>();
-        if(cursor.moveToFirst())
-        {
-            do {
-                Course course = new Course();
-                course.setId(cursor.getString(0));
-                course.setName(cursor.getString(1));
-                course.setDescription(cursor.getString(2));
-                course.setCode(cursor.getString(3));
-                courses.add(course);
-
-            }
-            while(cursor.moveToNext());
-        }
-
-        return courses;
-
     }
 }

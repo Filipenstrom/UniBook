@@ -24,7 +24,6 @@ public class CourseAdapter extends BaseAdapter{
         this.ids = ids;
         this.courseCodes = courseCodes;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
     }
 
     @Override
@@ -44,10 +43,8 @@ public class CourseAdapter extends BaseAdapter{
 
     @Override
     public View getView(int i, View convertView, ViewGroup parent) {
-
         View view = mInflator.inflate(R.layout.courses,null);
         TextView courseName = (TextView) view.findViewById(R.id.textViewCourses);
-
 
         String kursNamn = items[i];
         courseName.setText(kursNamn);

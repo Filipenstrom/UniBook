@@ -77,31 +77,33 @@ public class EditProfileActivity extends AppCompatActivity {
         User id = db.getUser(sp.getusername());
 
         //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
-<<<<<<< HEAD
 
-        if (editEmail.getText().toString().equals(id)) {
+     // if (editEmail.getText().toString().equals(id)) {
 
-            if (editEmail.getText().toString().equals(id.getMail())) {
-                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-            } else {
-                saveUserInformation();
+     //     if (editEmail.getText().toString().equals(id.getMail())) {
+     //         db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+     //     } else {
+     //         saveUserInformation();
 
-                db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+     //         db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
 
-                //db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+     //         //db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
 
-            }
-            Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-            startActivity(intent);
-=======
+     //     }
+     //     Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+     //     startActivity(intent);
+        Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+
         if(editEmail.getText().toString().equals(id.getMail())) {
 
             db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
+
+            startActivity(intent);
         }
         else{
             saveUserInformation();
             db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
->>>>>>> 7c5c0494b86f2b7cfda5e15b4b1ba2702eb70f67
+            startActivity(intent);
         }
     }
 

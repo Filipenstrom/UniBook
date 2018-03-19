@@ -33,8 +33,8 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                 TextView txtCourse = (TextView) findViewById(R.id.textViewCourses);
                 Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
                 intent.putExtra("kursNamn", txtCourse.getText().toString());
-                startActivity(intent);
-
+                setResult(2, intent);
+                finish();
             }
         });
 
@@ -43,12 +43,13 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
 
     public void getAllCourses(){
 
-        List<Course> kursLista = myDb.showCourses();
+        Intent intent = getIntent();
+        String programNamn = intent.getStringExtra("programNamn");
+        List<Course> kursLista = myDb.getCourses(programNamn);
         int numberOfCourses = kursLista.size();
         String[] items = new String[numberOfCourses];
         String[] ids = new String[numberOfCourses];
         String[] codes = new String[numberOfCourses];
-
 
         for (int i = 0; i < kursLista.size(); i++) {
             Course course = kursLista.get(i);
