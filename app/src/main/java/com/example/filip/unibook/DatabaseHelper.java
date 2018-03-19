@@ -44,13 +44,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB)");
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE INT, SCHOOL TEXT)");
         //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
         //String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(userid) REFERENCES users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
          db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));";
         //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
-
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
@@ -104,7 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes) {
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, int phone, String school) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -112,6 +111,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put(COL_4, mail);
         contentValues.put(COL_5, password);
         contentValues.put(COL_6, imageBytes);
+        contentValues.put("adress", adress);
+        contentValues.put("phone", phone);
+        contentValues.put("school", school);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
         if (result == -1) {
@@ -119,6 +121,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return true;
         }
+    }
+
+    public void updateUser(String id, String name, String surname, String mail, byte[] bytes){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COL_2, name);
+        contentValues.put(COL_3, surname);
+        contentValues.put(COL_4, mail);
+        contentValues.put(COL_6, bytes);
+
+        db.update(TABLE_NAME, contentValues, "id="+id, null);
     }
 
     //Metod som kollar om användarens email och lösenord stämmer överens
@@ -178,6 +191,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userInfo.setSurname(cursor.getString(2));
                 userInfo.setMail(cursor.getString(3));
                 userInfo.setPic(cursor.getBlob(5));
+                userInfo.setAdress(cursor.getString(6));
+                userInfo.setPhone(cursor.getInt(7));
+                userInfo.setSchool(cursor.getString(8));
             }
             while (cursor.moveToNext());
         }
@@ -285,17 +301,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return adsContent;
     }
 
-    public void createProgram() {
-
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("name", "Systemvetenskap");
-        contentValues.put("programcode", "ik");
-
-        long result = db.insert("program", null, contentValues);
-        db.close();
-    }
-
     public Ad getAd(int id)
     {
         SQLiteDatabase db = this.getReadableDatabase();
@@ -321,6 +326,17 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return ad;
     }
 
+    public void createProgram() {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", "Systemvetenskap");
+        contentValues.put("programcode", "ik");
+
+        long result = db.insert("program", null, contentValues);
+        db.close();
+    }
+
     public List<Program> getPrograms(){
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "select * from program";
@@ -340,5 +356,37 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return programs;
+    }
+
+    public List<Course> getCourses(String programNamn){
+        SQLiteDatabase db = this.getReadableDatabase();
+        String query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        Cursor cursor = db.rawQuery(query, null);
+
+        List<Course> courses = new ArrayList<Course>();
+        if(cursor.moveToFirst())
+        {
+            do {
+                Course course = new Course();
+                course.setName(cursor.getString(0));
+                courses.add(course);
+
+            }
+            while(cursor.moveToNext());
+        }
+
+        return courses;
+    }
+
+    public void createCourse(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("name", "Informatik A");
+        contentValues.put("description", "bajs");
+        contentValues.put("coursecode", "22");
+        contentValues.put("programid", "1");
+
+        long result = db.insert("courses", null, contentValues);
+        db.close();
     }
 }

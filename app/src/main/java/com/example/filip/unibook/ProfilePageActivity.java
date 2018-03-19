@@ -34,14 +34,21 @@ public class ProfilePageActivity extends AppCompatActivity {
         SharedPreferences sharedPreferences = new SharedPreferences(this);
 
         TextView name = (TextView) findViewById(R.id.txtNamn);
-        TextView surname = (TextView) findViewById(R.id.txtMail);
+        TextView mail = (TextView) findViewById(R.id.txtMail);
+        TextView adress = (TextView) findViewById(R.id.txtAdress);
+        TextView phone = (TextView) findViewById(R.id.txtTele);
+        TextView school = (TextView) findViewById(R.id.txtSkola);
         ImageView imageView = findViewById(R.id.profil);
 
+
         name.setText(userInformation.getName() + " " + userInformation.getSurname());
-        surname.setText(userInformation.getSurname());
+        mail.setText(userInformation.getMail());
+        adress.setText(userInformation.getAdress());
+        phone.setText(Integer.toString(userInformation.getPhone()));
+        school.setText(userInformation.getSchool());
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
 
-        //imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length));
+        //imageView.setImageBitmap(BitmapFactory.decodeByteArray(db.getProfileImg(sharedPreferences.getusername()), 0, db.getProfileImg(sharedPreferences.getusername()).length))
     }
 
     public void goToEditProfile(View view){

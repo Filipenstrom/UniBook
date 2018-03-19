@@ -11,23 +11,20 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.prefs.Preferences;
 
 
 public class CreateNewAdActivity extends AppCompatActivity {
     Context context = this;
     DatabaseHelper myDb;
-    EditText titel, pris, info, isdn, program, kurs;
-    Button button;
+    EditText titel, pris, info, isdn;
+    TextView kurs, program;
+    Button button, listProgramBtn, listCourseBtn;
     private static final int PICK_IMAGE = 100;
     ImageView imageView;
     Uri imageUri;
@@ -40,27 +37,55 @@ public class CreateNewAdActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_ad);
 
-        myDb = new DatabaseHelper(this);
+         myDb = new DatabaseHelper(this);
          titel = (EditText) findViewById(R.id.editTxtTitel);
          pris = (EditText) findViewById(R.id.editTxtPris);
          info = (EditText) findViewById(R.id.editTxtInfo);
          isdn = (EditText) findViewById(R.id.editTxtISDN);
-        //program = (EditText) findViewById(R.id.editTxtProgram);
-         kurs = (EditText) findViewById(R.id.editTxtKurs);
+         program = findViewById(R.id.txtViewProgram);
+         kurs = findViewById(R.id.textViewCourses);
          button = (Button) findViewById(R.id.btnBildKnapp);
+         listProgramBtn = (Button) findViewById(R.id.btnGoToProgram);
+         listCourseBtn = (Button) findViewById(R.id.btnKurs);
          imageView = (ImageView) findViewById(R.id.imgViewBokbild);
+
          button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
                  choseImg();
              }
          });
-         listView = (ListView) findViewById(R.id.programListView);
 
+         listProgramBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CreateNewAdActivity.this, ListAllProgramsActivity.class);
+                startActivity(intent);
+            }
+        });
+
+         listCourseBtn.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View v) {
+                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
+                 intent.putExtra("programNamn", program.getText().toString());
+                 startActivityForResult(intent, 2);
+             }
+         });
+
+        Intent intent = getIntent();
+        String programNamn = intent.getStringExtra("programNamn");
+        TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
+        txtProgram.setText(programNamn);
+        txtProgram.setVisibility(View.VISIBLE);
+
+        Intent kursIntent = getIntent();
+        String kursNamn = kursIntent.getStringExtra("kursNamn");
+        TextView txtKurs = (TextView) findViewById(R.id.textViewCourses) ;
+        txtKurs.setText(kursNamn);
+        txtKurs.setVisibility(View.VISIBLE);
 
         createAd();
-        getAllPrograms();
-
     }
 
     //Metod som skapar en ny annons för den inloggade
@@ -75,10 +100,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 String bokPris = pris.getText().toString();
                 String bokInfo = info.getText().toString();
                 String bokISDN = isdn.getText().toString();
-
-
-
-                //String bokTillhorProgram = program.getText().toString();
+                TextView program = (TextView) findViewById(R.id.txtViewProgram);
+                String bokTillhorProgram = program.getText().toString();
                 String bokTillhorKurs = kurs.getText().toString();
 
                 SharedPreferences prefs = new SharedPreferences(context);
@@ -92,6 +115,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                        Intent intent = new Intent(CreateNewAdActivity.this, MyAdsActivity.class);
+                        startActivity(intent);
                     }
                     else {
                         Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
@@ -100,26 +125,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
             }
         });
     }
-
-    public void getAllPrograms() {
-        List<Program> programLista = myDb.getPrograms();
-        int numberOfPrograms = programLista.size();
-        String[] items = new String[numberOfPrograms];
-        String[] ids = new String[numberOfPrograms];
-        String[] codes = new String[numberOfPrograms];
-
-        for (int i = 0; i < programLista.size(); i++) {
-            Program program = programLista.get(i);
-            ids[i] = program.getId();
-            items[i] = program.getName();
-            codes[i] = program.getProgramCode();
-
-        }
-
-        ProgramAdapter programAdapter = new ProgramAdapter(this, items, ids);
-        listView.setAdapter(programAdapter);
-    }
-
 
     public void choseImg(){
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
@@ -139,6 +144,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
             byte[] imageInByte = baos.toByteArray();
             bytes = imageInByte;
+        }
+
+        if(resultCode == 2){
+            kurs.setText(data.getStringExtra("kursNamn"));
         }
     }
 }
