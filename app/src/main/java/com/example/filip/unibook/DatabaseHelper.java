@@ -170,6 +170,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userInfo.setSurname(cursor.getString(2));
                 userInfo.setMail(cursor.getString(3));
                 userInfo.setPic(cursor.getBlob(5));
+                userInfo.setAdress(cursor.getString(6));
+                userInfo.setPhone(cursor.getInt(7));
+                userInfo.setSchool(cursor.getString(8));
             }
             while (cursor.moveToNext());
         }

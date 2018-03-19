@@ -33,11 +33,11 @@ public class ProfilePageActivity extends AppCompatActivity {
         User userInformation = db.getUser(username);
         SharedPreferences sharedPreferences = new SharedPreferences(this);
 
-        TextView name = (TextView) findViewById(R.id.txtNamn);
-        TextView mail = (TextView) findViewById(R.id.txtMail);
-        TextView adress = (TextView) findViewById(R.id.txtAdress);
-        TextView phone = (TextView) findViewById(R.id.txtTele);
-        TextView school = (TextView) findViewById(R.id.txtSkola);
+        TextView name = findViewById(R.id.txtNamn);
+        TextView mail =  findViewById(R.id.txtMail);
+        TextView adress =  findViewById(R.id.txtAdress);
+        TextView phone =  findViewById(R.id.txtTele);
+        TextView school =  findViewById(R.id.txtSkola);
         ImageView imageView = findViewById(R.id.profil);
 
 
