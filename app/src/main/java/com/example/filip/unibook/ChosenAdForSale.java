@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -60,9 +61,9 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnCallAd.setOnClickListener(new View.OnClickListener() {
             public void onClick(View arg0) {
                 Intent callIntent = new Intent(Intent.ACTION_CALL);
-                callIntent.setData(Uri.parse("tel:0377778888"));
+                callIntent.setData(Uri.parse("tel:222"));
 
-                if (ActivityCompat.checkSelfPermission(ChosenAdForSale.this,
+                if (ContextCompat.checkSelfPermission(ChosenAdForSale.this,
                         Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                     return;
                 }
