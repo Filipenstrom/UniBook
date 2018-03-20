@@ -1,17 +1,18 @@
 package com.example.filip.unibook;
 
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.BitmapFactory;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Button;
 
-import java.util.List;
+import android.graphics.BitmapFactory;
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.ImageView;
 
 public class ChosenAdForSale extends AppCompatActivity {
 
@@ -52,6 +53,22 @@ public class ChosenAdForSale extends AppCompatActivity {
 
         Button btnReportAd = findViewById(R.id.btnReportAd);
 
+        Button btnCallAd;
+
+        btnCallAd = (Button)findViewById(R.id.btnChosenAdCall);
+
+        btnCallAd.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View arg0) {
+                Intent callIntent = new Intent(Intent.ACTION_CALL);
+                callIntent.setData(Uri.parse("tel:0377778888"));
+
+                if (ActivityCompat.checkSelfPermission(ChosenAdForSale.this,
+                        Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                startActivity(callIntent);
+            }
+        });
 
         btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override

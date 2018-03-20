@@ -35,22 +35,20 @@ public class ReportAd extends AppCompatActivity {
 
         adTitle.setText(ad.getTitle());
         adID.setText(ad.getId());
-        String fullName = user.getName() + " " + user.getSurname();
+        final String fullName = user.getName() + " " + user.getSurname();
         authorName.setText(fullName);
         authorMail.setText(user.getMail());
-
         Button reportBtn = findViewById(R.id.btnReportSendReportAd);
 
         reportBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int id = Integer.parseInt(ad.getId());
-                int idInt = Integer.parseInt(user.getId());
 
-                boolean isInserted = db.insertReport(ad.getTitle(), id, authorName.getText().toString(), authorMail.getText().toString(), message.getText().toString(), idInt );
+                boolean isInserted = db.insertReport(ad.getTitle(), authorName.getText().toString(), authorMail.getText().toString(), message.getText().toString(), Integer.parseInt(user.getId()), Integer.parseInt(ad.getId()));
 
                 if(isInserted == true){
-                    Toast.makeText(ReportAd.this,"Annons skapad", Toast.LENGTH_LONG).show();
+                    Toast.makeText(ReportAd.this,"Anmälan skapad", Toast.LENGTH_LONG).show();
+                    finish();
                 }
                 else {
                     Toast.makeText(ReportAd.this, "Något gick fel", Toast.LENGTH_LONG).show();

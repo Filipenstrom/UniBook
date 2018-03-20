@@ -62,7 +62,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
-        //db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
 
         onCreate(db);
     }
@@ -84,16 +84,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
-    //Inte klar än
-    public boolean insertReport(String adTitle, int adID, String authorName, String authorMail, String message, int authorID) {
+    public boolean insertReport(String adTitle, String authorName, String authorMail, String message, int authorID, int adID) {
         SQLiteDatabase sq = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("adTitle", adTitle);
-        contentValues.put("adID", adID);
-        contentValues.put("autorName", authorName);
+        contentValues.put("authorName", authorName);
         contentValues.put("authorMail", authorMail);
-        contentValues.put("authorID", authorID);
         contentValues.put("message", message);
+        contentValues.put("authorID", authorID);
+        contentValues.put("adID", adID);
 
         long result = sq.insert(TABLE_REPORTS, null, contentValues);
         sq.close();
@@ -117,7 +116,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             while (cursor.moveToNext());
         }
-
         return notisText;
     }
 
