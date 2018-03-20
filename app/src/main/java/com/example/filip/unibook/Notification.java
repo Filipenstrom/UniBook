@@ -21,12 +21,12 @@ public final class Notification{
     public NotificationManagerCompat notificationManagerCompat;
 
 
-    public Notification(Context c) {
+    public Notification(Context c, String program, String text) {
         context = c;
         setChannel(c);
         mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.schjool)
-                .setContentTitle("En bok du lagt till i favoriter finns nu att köpa.")
+                .setContentTitle("En bok för programmet " + program + " har lagts till.")
                 .setContentText("Databasteknik av Johan Lindhal")
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 

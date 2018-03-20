@@ -77,6 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
 
                     if (isInserted == true) {
                         Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                        saveUserInformation();
                         startActivity(intent);
                         myDb.createProgram();
                         myDb.createCourse();
@@ -111,6 +112,13 @@ public class RegisterActivity extends AppCompatActivity {
 
             }
         }
+
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = findViewById(R.id.editTxtMail);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
+    }
 
     }
 

@@ -35,6 +35,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_COURSES = "courses";
     public static final String TABLE_FAVORITES = "favorites";
     public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String TABLE_REPORTS = "reports";
 
 
 

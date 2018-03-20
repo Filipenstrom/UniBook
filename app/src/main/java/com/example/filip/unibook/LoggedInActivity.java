@@ -1,6 +1,8 @@
 package com.example.filip.unibook;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,7 +27,13 @@ public class LoggedInActivity extends AppCompatActivity {
         goToProfile();
         goToSettings();
         goToSearch();
-        checkForNotis();
+        //checkForNotis();
+
+
+            if (!isMyServiceRunning()) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, MyService.class);
+                startService(serviceIntent);
+            }
     }
 
     public void goToProfile() {
@@ -40,7 +48,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToSearch(){
+    public void goToSearch() {
         LinearLayout searchBtn = findViewById(R.id.searchLinearLayout);
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -52,8 +60,8 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToAdds(){
-        LinearLayout addBtn =  findViewById(R.id.adsLinearLayout);
+    public void goToAdds() {
+        LinearLayout addBtn = findViewById(R.id.adsLinearLayout);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -63,8 +71,8 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToSettings(){
-        LinearLayout settingsBtn =  findViewById(R.id.settingsLinearLayout);
+    public void goToSettings() {
+        LinearLayout settingsBtn = findViewById(R.id.settingsLinearLayout);
         settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,40 +82,14 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void checkForNotis() {
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sp = new SharedPreferences(this);
-        User user = db.getUser(sp.getusername());
-        List<String> notis = db.getNotis(Integer.parseInt(user.getId()));
-        List<Ad> ads = db.getAllAds("");
-
-        try {
-            //Loopa igenom alla ads.
-            for (int i = 0; i < ads.size(); i++) {
-                //Loopa igenom alla notiser på en ad.
-                for (int i2 = 0; i2 < notis.size(); i2++) {
-                    Ad ad;
-                    if (ads.size() == 1) {
-                        ad = ads.get(i);
-                    } else {
-                        //Gör bara kollen på de senast tillagda böckerna
-                        ad = ads.get(i + db.getNotisCounter(notis.get(i)));
-                    }
-                    //Kolla om det lagts till nya böcker sen senaste notisen visades, om inte visa ingen ny notis.
-                    if (ads.size() > db.getNotisCounter(ad.getProgram())) {
-                        String program = ad.getProgram();
-                        //Om notisen matchar ett program på en ny bok, visa notis.
-                        if (notis.get(i2).equals(program)) {
-                            Notification notification = new Notification(this);
-                            notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-                            db.setNotisCounter(ad.getProgram(), ads.size());
-                        }
-                    }
-                }
+    //Starta background service om den inte redan är igång. Detta föra att skicka notifikationer.
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(this.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (MyService.class.getName().equals(service.service.getClassName())) {
+                return true;
             }
         }
-        catch(Exception e){
-            Log.d("Broken", "Index out of bounds");
-        }
+        return false;
     }
 }
