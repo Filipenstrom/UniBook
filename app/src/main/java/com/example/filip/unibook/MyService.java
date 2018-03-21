@@ -71,11 +71,19 @@ public class MyService extends Service {
                     //Kolla om det lagts till nya böcker sen senaste notisen visades, om inte visa ingen ny notis.
                     if (ads.size() > db.getNotisCounter(ad.getProgram())) {
                         String program = ad.getProgram();
+                        String course = ad.getCourse();
                         //Om notisen matchar ett program på en ny bok, visa notis.
-                        if (notis.get(i2).equals(program)) {
-                            Notification notification = new Notification(this, program, "Tryck för att öppna UniBook");
+                        if (notis.get(i2).equals(program) || notis.get(i2).equals(course)) {
+                            Notification notification = new Notification(this, program + " i kursen " + course, "Tryck för att öppna UniBook");
                             notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-                            db.setNotisCounter(ad.getProgram(), ads.size());
+
+                            //Ändra notiscounter på rätt notis.
+                            if(notis.get(i2).equals(program)) {
+                                db.setNotisCounter(ad.getProgram(), ads.size());
+                            }
+                            else if(notis.get(i2).equals(course)){
+                                db.setNotisCounter(ad.getCourse(), ads.size());
+                            }
                         }
                         //Om boken inte matchar notisen gå vidare till nästa bok.
                         else {

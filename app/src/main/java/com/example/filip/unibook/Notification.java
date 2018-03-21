@@ -34,6 +34,7 @@ public final class Notification{
         );
 
         setChannel(c);
+
         //Bygger notifikationen
         mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.schjool)

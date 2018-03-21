@@ -16,6 +16,7 @@ public class NotificationActivity extends AppCompatActivity {
 
     TextView addedNotis;
     TextView newNotis;
+    TextView newNotisCourse;
     DatabaseHelper db;
     SharedPreferences sp;
     User user;
@@ -34,22 +35,31 @@ public class NotificationActivity extends AppCompatActivity {
         usersNotices();
 
         Button btnaddNotis =  findViewById(R.id.btnaddNotis);
+        Button btnaddNotisCourse =  findViewById(R.id.btnAddNotisCourse);
 
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNotis();
+                saveNotisProg();
+            }
+        });
+
+        btnaddNotisCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveNotisCourse();
             }
         });
     }
 
     //Spara ner en ny notis. Om det inte finns ett program som heter så som användaren skrivit in ska det inte sparas.
-    public void saveNotis(){
+    public void saveNotisProg(){
         List<Program> allprogram = db.getPrograms();
+        List<Ad> allads = db.getAllAds("");
 
         for(int i = 0;i<allprogram.size();i++){
             if(allprogram.get(i).getName().equals(newNotis.getText().toString().trim())){
-                db.addNotis(newNotis.getText().toString(), user.getId().toString(), 0);
+                db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
                 usersNotices();
                 Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
                 break;
@@ -57,7 +67,26 @@ public class NotificationActivity extends AppCompatActivity {
 
             else if(allprogram.size() == (i+1)){
                 Toast.makeText(NotificationActivity.this, "Det finns inget program som heter så.", Toast.LENGTH_LONG).show();
-             }
+            }
+        }
+    }
+
+    //Spara ner en ny notis. Om det inte finns en kurs som heter så som användaren skrivit in ska det inte sparas.
+    public void saveNotisCourse(){
+        List<Course> allcourses = db.getCourses("");
+        List<Ad> allads = db.getAllAds("");
+
+        for(int i = 0;i<allcourses.size();i++){
+            if(allcourses.get(i).getName().equals(newNotis.getText().toString().trim())){
+                db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
+                usersNotices();
+                Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
+                break;
+            }
+
+            else if(allcourses.size() == (i+1)){
+                Toast.makeText(NotificationActivity.this, "Det finns ingen kurs som heter så.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 

@@ -394,7 +394,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Course> getCourses(String programNamn){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        String query;
+        if(!programNamn.equals("")) {
+            query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        }
+        else{
+            query = "select name from courses";
+        }
         Cursor cursor = db.rawQuery(query, null);
 
         List<Course> courses = new ArrayList<Course>();
