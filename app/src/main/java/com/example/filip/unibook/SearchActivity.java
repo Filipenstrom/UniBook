@@ -14,8 +14,8 @@ import android.widget.*;
 public class SearchActivity extends AppCompatActivity {
 
     DatabaseHelper myDb = new DatabaseHelper(this);
-
-
+    private Button programSearchBtn;
+    private Button courseSearchBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,16 +26,16 @@ public class SearchActivity extends AppCompatActivity {
         
         fillUpAds(fakeInput);
 
-        Button courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
+        courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
-        final Button programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
+        programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SearchActivity.this, ListAllProgramsActivity.class);
                 intent.putExtra("activityCode", 1);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -47,15 +47,9 @@ public class SearchActivity extends AppCompatActivity {
 
                 String[] myExtras = new String[]{"1", programNamn};
                 intent.putExtra("extras", myExtras);
-                startActivity(intent);
+                startActivityForResult(intent, 1);
             }
         });
-
-        Intent intent = getIntent();
-
-        programSearchBtn.setText(intent.getStringExtra("programNamn"));
-
-        courseSearchBtn.setText(intent.getStringExtra("kursNamn"));
 
         SearchView search = findViewById(R.id.searchViewBooks);
 
@@ -112,12 +106,15 @@ public class SearchActivity extends AppCompatActivity {
         listView.setAdapter(itemAdapter);
     }
 
-    //@Override
-    //protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    //    super.onActivityResult(requestCode, resultCode, data);
-//
-    //    if(resultCode == 2) {
-    //        programSearchBtn.setText(data.getStringExtra("programNamn"));
-    //    }
-    //}
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(resultCode == 1){
+            programSearchBtn.setText(data.getStringExtra("programNamn"));
+        }
+        if(resultCode == 2){
+            courseSearchBtn.setText(data.getStringExtra("kursNamn"));
+        }
+    }
 }

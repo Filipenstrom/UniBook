@@ -36,9 +36,10 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                 String value = listView.getItemAtPosition(position).toString();
                 TextView txtCourse = (TextView) findViewById(R.id.textViewCourses);
                 if(extras[0].equals("1")) {
-                    Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, SearchActivity.class);
-                    intent.putExtra("kursNamn", txtCourse.getText().toString());
-                    startActivity(intent);
+                    Intent data = new Intent();
+                    data.putExtra("kursNamn", txtCourse.getText().toString());
+                    setResult(2, data);
+                    finish();
                 } else {
                     Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
                     intent.putExtra("kursNamn", txtCourse.getText().toString());
