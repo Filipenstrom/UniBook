@@ -14,7 +14,7 @@ import android.widget.*;
 public class SearchActivity extends AppCompatActivity {
 
     DatabaseHelper myDb = new DatabaseHelper(this);
-    final Button programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
+
 
 
     @Override
@@ -28,13 +28,14 @@ public class SearchActivity extends AppCompatActivity {
 
         Button courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
+        final Button programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SearchActivity.this, ListAllProgramsActivity.class);
                 intent.putExtra("activityCode", 1);
-                startActivityForResult(intent, 1);
+                startActivity(intent);
             }
         });
 
@@ -49,6 +50,12 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        Intent intent = getIntent();
+
+        programSearchBtn.setText(intent.getStringExtra("programNamn"));
+
+        courseSearchBtn.setText(intent.getStringExtra("kursNamn"));
 
         SearchView search = findViewById(R.id.searchViewBooks);
 
@@ -105,12 +112,12 @@ public class SearchActivity extends AppCompatActivity {
         listView.setAdapter(itemAdapter);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == 1) {
-            programSearchBtn.setText(data.getStringExtra("kursNamn"));
-        }
-    }
+    //@Override
+    //protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    //    super.onActivityResult(requestCode, resultCode, data);
+//
+    //    if(resultCode == 2) {
+    //        programSearchBtn.setText(data.getStringExtra("programNamn"));
+    //    }
+    //}
 }

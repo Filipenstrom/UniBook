@@ -37,11 +37,10 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                 String value = listView.getItemAtPosition(position).toString();
                 TextView txtProgram = (TextView) findViewById(R.id.txtProgram);
                 if(activityCode ==  1) {
-                    Intent data = new Intent();
+                    Intent data = new Intent(ListAllProgramsActivity.this, SearchActivity.class);
                     String programNamn = txtProgram.getText().toString();
-                    data.setData(Uri.parse(programNamn));
-                    setResult(1, data);
-                    finish();
+                    data.putExtra("programNamn", programNamn);
+                    startActivity(data);
                 }else {
                     Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
                     intent.putExtra("programNamn", txtProgram.getText().toString());
