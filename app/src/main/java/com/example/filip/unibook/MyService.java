@@ -53,7 +53,7 @@ public class MyService extends Service {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         User user = db.getUser(sp.getusername());
-        List<String> notis = db.getNotis(Integer.parseInt(user.getId()));
+        List<String> notis = db.getNotis(user.getId());
         List<Ad> ads = db.getAllAds("");
 
         try {
@@ -66,14 +66,14 @@ public class MyService extends Service {
                         ad = ads.get(i);
                     } else {
                         //Gör bara kollen på de senast tillagda böckerna
-                        ad = ads.get(db.getNotisCounter(notis.get(i)));
+                        ad = ads.get(db.getNotisCounter(notis.get(i2)));
                     }
                     //Kolla om det lagts till nya böcker sen senaste notisen visades, om inte visa ingen ny notis.
                     if (ads.size() > db.getNotisCounter(ad.getProgram())) {
                         String program = ad.getProgram();
                         //Om notisen matchar ett program på en ny bok, visa notis.
                         if (notis.get(i2).equals(program)) {
-                            Notification notification = new Notification(this, program, "Bajs");
+                            Notification notification = new Notification(this, program, "Tryck för att öppna UniBook");
                             notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
                             db.setNotisCounter(ad.getProgram(), ads.size());
                         }

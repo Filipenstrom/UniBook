@@ -120,5 +120,5 @@ public class RegisterActivity extends AppCompatActivity {
         sp.setusername(username.getText().toString());
     }
 
-    }
+}
 

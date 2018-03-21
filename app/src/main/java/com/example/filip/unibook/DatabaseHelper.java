@@ -88,7 +88,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
-    public List<String> getNotis(int userid) {
+    public List<String> getNotis(String userid) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select adnoti from " + TABLE_NOTIFICATIONS + " where userid = " + "'" + userid + "'";
         Cursor cursor = sq.rawQuery(query, null);
