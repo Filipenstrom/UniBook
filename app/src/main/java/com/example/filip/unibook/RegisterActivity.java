@@ -73,9 +73,10 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes, adress, Integer.parseInt(phone), school);
+                    boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes, adress, phone, school);
 
                     if (isInserted == true) {
+                        saveUserInformation();
                         Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
                         startActivity(intent);
                         myDb.createProgram();
@@ -112,5 +113,11 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
 
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = (EditText) findViewById(R.id.editTxtMail);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
+    }
     }
 

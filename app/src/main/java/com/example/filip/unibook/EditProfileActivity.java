@@ -67,7 +67,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editEmail.setText(userInformation.getMail());
         editAdress.setText(userInformation.getAdress());
         editSchool.setText(userInformation.getSchool());
-        editPhone.setText(Integer.toString(userInformation.getPhone()));
+        editPhone.setText(userInformation.getPhone());
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 

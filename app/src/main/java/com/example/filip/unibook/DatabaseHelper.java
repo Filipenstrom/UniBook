@@ -44,7 +44,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE INT, SCHOOL TEXT)");
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE VARCHAR, SCHOOL TEXT)");
         db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));"
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
@@ -120,7 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, int phone, String school) {
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, String phone, String school) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -188,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userInfo.setMail(cursor.getString(3));
                 userInfo.setPic(cursor.getBlob(5));
                 userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getInt(7));
+                userInfo.setPhone(cursor.getString(7));
                 userInfo.setSchool(cursor.getString(8));
             }
             while (cursor.moveToNext());
@@ -212,7 +212,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userInfo.setMail(cursor.getString(3));
                 userInfo.setPic(cursor.getBlob(5));
                 userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getInt(7));
+                userInfo.setPhone(cursor.getString(7));
                 userInfo.setSchool(cursor.getString(8));
             }
             while (cursor.moveToNext());

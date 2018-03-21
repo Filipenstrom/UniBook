@@ -2,6 +2,7 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -26,14 +27,26 @@ public class ListAllProgramsActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.programListView);
         myDb = new DatabaseHelper(this);
 
+        Intent intent = getIntent();
+
+        final int activityCode = intent.getIntExtra("activityCode", -1);
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String value = listView.getItemAtPosition(position).toString();
                 TextView txtProgram = (TextView) findViewById(R.id.txtProgram);
-                Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
-                intent.putExtra("programNamn", txtProgram.getText().toString());
-                startActivity(intent);
+                if(activityCode ==  1) {
+                    Intent data = new Intent();
+                    String programNamn = txtProgram.getText().toString();
+                    data.setData(Uri.parse(programNamn));
+                    setResult(1, data);
+                    finish();
+                }else {
+                    Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
+                    intent.putExtra("programNamn", txtProgram.getText().toString());
+                    startActivity(intent);
+                }
             }
         });
 
@@ -52,7 +65,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
             ids[i] = program.getId();
             items[i] = program.getName();
             codes[i] = program.getProgramCode();
-
         }
 
         ProgramAdapter programAdapter = new ProgramAdapter(this, items, ids);

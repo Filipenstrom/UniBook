@@ -26,26 +26,36 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         myDb = new DatabaseHelper(this);
         SharedPreferences prefs = new SharedPreferences(context);
 
+        Intent intent = getIntent();
+
+        final String[] extras = intent.getStringArrayExtra("extras");
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String value = listView.getItemAtPosition(position).toString();
                 TextView txtCourse = (TextView) findViewById(R.id.textViewCourses);
-                Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
-                intent.putExtra("kursNamn", txtCourse.getText().toString());
-                setResult(2, intent);
-                finish();
+                if(extras[0].equals("1")) {
+                    Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, SearchActivity.class);
+                    intent.putExtra("kursNamn", txtCourse.getText().toString());
+                    startActivity(intent);
+                } else {
+                    Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
+                    intent.putExtra("kursNamn", txtCourse.getText().toString());
+                    setResult(2, intent);
+                    finish();
+                }
             }
         });
-
         getAllCourses();
     }
 
     public void getAllCourses(){
 
         Intent intent = getIntent();
-        String programNamn = intent.getStringExtra("programNamn");
-        List<Course> kursLista = myDb.getCourses(programNamn);
+        String[] programNamn = intent.getStringArrayExtra("extras");
+        String programName = programNamn[1];
+        List<Course> kursLista = myDb.getCourses(programName);
         int numberOfCourses = kursLista.size();
         String[] items = new String[numberOfCourses];
         String[] ids = new String[numberOfCourses];

@@ -44,7 +44,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         name.setText(userInformation.getName() + " " + userInformation.getSurname());
         mail.setText(userInformation.getMail());
         adress.setText(userInformation.getAdress());
-        phone.setText(Integer.toString(userInformation.getPhone()));
+        phone.setText(userInformation.getPhone());
         school.setText(userInformation.getSchool());
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
 

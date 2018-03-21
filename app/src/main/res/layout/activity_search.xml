@@ -23,7 +23,7 @@
     <SearchView
         android:id="@+id/searchViewBooks"
         android:layout_width="0dp"
-        android:layout_height="64dp"
+        android:layout_height="44dp"
         android:background="@drawable/white_rounded_corners"
         android:clickable="false"
         android:queryHint="Sök efter böcker"
@@ -32,16 +32,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchViewUniBook" />
 
+    <Button
+        android:id="@+id/btnSearchGoToProgram"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@android:color/background_light"
+        android:hint="Välj Program"
+        app:layout_constraintEnd_toStartOf="@+id/btnSearchGoToCourse"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchViewBooks" />
+
+    <Button
+        android:id="@+id/btnSearchGoToCourse"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:background="@android:color/background_light"
+        android:hint="Välj Kurs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnSearchGoToProgram"
+        app:layout_constraintTop_toBottomOf="@+id/searchViewBooks" />
+
     <ListView
         android:id="@+id/listViewAllAds"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.488"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchViewBooks" />
+        app:layout_constraintTop_toBottomOf="@+id/btnSearchGoToProgram" />
 
 
 </android.support.constraint.ConstraintLayout>
