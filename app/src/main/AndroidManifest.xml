@@ -3,6 +3,9 @@
     package="com.example.filip.unibook">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -49,6 +52,9 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
+
+        <activity android:name="com.example.filip.unibook.AndroidDatabaseManager"
+            android:label="@string/app_name"/>
     </application>
 
 

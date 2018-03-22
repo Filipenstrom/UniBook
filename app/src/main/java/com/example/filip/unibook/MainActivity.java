@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
                 if(losenord.equals(pass)){
 
                     Intent loggedIn = new Intent(MainActivity.this, LoggedInActivity.class);
-                    
+
                     //Kör metoden för att spara ner username.
                     saveUserInformation();
                     startActivity(loggedIn);
@@ -54,6 +54,11 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     Toast.makeText(MainActivity.this,"Username och password don't match!", Toast.LENGTH_LONG).show();
                 }
+
+
+                    Intent dbmanager = new Intent(MainActivity.this,AndroidDatabaseManager.class);
+                    startActivity(dbmanager);
+
             }
         });
     }

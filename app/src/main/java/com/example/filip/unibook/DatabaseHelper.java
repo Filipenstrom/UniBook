@@ -3,16 +3,19 @@ package com.example.filip.unibook;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -142,6 +145,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("school", school);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
+
         if (result == -1) {
             return false;
         } else {
@@ -185,26 +189,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ////Hämta all information om en användare, INTE HELT KLAR
     public User getUser(String mail) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select * from users_table where mail = '"+ mail + "'";
+        String query = "SELECT * FROM USERS_TABLE WHERE MAIL = '" + mail + "'";
         Cursor cursor = sq.rawQuery(query, null);
         User userInfo = new User();
 
-        if (cursor.moveToFirst()) {
-            do {
-                userInfo.setId(cursor.getString(0));
-                userInfo.setName(cursor.getString(1));
-                userInfo.setSurname(cursor.getString(2));
-                userInfo.setMail(cursor.getString(3));
-                userInfo.setPic(cursor.getBlob(5));
-                userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getInt(7));
-                userInfo.setSchool(cursor.getString(8));
-            }
-            while (cursor.moveToNext());
+    if (cursor != null && cursor.moveToFirst()) {
+        do {
+            userInfo.setId(cursor.getString(0));
+            userInfo.setName(cursor.getString(1));
+            userInfo.setSurname(cursor.getString(2));
+            userInfo.setMail(cursor.getString(3));
+            userInfo.setPic(cursor.getBlob(5));
+            userInfo.setAdress(cursor.getString(6));
+            userInfo.setPhone(cursor.getInt(7));
+            userInfo.setSchool(cursor.getString(8));
         }
-
-        return userInfo;
+        while (cursor.moveToNext());
     }
+
+    return userInfo;
+ }
 
     //Hämta all information om en användare, INTE HELT KLAR
     public User getUserWithId(int id) {
@@ -440,4 +444,53 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         long result2 = db.insert("courses", null, contentValues2);
         db.close();
     }
+
+
+    public ArrayList<Cursor> getData(String Query){
+        //get writable database
+        SQLiteDatabase sqlDB = this.getWritableDatabase();
+        String[] columns = new String[] { "message" };
+        //an array list of cursor to save two cursors one has results from the query
+        //other cursor stores error message if any errors are triggered
+        ArrayList<Cursor> alc = new ArrayList<Cursor>(2);
+        MatrixCursor Cursor2= new MatrixCursor(columns);
+        alc.add(null);
+        alc.add(null);
+
+        try{
+            String maxQuery = Query ;
+            //execute the query results will be save in Cursor c
+            Cursor c = sqlDB.rawQuery(maxQuery, null);
+
+            //add value to cursor2
+            Cursor2.addRow(new Object[] { "Success" });
+
+            alc.set(1,Cursor2);
+            if (null != c && c.getCount() > 0) {
+
+                alc.set(0,c);
+                c.moveToFirst();
+
+                return alc ;
+            }
+            return alc;
+        }
+       // catch(SQLException sqlEx){
+       //     Log.d("printing exception", sqlEx.getMessage());
+       //     //if any exceptions are triggered save the error message to cursor an return the arraylist
+       //     Cursor2.addRow(new Object[] { ""+sqlEx.getMessage() });
+       //     alc.set(1,Cursor2);
+       //     //throw sqlEx;
+       //     return alc;
+       // }
+        catch(Exception ex){
+            Log.d("printing exception", ex.getMessage());
+
+            //if any exceptions are triggered save the error message to cursor an return the arraylist
+            Cursor2.addRow(new Object[] { ""+ex.getMessage() });
+            alc.set(1,Cursor2);
+            return alc;
+        }
+    }
+
 }
