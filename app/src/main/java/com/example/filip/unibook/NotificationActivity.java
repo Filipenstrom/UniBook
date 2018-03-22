@@ -57,17 +57,18 @@ public class NotificationActivity extends AppCompatActivity {
         List<Program> allprogram = db.getPrograms();
         List<Ad> allads = db.getAllAds("");
 
-        for(int i = 0;i<allprogram.size();i++){
-            if(allprogram.get(i).getName().equals(newNotis.getText().toString().trim())){
+        if(allads != null){
+
+        for(int i = 0;i<allprogram.size();i++) {
+            if (allprogram.get(i).getName().equals(newNotis.getText().toString().trim())) {
                 db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
                 usersNotices();
                 Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
                 break;
-            }
-
-            else if(allprogram.size() == (i+1)){
+            } else if (allprogram.size() == (i + 1)) {
                 Toast.makeText(NotificationActivity.this, "Det finns inget program som heter så.", Toast.LENGTH_LONG).show();
             }
+          }
         }
     }
 
@@ -76,17 +77,18 @@ public class NotificationActivity extends AppCompatActivity {
         List<Course> allcourses = db.getCourses("");
         List<Ad> allads = db.getAllAds("");
 
-        for(int i = 0;i<allcourses.size();i++){
-            if(allcourses.get(i).getName().equals(newNotis.getText().toString().trim())){
+        if(allads != null){
+
+        for(int i = 0;i<allcourses.size();i++) {
+            if (allcourses.get(i).getName().equals(newNotis.getText().toString().trim())) {
                 db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
                 usersNotices();
                 Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
                 break;
-            }
-
-            else if(allcourses.size() == (i+1)){
+            } else if (allcourses.size() == (i + 1)) {
                 Toast.makeText(NotificationActivity.this, "Det finns ingen kurs som heter så.", Toast.LENGTH_LONG).show();
             }
+          }
         }
     }
 

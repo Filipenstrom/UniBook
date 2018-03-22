@@ -303,31 +303,35 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
-        if(inputQuery == "")
-            query = "select title, price, pic, id, description, program, course from ads";
-        else
-            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+        try {
+            if (inputQuery == "")
+                query = "select title, price, pic, id, description, program, course from ads";
+            else
+                query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
 
-        Cursor cursor = sq.rawQuery(query, null);
+            Cursor cursor = sq.rawQuery(query, null);
 
-        List<Ad> adsContent = new ArrayList<Ad>();
+            List<Ad> adsContent = new ArrayList<Ad>();
 
-        if (cursor.moveToFirst())
-        {
-            do {
-                Ad ad = new Ad();
-                ad.setTitle(cursor.getString(0));
-                ad.setPrice(cursor.getString(1));
-                ad.setPic(cursor.getBlob(2));
-                ad.setId(cursor.getString(3));
-                ad.setinfo(cursor.getString(4));
-                ad.setProgram(cursor.getString(5));
-                ad.setCourse(cursor.getString(6));
-                adsContent.add(ad);
+            if (cursor.moveToFirst()) {
+                do {
+                    Ad ad = new Ad();
+                    ad.setTitle(cursor.getString(0));
+                    ad.setPrice(cursor.getString(1));
+                    ad.setPic(cursor.getBlob(2));
+                    ad.setId(cursor.getString(3));
+                    ad.setinfo(cursor.getString(4));
+                    ad.setProgram(cursor.getString(5));
+                    ad.setCourse(cursor.getString(6));
+                    adsContent.add(ad);
+                }
+                while (cursor.moveToNext());
             }
-            while (cursor.moveToNext());
+            return adsContent;
         }
-        return adsContent;
+        catch(Exception e){
+            return null;
+        }
     }
 
     public Ad getAd(int id)
