@@ -33,8 +33,8 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String value = listView.getItemAtPosition(position).toString();
-                TextView txtCourse = (TextView) findViewById(R.id.textViewCourses);
+                TextView txtCourse = (TextView) view.findViewById(R.id.textViewCourses);
+                TextView txtCourseId = view.findViewById(R.id.txtViewCoursesId);
                 if(extras[0].equals("1")) {
                     Intent data = new Intent();
                     data.putExtra("kursNamn", txtCourse.getText().toString());
@@ -42,7 +42,10 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                     finish();
                 } else {
                     Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
-                    intent.putExtra("kursNamn", txtCourse.getText().toString());
+                    String kursId = txtCourseId.getText().toString();
+                    String kursNamn = txtCourse.getText().toString();
+                    String[] myExtras = new String[]{kursId, kursNamn};
+                    intent.putExtra("kursInfoIntent", myExtras);
                     setResult(2, intent);
                     finish();
                 }

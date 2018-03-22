@@ -16,15 +16,17 @@ public class SearchActivity extends AppCompatActivity {
     DatabaseHelper myDb = new DatabaseHelper(this);
     private Button programSearchBtn;
     private Button courseSearchBtn;
+    private String chosenProgram = "";
+    private String chosenCourse = "";
+    private String input = "";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        String fakeInput = "";
-        
-        fillUpAds(fakeInput);
+        fillUpAds(input, chosenProgram, chosenCourse);
 
         courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
@@ -57,16 +59,16 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 SearchView search = findViewById(R.id.searchViewBooks);
-                String input = search.getQuery().toString();
-                fillUpAds(input);
+                input = search.getQuery().toString();
+                fillUpAds(input, chosenProgram, chosenCourse);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 SearchView search = findViewById(R.id.searchViewBooks);
-                String input = search.getQuery().toString();
-                fillUpAds(input);
+                input = search.getQuery().toString();
+                fillUpAds(input, chosenProgram, chosenCourse);
                 return false;
             }
         });
@@ -86,10 +88,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     //Fyller upp listan med annonser baserat på användarens input
-    public void fillUpAds(String input){
+    public void fillUpAds(String query, String chosenProgram, String chosenCourse){
         ListView listView = findViewById(R.id.listViewAllAds);
 
-        List<Ad> annonser = myDb.getAllAds(input);
+        List<Ad> annonser = myDb.getAllAds(query, chosenProgram, chosenCourse );
         int numberOfAds = annonser.size();
         String[] titles = new String[numberOfAds];
         String[] prices = new String[numberOfAds];
@@ -111,10 +113,16 @@ public class SearchActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == 1){
-            programSearchBtn.setText(data.getStringExtra("programNamn"));
+            String programNamn = data.getStringExtra("programNamn");
+            programSearchBtn.setText(programNamn);
+            chosenProgram = programNamn;
+            fillUpAds(input, chosenProgram, chosenCourse);
         }
         if(resultCode == 2){
-            courseSearchBtn.setText(data.getStringExtra("kursNamn"));
+            String kursNamn = data.getStringExtra("kursNamn");
+            courseSearchBtn.setText(kursNamn);
+            chosenCourse = kursNamn;
+            fillUpAds(input, chosenProgram, chosenCourse);
         }
     }
 }

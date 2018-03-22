@@ -34,8 +34,8 @@ public class ListAllProgramsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String value = listView.getItemAtPosition(position).toString();
-                TextView txtProgram = (TextView) findViewById(R.id.txtProgram);
+                TextView txtProgram = (TextView) view.findViewById(R.id.txtProgram);
+                TextView txtProgramId = view.findViewById(R.id.txtProgramId);
                 if(activityCode ==  1) {
                     Intent data = new Intent();
                     String programNamn = txtProgram.getText().toString();
@@ -44,7 +44,11 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                     finish();
                 }else {
                     Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
-                    intent.putExtra("programNamn", txtProgram.getText().toString());
+                    String programId = txtProgramId.getText().toString();
+                    String program = txtProgram.getText().toString();
+                    String[] myExtras = new String[]{programId, program};
+                    intent.putExtra("programInfoIntent", myExtras);
+
                     startActivity(intent);
                 }
             }

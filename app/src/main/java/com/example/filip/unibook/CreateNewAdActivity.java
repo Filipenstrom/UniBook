@@ -30,7 +30,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
     Uri imageUri;
     ListView listView;
     byte[] bytes = null;
-
+    String[] programInfo;
+    String[] kursInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,11 +78,12 @@ public class CreateNewAdActivity extends AppCompatActivity {
          });
 
         Intent intent = getIntent();
-        String programNamn = intent.getStringExtra("programNamn");
+        programInfo  = intent.getStringArrayExtra("programInfoIntent");
         TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
-        txtProgram.setText(programNamn);
-        txtProgram.setVisibility(View.VISIBLE);
-
+        if(programInfo != null){
+            txtProgram.setText(programInfo[1]);
+            txtProgram.setVisibility(View.VISIBLE);
+        }
         createAd();
     }
 
@@ -100,6 +102,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 TextView program = (TextView) findViewById(R.id.txtViewProgram);
                 String bokTillhorProgram = program.getText().toString();
                 String bokTillhorKurs = kurs.getText().toString();
+                String bokTillhorProgramId = programInfo[0];
+                String boktillhorKursId = kursInfo[0];
 
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
@@ -108,7 +112,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
                     Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes, bokTillhorProgramId, boktillhorKursId);
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
@@ -144,7 +148,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
 
         if(resultCode == 2){
-            kurs.setText(data.getStringExtra("kursNamn"));
+            kursInfo = data.getStringArrayExtra("kursInfoIntent");
+            kurs.setText(kursInfo[1]);
             kurs.setVisibility(View.VISIBLE);
         }
     }

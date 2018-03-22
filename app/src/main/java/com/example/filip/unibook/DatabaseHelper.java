@@ -45,7 +45,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE VARCHAR, SCHOOL TEXT)");
-        db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
+        db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, PROGRAMID INTEGER, COURSEID INTEGER,  FOREIGN KEY (USERID) REFERENCES users_table(ID), FOREIGN KEY (PROGRAMID) REFERENCES program(ID), FOREIGN KEY (COURSEID) REFERENCES courses(ID))");
         //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));"
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
         db.execSQL("create table " + TABLE_REPORTS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, ADTITLE TEXT, AUTHORNAME TEXT, AUTHORMAIL TEXT, MESSAGE TEXT, AUTHORID INTEGER, ADID INTEGER, FOREIGN KEY(ADID) REFERENCES ads(ID), FOREIGN KEY(AUTHORID) REFERENCES users_table(ID))");
@@ -222,7 +222,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Metod som skapar en annons för den inloggade användaren
-    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
+    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes, String programId, String courseId) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("TITLE", titel);
@@ -233,6 +233,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("COURSE", kurs);
         contentValues.put("USERID", userid);
         contentValues.put("PIC", imageBytes);
+        contentValues.put("PROGRAMID", programId);
+        contentValues.put("COURSEID", courseId);
         long result = db.insert(TABLE_ADS, null, contentValues);
         db.close();
 
@@ -290,14 +292,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_ADS,"id="+id, null);
     }
   
-    public List<Ad> getAllAds(String inputQuery) {
+    public List<Ad> getAllAds(String inputQuery, String chosenProgram, String chosenCourse) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
-        if(inputQuery == "")
-            query = "select title, price, pic, id, description, program, course from ads";
-        else
-            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+        if(inputQuery.equals("") && chosenProgram.equals("") && chosenCourse.equals("")){
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads";
+        } else if(chosenProgram.equals("")) {
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads where title like '%" + inputQuery + "%'";
+        }else if(chosenCourse.equals("")){
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "'";
+        }
+        else{
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%in%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
+        }
+
 
         Cursor cursor = sq.rawQuery(query, null);
 
@@ -352,8 +366,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", "Systemvetenskap");
         contentValues.put("programcode", "ik");
+        ContentValues contentValues1 = new ContentValues();
+        contentValues1.put("name", "Ekonomi");
+        contentValues1.put("programcode", "ik");
 
-        long result = db.insert("program", null, contentValues);
+        db.insert("program", null, contentValues1);
+        db.insert("program", null, contentValues);
         db.close();
     }
 
@@ -380,7 +398,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Course> getCourses(String programNamn){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        String query = "select courses.name, courses.id from courses join program on programid = program.id where program.name = '" + programNamn + "'";
         Cursor cursor = db.rawQuery(query, null);
 
         List<Course> courses = new ArrayList<Course>();
@@ -389,8 +407,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Course course = new Course();
                 course.setName(cursor.getString(0));
+                String id = Integer.toString(cursor.getInt(1));
+                course.setId(id);
                 courses.add(course);
-
             }
             while(cursor.moveToNext());
         }
@@ -406,7 +425,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("coursecode", "22");
         contentValues.put("programid", "1");
 
-        long result = db.insert("courses", null, contentValues);
+        ContentValues contentValues1 = new ContentValues();
+        contentValues1.put("name", "Redovisning A");
+        contentValues1.put("description", "kuken");
+        contentValues1.put("coursecode", "11");
+        contentValues1.put("programid", "2");
+
+        db.insert("courses", null, contentValues);
+        db.insert("courses", null, contentValues1);
         db.close();
     }
 }
