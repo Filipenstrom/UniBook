@@ -307,14 +307,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
-        try {
+
             if (inputQuery == "")
                 query = "select title, price, pic, id, description, program, course from ads";
             else
                 query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
 
             Cursor cursor = sq.rawQuery(query, null);
-
             List<Ad> adsContent = new ArrayList<Ad>();
 
             if (cursor.moveToFirst()) {
@@ -332,10 +331,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 while (cursor.moveToNext());
             }
             return adsContent;
-        }
-        catch(Exception e){
-            return null;
-        }
     }
 
     public Ad getAd(int id)

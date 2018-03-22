@@ -80,9 +80,11 @@ public class MyService extends Service {
                             //Ändra notiscounter på rätt notis.
                             if(notis.get(i2).equals(program)) {
                                 db.setNotisCounter(ad.getProgram(), ads.size());
+                                break;
                             }
                             else if(notis.get(i2).equals(course)){
                                 db.setNotisCounter(ad.getCourse(), ads.size());
+                                break;
                             }
                         }
                         //Om boken inte matchar notisen gå vidare till nästa bok.

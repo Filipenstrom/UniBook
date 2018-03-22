@@ -77,7 +77,7 @@ public class NotificationActivity extends AppCompatActivity {
         List<Course> allcourses = db.getCourses("");
         List<Ad> allads = db.getAllAds("");
 
-        if(allads != null){
+
 
         for(int i = 0;i<allcourses.size();i++) {
             if (allcourses.get(i).getName().equals(newNotis.getText().toString().trim())) {
@@ -89,7 +89,7 @@ public class NotificationActivity extends AppCompatActivity {
                 Toast.makeText(NotificationActivity.this, "Det finns ingen kurs som heter så.", Toast.LENGTH_LONG).show();
             }
           }
-        }
+
     }
 
     //Lista redan sparade notiser som användaren har gjort.
