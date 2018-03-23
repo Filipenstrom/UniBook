@@ -73,7 +73,7 @@ public class MyService extends Service {
                         String program = ad.getProgram();
                         String course = ad.getCourse();
                         //Om notisen matchar ett program på en ny bok, visa notis.
-                        if (notis.get(i2).equals(program) || notis.get(i2).equals(course)) {
+                        if (notis.get(i2).trim().equals(program) || notis.get(i2).trim().equals(course)) {
                             Notification notification = new Notification(this, program + " i kursen " + course, "Tryck för att öppna UniBook");
                             notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
 
@@ -93,6 +93,7 @@ public class MyService extends Service {
                             db.setNotisCounter(notis.get(i2), counter);
                         }
                     }
+                    break;
                 }
             }
         } catch (Exception e) {
