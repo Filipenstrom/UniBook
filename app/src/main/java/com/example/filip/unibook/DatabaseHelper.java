@@ -309,7 +309,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
         else{
             query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
-                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%in%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
         }
 
 

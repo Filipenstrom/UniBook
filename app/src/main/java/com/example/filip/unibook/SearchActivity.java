@@ -16,10 +16,10 @@ public class SearchActivity extends AppCompatActivity {
     DatabaseHelper myDb = new DatabaseHelper(this);
     private Button programSearchBtn;
     private Button courseSearchBtn;
+    private SearchView searchView;
     private String chosenProgram = "";
     private String chosenCourse = "";
     private String input = "";
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +31,8 @@ public class SearchActivity extends AppCompatActivity {
         courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
         programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
+
+        searchView = findViewById(R.id.searchViewBooks);
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -46,28 +48,29 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(SearchActivity.this, ListAllCoursesFromProgramActivity.class);
                 String programNamn = programSearchBtn.getText().toString();
+                if(programNamn.equals("")){
 
-                String[] myExtras = new String[]{"1", programNamn};
-                intent.putExtra("extras", myExtras);
-                startActivityForResult(intent, 1);
+                    Toast.makeText(SearchActivity.this, "Du måste först välja ett program innan du väljer kurs", Toast.LENGTH_SHORT).show();
+                }else {
+
+                    String[] myExtras = new String[]{"1", programNamn};
+                    intent.putExtra("extras", myExtras);
+                    startActivityForResult(intent, 1);
+                }
             }
         });
 
-        SearchView search = findViewById(R.id.searchViewBooks);
-
-        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                SearchView search = findViewById(R.id.searchViewBooks);
-                input = search.getQuery().toString();
+                input = searchView.getQuery().toString();
                 fillUpAds(input, chosenProgram, chosenCourse);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                SearchView search = findViewById(R.id.searchViewBooks);
-                input = search.getQuery().toString();
+                input = searchView.getQuery().toString();
                 fillUpAds(input, chosenProgram, chosenCourse);
                 return false;
             }
@@ -113,12 +116,16 @@ public class SearchActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
 
         if(resultCode == 1){
+
             String programNamn = data.getStringExtra("programNamn");
             programSearchBtn.setText(programNamn);
+            courseSearchBtn.setText("");
+            chosenCourse = "";
             chosenProgram = programNamn;
             fillUpAds(input, chosenProgram, chosenCourse);
         }
         if(resultCode == 2){
+            
             String kursNamn = data.getStringExtra("kursNamn");
             courseSearchBtn.setText(kursNamn);
             chosenCourse = kursNamn;
