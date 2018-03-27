@@ -1,10 +1,10 @@
 package com.example.filip.unibook;
 
 /**
- * Created by Ludvig on 2018-03-13.
+ * Created by marku on 2018-03-27.
  */
 
-public class User {
+public class Balle {
     private String id;
     private String name;
     private String surname;
@@ -14,8 +14,14 @@ public class User {
     private String phone;
     private String school;
 
-    public User() {
-
+    public Balle(String id, String name, String surname, String mail, String adress, String phone, String school) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.mail = mail;
+        this.adress = adress;
+        this.phone = phone;
+        this.school = school;
     }
 
     public String getId()

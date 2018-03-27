@@ -3,6 +3,8 @@
     package="com.example.filip.unibook">
 
     <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
 
 
     <application

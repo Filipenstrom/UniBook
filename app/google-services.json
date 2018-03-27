@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "76158814814",
+    "firebase_url": "https://unibook-41e0f.firebaseio.com",
+    "project_id": "unibook-41e0f",
+    "storage_bucket": "unibook-41e0f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76158814814:android:eb7370a361fa8fca",
+        "android_client_info": {
+          "package_name": "com.example.filip.unibook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "76158814814-qv07j99eap3nk61vo5jq1tf0b387jgc3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYb98eBROjQ2SV5j0EMTvZAeyv8pOm9Os"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

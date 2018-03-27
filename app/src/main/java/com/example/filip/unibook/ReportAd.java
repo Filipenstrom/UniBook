@@ -9,12 +9,31 @@ import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class ReportAd extends AppCompatActivity {
+
+    private TextView adTitle;
+    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+    private DatabaseReference mRootReference = firebaseDatabase.getReference();
+    private DatabaseReference mChildReference = mRootReference.child("users");
+    private DatabaseReference mittBarn = mRootReference.child("users").child("1").child("adress");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_ad);
+
+        writeUserData();
+
+        adTitle = findViewById(R.id.txtAdTitle);
 
         final DatabaseHelper db = new DatabaseHelper(this);
 
@@ -53,6 +72,36 @@ public class ReportAd extends AppCompatActivity {
                 else {
                     Toast.makeText(ReportAd.this, "Något gick fel", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+    }
+
+    public void writeUserData() {
+
+        //Balle bajs = new Balle();
+//
+        //mChildReference.child("7").setValue(bajs);
+        //mChildReference.push().setValue(bajs);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        mittBarn.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                String message = "";
+
+                message = dataSnapshot.getValue(String.class);
+
+                adTitle.setText(message);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
             }
         });
     }

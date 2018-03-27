@@ -125,7 +125,7 @@ public class SearchActivity extends AppCompatActivity {
             fillUpAds(input, chosenProgram, chosenCourse);
         }
         if(resultCode == 2){
-            
+
             String kursNamn = data.getStringExtra("kursNamn");
             courseSearchBtn.setText(kursNamn);
             chosenCourse = kursNamn;

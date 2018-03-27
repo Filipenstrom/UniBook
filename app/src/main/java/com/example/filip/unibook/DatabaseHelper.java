@@ -10,6 +10,10 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.widget.ImageView;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
@@ -138,6 +142,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         } else {
             return true;
         }
+    }
+
+    //Metod som lägger in användare i databasen
+    public void insertUserTest(String name, String surname, String mail, String password, byte[] imageBytes, String adress, String phone, String school) {
+
+
     }
 
     public void updateUser(String id, String name, String surname, String mail, byte[] bytes){
