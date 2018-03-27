@@ -9,6 +9,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 public class MainActivity extends AppCompatActivity {
 
     DatabaseHelper myDb;
@@ -17,12 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         myDb = new DatabaseHelper(this);
 
-
-        //EditText username = (EditText) findViewById(R.id.editTxtUsername);
-        //EditText password = (EditText) findViewById(R.id.editTxtPassword);
         Button login = (Button) findViewById(R.id.loginBtn);
         Button registerBtn = (Button) findViewById(R.id.registreraBtn);
 
@@ -54,11 +52,6 @@ public class MainActivity extends AppCompatActivity {
                 else {
                     Toast.makeText(MainActivity.this,"Username och password don't match!", Toast.LENGTH_LONG).show();
                 }
-
-
-                    Intent dbmanager = new Intent(MainActivity.this,AndroidDatabaseManager.class);
-                    startActivity(dbmanager);
-
             }
         });
     }
