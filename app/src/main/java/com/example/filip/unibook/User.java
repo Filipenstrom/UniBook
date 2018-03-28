@@ -14,8 +14,6 @@ public class User {
     private int phone;
     private String school;
 
-    public User(){}
-
     public String getId()
     {
         return this.id;

@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -12,6 +13,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.io.ByteArrayOutputStream;
 
@@ -24,11 +30,16 @@ public class RegisterActivity extends AppCompatActivity {
     ImageView imageView;
     Button button;
     byte[] bytes = null;
+    //FirebaseAuth firebaseAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+
+        //Firebase code!!!
+        //firebaseAuth = FirebaseAuth.getInstance();
+        //Firebase firebase = new Firebase();
 
         myDb = new DatabaseHelper(this);
 
@@ -50,6 +61,14 @@ public class RegisterActivity extends AppCompatActivity {
         });
 
         register();
+
+     //  Button registerBtn = (Button) findViewById(R.id.registerBtn);
+     //  registerBtn.setOnClickListener(new View.OnClickListener() {
+     //      @Override
+     //      public void onClick(View view) {
+     //          firebaseReg();
+     //      }
+     //  });
     }
 
     //Metod för att registrera sig som användare
@@ -72,11 +91,13 @@ public class RegisterActivity extends AppCompatActivity {
                 if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || pass.trim().equals("") || bytes == null || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
                     Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
-                else{
+                else {
                     boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes, adress, Integer.parseInt(phone), school);
+
 
                     if (isInserted == true) {
                         Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                        saveUserInformation();
                         startActivity(intent);
                         myDb.createProgram();
                         myDb.createCourse();
@@ -88,6 +109,24 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
     }
+
+  // public void firebaseReg(){
+  //     String email = editEmail.getText().toString();
+  //     String pass = editPassword.getText().toString();
+  //     //Firebase code!!
+  //     firebaseAuth.createUserWithEmailAndPassword(email, pass)
+  //             .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+  //                 @Override
+  //                 public void onComplete(@NonNull Task<AuthResult> task) {
+  //                     if(task.isSuccessful()){
+  //                         Toast.makeText(RegisterActivity.this, "Det fungerade!", Toast.LENGTH_LONG).show();
+  //                     }else{
+  //                         Toast.makeText(RegisterActivity.this, "Det fungerade inte!", Toast.LENGTH_LONG).show();
+  //                     }
+
+  //                 }
+  //             });
+  // }
 
         //Metod för att välja profilbild
         public void choseImg(){
@@ -112,5 +151,12 @@ public class RegisterActivity extends AppCompatActivity {
             }
         }
 
+    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
+    public void saveUserInformation(){
+        EditText username = findViewById(R.id.editTxtMail);
+        SharedPreferences sp = new SharedPreferences(this);
+        sp.setusername(username.getText().toString());
     }
+
+}
 

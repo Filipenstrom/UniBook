@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.app.Activity;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -21,13 +22,25 @@ public final class Notification{
     public NotificationManagerCompat notificationManagerCompat;
 
 
-    public Notification(Context c) {
+    public Notification(Context c, String program, String text) {
         context = c;
+
+        //Intent för att öppna UniBook om man trycker på notifikationen.
+        Intent notifyIntent = new Intent(context, MainActivity.class);
+        notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        PendingIntent notifyPendingIntent = PendingIntent.getActivity(
+                context, 0, notifyIntent, PendingIntent.FLAG_UPDATE_CURRENT
+        );
+
         setChannel(c);
+
+        //Bygger notifikationen
         mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.schjool)
-                .setContentTitle("En bok du lagt till i favoriter finns nu att köpa.")
-                .setContentText("Databasteknik av Johan Lindhal")
+                .setContentTitle("En bok för programmet " + program + " har lagts till.")
+                .setContentText(text)
+                .setContentIntent(notifyPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         notificationManagerCompat = NotificationManagerCompat.from(context);
@@ -36,7 +49,7 @@ public final class Notification{
     public void setChannel(Context c){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "UniBook";
-            String description = "Favoriserad bok har lagts upp";
+            String description = "Bok har lagts upp";
             //int importance = NotificationManagerCompat.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription(description);
