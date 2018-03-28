@@ -27,8 +27,7 @@ import java.io.ByteArrayOutputStream;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    DatabaseHelper myDb;
+    private FirebaseAuth mAuth;
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     private static final int PICK_IMAGE = 100;
     Uri imageUri;
@@ -41,17 +40,16 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        myDb = new DatabaseHelper(this);
-
-        editName = (EditText) findViewById(R.id.editTxtName);
-        editSurname = (EditText) findViewById(R.id.editTxtSurname);
-        editEmail = (EditText) findViewById(R.id.editTxtMail);
-        editPassword = (EditText) findViewById(R.id.editTxtPass);
-        button = (Button) findViewById(R.id.btnImage);
-        imageView = (ImageView) findViewById(R.id.ivProfile);
+        editName = findViewById(R.id.editTxtName);
+        editSurname = findViewById(R.id.editTxtSurname);
+        editEmail = findViewById(R.id.editTxtMail);
+        editPassword = findViewById(R.id.editTxtPass);
+        button = findViewById(R.id.btnImage);
+        imageView = findViewById(R.id.ivProfile);
         editAdress = findViewById(R.id.edittxtAdress);
         editPhone = findViewById(R.id.edittxtPhone);
         editSchool = findViewById(R.id.edittxtSchool);
+        mAuth = FirebaseAuth.getInstance();
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,20 +58,19 @@ public class RegisterActivity extends AppCompatActivity {
             }
         });
         register();
-        //register();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
     }
 
     public void register(){
 
-        Button registerBtn = (Button) findViewById(R.id.registerBtn);
+        Button registerBtn = findViewById(R.id.registerBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,77 +88,60 @@ public class RegisterActivity extends AppCompatActivity {
         final String phone = editPhone.getText().toString();
         final String school = editSchool.getText().toString();
 
+        if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || password.trim().equals("") || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
 
+            Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
+        }else {
 
+            mAuth.createUserWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("message", "createUserWithEmail:success");
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            //Log.d(TAG, "createUserWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                FirebaseHelper helper = new FirebaseHelper();
 
-                            FirebaseUser user = mAuth.getCurrentUser();
+                                helper.insertUser(user.getUid().toString(), namn, surname, email, adress, phone, school );
 
-                            FirebaseHelper helper = new FirebaseHelper();
+                                Toast.makeText(RegisterActivity.this, "Registrering lyckades",
+                                        Toast.LENGTH_SHORT).show();
 
-                            helper.insertUser(user.getUid().toString(), namn, surname, email, adress, phone, school );
+                                Intent logInIntent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                                startActivity(logInIntent);
+                            } else {
 
-                            Toast.makeText(RegisterActivity.this, user.getUid().toString(),
-                                    Toast.LENGTH_SHORT).show();
+                                Log.w("Exception", "createUserWithEmail:failure", task.getException());
 
-                            //updateUI(user);
-                        } else {
-                            // If sign in fails, display a message to the user.
-                            //Log.w(TAG, "createUserWithEmail:failure", task.getException());
-                            Toast.makeText(RegisterActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
+                                if(task.getException().getMessage().equals("The email address is badly formatted.")) {
+
+                                    //Om emailen redan existerar i databasem, visa meddelande för användaren.
+                                    Toast.makeText(RegisterActivity.this, "Det måste vara en giltig e-mail adress",
+                                            Toast.LENGTH_LONG).show();
+                                }else if(task.getException().getMessage().equals("The email address is already in use by another account.")) {
+
+                                    //Om emailen redan existerar i databasem, visa meddelande för användaren.
+                                    Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad",
+                                            Toast.LENGTH_LONG).show();
+                                }else if(task.getException().getMessage().equals("The given password is invalid. [ Password should be at least 6 characters ]")) {
+
+                                    //Om inloggning misslyckas av andra skäl, visa meddelande för användaren.
+                                    Toast.makeText(RegisterActivity.this, "Lösenordet måste vara minst 6 tecken.",
+                                            Toast.LENGTH_SHORT).show();
+                                }else {
+
+                                    //Om inloggning misslyckas av andra skäl, visa meddelande för användaren.
+                                    Toast.makeText(RegisterActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
+
+                            }
                         }
-
-                        // ...
-                    }
-                });
+                    });
+        }
     }
-
-    ////Metod för att registrera sig som användare
-    //public void register() {
-//
-    //    Button registerBtn = (Button) findViewById(R.id.registerBtn);
-    //    registerBtn.setOnClickListener(new View.OnClickListener() {
-    //        @Override
-    //        public void onClick(View v) {
-//
-    //            String namn = editName.getText().toString();
-    //            String surname = editSurname.getText().toString();
-    //            String email = editEmail.getText().toString();
-    //            String pass = editPassword.getText().toString();
-    //            String adress = editAdress.getText().toString();
-    //            String phone = editPhone.getText().toString();
-    //            String school = editSchool.getText().toString();
-//
-//
-    //            if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || pass.trim().equals("") || bytes == null || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
-    //                Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
-    //            }
-    //            else{
-    //                boolean isInserted = myDb.insertUser(namn, surname, email, pass, bytes, adress, phone, school);
-//
-    //                if (isInserted == true) {
-    //                    saveUserInformation();
-    //                    Intent intent = new Intent(RegisterActivity.this, LoggedInActivity.class);
-    //                    startActivity(intent);
-    //                    myDb.createProgram();
-    //                    myDb.createCourse();
-    //                }
-    //                else {
-    //                    Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad", Toast.LENGTH_LONG).show();
-    //                }
-    //            }
-    //        }
-    //    });
-    //}
 
     //Metod för att välja profilbild
     public void choseImg(){
@@ -182,13 +162,6 @@ public class RegisterActivity extends AppCompatActivity {
             byte[] imageInByte = baos.toByteArray();
             bytes = imageInByte;
         }
-    }
-
-    //Kod för att spara ner username så man kan nå det i alla aktiviteter.
-    public void saveUserInformation(){
-        EditText username = (EditText) findViewById(R.id.editTxtMail);
-        SharedPreferences sp = new SharedPreferences(this);
-        sp.setusername(username.getText().toString());
     }
 }
 

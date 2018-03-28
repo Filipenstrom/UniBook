@@ -23,7 +23,5 @@ public class FirebaseHelper {
 
         mChildReference.child(id).setValue(balle);
     }
-
-
 }
 

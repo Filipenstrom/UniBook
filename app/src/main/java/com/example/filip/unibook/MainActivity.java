@@ -1,6 +1,5 @@
 package com.example.filip.unibook;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -10,7 +9,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -57,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("message", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
@@ -65,13 +64,12 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(logInIntent);
                             //updateUI(user);
                         } else {
+
                             // If sign in fails, display a message to the user.
                             Log.w("message", "signInWithEmail:failure", task.getException());
                             Toast.makeText(MainActivity.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            //updateUI(null);
                         }
-                        // ...
                     }
                 });
     }
@@ -82,6 +80,5 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        //updateUI(currentUser);
     }
 }
