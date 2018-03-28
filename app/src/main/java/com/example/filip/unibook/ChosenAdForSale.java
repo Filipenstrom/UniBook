@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Button;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -25,6 +26,8 @@ public class ChosenAdForSale extends AppCompatActivity {
     TextView seller;
     User user;
     TextView chosenAdId;
+    Button favoriteBtn;
+    Context context;
     final DatabaseHelper db = new DatabaseHelper(this);
 
     @Override
@@ -40,6 +43,8 @@ public class ChosenAdForSale extends AppCompatActivity {
         pic = findViewById(R.id.chosenAdImg);
         seller = findViewById(R.id.chosenAdSellerName);
         chosenAdId = findViewById(R.id.txtChosenAdForSale);
+        favoriteBtn = findViewById(R.id.btnAddToFavorites);
+        context = this;
 
         Intent intent = getIntent();
         int id = intent.getIntExtra("id", -1);
@@ -62,7 +67,58 @@ public class ChosenAdForSale extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        favoriteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences prefs = new SharedPreferences(context);
+                User inloggadAnv = db.getUser(prefs.getusername());
+                String knappText = favoriteBtn.getText().toString();
+                // String userid = Integer.toString(id);
+                String adId = chosenAd.getId();
+                String anvandare = inloggadAnv.getId();
+
+                if(knappText.equals("LÄGG TILL SOM FAVORIT"))
+                {
+                    db.addFavorite(adId, anvandare);
+                    Toast.makeText(ChosenAdForSale.this,"Tillagd i favoriter!", Toast.LENGTH_LONG).show();
+                    favoriteBtn.setText("TA BORT SOM FAVORIT");
+                }
+
+                else {
+                    //db.deleteFavorite(adId,anvandare);
+                    Toast.makeText(ChosenAdForSale.this,"Borttagen från favoriter!", Toast.LENGTH_LONG).show();
+                    favoriteBtn.setText("LÄGG TILL SOM FAVORIT");
+                }
+            }
+        });
+
+        //canAddToFavorite();
     }
+
+    /*public void canAddToFavorite(){
+        SharedPreferences prefs = new SharedPreferences(context);
+        User anvandare = db.getUser(prefs.getusername());
+        List<Ad> annonser = db.getMyFavoriteAds(anvandare.getId());
+        String adId = chosenAd.getId();
+        String annonsAnvId = Integer.toString(chosenAd.getUserId());
+
+        for (int i = 0; i < annonser.size(); i++) {
+            Ad annons = annonser.get(i);
+            if(annonsAnvId.equals(anvandare.getId())){
+                favoriteBtn.setVisibility(View.INVISIBLE);
+            }
+            else if(annons.getId().equals(adId)){
+
+                favoriteBtn.setText("TA BORT SOM FAVORIT");
+                break;
+            }
+            else {
+                favoriteBtn.setText("LÄGG TILL SOM FAVORIT");
+
+            }
+        }
+    }*/
 
         //Hämtar data om den valda annonsen från listan.
     public void fillAdInformation(){
