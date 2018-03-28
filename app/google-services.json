@@ -1,35 +1,27 @@
 {
   "project_info": {
-    "project_number": "378759273182",
-    "firebase_url": "https://unibookdb.firebaseio.com",
-    "project_id": "unibookdb",
-    "storage_bucket": "unibookdb.appspot.com"
+    "project_number": "76158814814",
+    "firebase_url": "https://unibook-41e0f.firebaseio.com",
+    "project_id": "unibook-41e0f",
+    "storage_bucket": "unibook-41e0f.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:378759273182:android:eb7370a361fa8fca",
+        "mobilesdk_app_id": "1:76158814814:android:eb7370a361fa8fca",
         "android_client_info": {
           "package_name": "com.example.filip.unibook"
         }
       },
       "oauth_client": [
         {
-          "client_id": "378759273182-a5k7j1hmsv05ifbvm47mfn2vrntojvo0.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.filip.unibook",
-            "certificate_hash": "b7d6db186c3e3cae0ee32d7e20c9b1a8fc410e6f"
-          }
-        },
-        {
-          "client_id": "378759273182-6l7bfqpu10k42aatptv9hrustsslpn8u.apps.googleusercontent.com",
+          "client_id": "76158814814-qv07j99eap3nk61vo5jq1tf0b387jgc3.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyA7PfUz-WHe8Rk_ctNlz1RG0F5UfBAKf6g"
+          "current_key": "AIzaSyDYb98eBROjQ2SV5j0EMTvZAeyv8pOm9Os"
         }
       ],
       "services": {
@@ -37,13 +29,8 @@
           "status": 1
         },
         "appinvite_service": {
-          "status": 2,
-          "other_platform_oauth_client": [
-            {
-              "client_id": "378759273182-6l7bfqpu10k42aatptv9hrustsslpn8u.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 2
