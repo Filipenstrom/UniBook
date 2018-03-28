@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.filip.unibook">
 
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
 
     <application
@@ -17,12 +17,12 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity android:name=".RegisterActivity" />
-        <activity android:name=".LoggedInActivity"
-            android:screenOrientation="portrait"/>
+        <activity android:name=".LoggedInActivity" />
         <activity android:name=".ProfilePageActivity" />
         <activity android:name=".CreateNewAdActivity" />
         <activity android:name=".MyAdsActivity" />
@@ -36,6 +36,24 @@
         <activity android:name=".ChosenAdForSale" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".ListAllCoursesFromProgramActivity"></activity>
+
+        <service android:name="com.example.filip.unibook.MyService">
+            <intent-filter>
+                <action android:name="com.example.filip.unibook" />
+            </intent-filter>
+        </service>
+
+        <receiver
+            android:name="com.example.filip.unibook.BootReceiver"
+            android:enabled="true"
+            android:exported="true"
+            android:label="BootReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
+
 
 </manifest>

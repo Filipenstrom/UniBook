@@ -14,64 +14,32 @@ import android.widget.*;
 public class SearchActivity extends AppCompatActivity {
 
     DatabaseHelper myDb = new DatabaseHelper(this);
-    private Button programSearchBtn;
-    private Button courseSearchBtn;
-    private SearchView searchView;
-    private String chosenProgram = "";
-    private String chosenCourse = "";
-    private String input = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
-        fillUpAds(input, chosenProgram, chosenCourse);
+        String fakeInput = "";
+        
+        fillUpAds(fakeInput);
 
-        courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
+        SearchView search = findViewById(R.id.searchViewBooks);
 
-        programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
-
-        searchView = findViewById(R.id.searchViewBooks);
-
-        programSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SearchActivity.this, ListAllProgramsActivity.class);
-                intent.putExtra("activityCode", 1);
-                startActivityForResult(intent, 1);
-            }
-        });
-
-        courseSearchBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SearchActivity.this, ListAllCoursesFromProgramActivity.class);
-                String programNamn = programSearchBtn.getText().toString();
-                if(programNamn.equals("")){
-
-                    Toast.makeText(SearchActivity.this, "Du måste först välja ett program innan du väljer kurs", Toast.LENGTH_SHORT).show();
-                }else {
-
-                    String[] myExtras = new String[]{"1", programNamn};
-                    intent.putExtra("extras", myExtras);
-                    startActivityForResult(intent, 1);
-                }
-            }
-        });
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                input = searchView.getQuery().toString();
-                fillUpAds(input, chosenProgram, chosenCourse);
+                SearchView search = findViewById(R.id.searchViewBooks);
+                String input = search.getQuery().toString();
+                fillUpAds(input);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                input = searchView.getQuery().toString();
-                fillUpAds(input, chosenProgram, chosenCourse);
+                SearchView search = findViewById(R.id.searchViewBooks);
+                String input = search.getQuery().toString();
+                fillUpAds(input);
                 return false;
             }
         });
@@ -91,10 +59,10 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     //Fyller upp listan med annonser baserat på användarens input
-    public void fillUpAds(String query, String chosenProgram, String chosenCourse){
+    public void fillUpAds(String input){
         ListView listView = findViewById(R.id.listViewAllAds);
 
-        List<Ad> annonser = myDb.getAllAds(query, chosenProgram, chosenCourse );
+        List<Ad> annonser = myDb.getAllAds(input);
         int numberOfAds = annonser.size();
         String[] titles = new String[numberOfAds];
         String[] prices = new String[numberOfAds];
@@ -109,27 +77,5 @@ public class SearchActivity extends AppCompatActivity {
          }
         ItemAdapter itemAdapter = new ItemAdapter(this, titles, prices, bytes, ids);
         listView.setAdapter(itemAdapter);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if(resultCode == 1){
-
-            String programNamn = data.getStringExtra("programNamn");
-            programSearchBtn.setText(programNamn);
-            courseSearchBtn.setText("");
-            chosenCourse = "";
-            chosenProgram = programNamn;
-            fillUpAds(input, chosenProgram, chosenCourse);
-        }
-        if(resultCode == 2){
-
-            String kursNamn = data.getStringExtra("kursNamn");
-            courseSearchBtn.setText(kursNamn);
-            chosenCourse = kursNamn;
-            fillUpAds(input, chosenProgram, chosenCourse);
-        }
     }
 }

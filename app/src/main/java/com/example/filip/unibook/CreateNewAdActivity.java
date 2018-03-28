@@ -30,8 +30,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
     Uri imageUri;
     ListView listView;
     byte[] bytes = null;
-    String[] programInfo;
-    String[] kursInfo;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,22 +67,24 @@ public class CreateNewAdActivity extends AppCompatActivity {
          listCourseBtn.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
-                 String programNamn = program.getText().toString();
-                 String[] myExtras = new String[]{"0", programNamn};
-
                  Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
-                 intent.putExtra("extras", myExtras);
+                 intent.putExtra("programNamn", program.getText().toString());
                  startActivityForResult(intent, 2);
              }
          });
 
         Intent intent = getIntent();
-        programInfo  = intent.getStringArrayExtra("programInfoIntent");
+        String programNamn = intent.getStringExtra("programNamn");
         TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
-        if(programInfo != null){
-            txtProgram.setText(programInfo[1]);
-            txtProgram.setVisibility(View.VISIBLE);
-        }
+        txtProgram.setText(programNamn);
+        txtProgram.setVisibility(View.VISIBLE);
+
+        Intent kursIntent = getIntent();
+        String kursNamn = kursIntent.getStringExtra("kursNamn");
+        TextView txtKurs = (TextView) findViewById(R.id.textViewCourses) ;
+        txtKurs.setText(kursNamn);
+        txtKurs.setVisibility(View.VISIBLE);
+
         createAd();
     }
 
@@ -102,8 +103,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 TextView program = (TextView) findViewById(R.id.txtViewProgram);
                 String bokTillhorProgram = program.getText().toString();
                 String bokTillhorKurs = kurs.getText().toString();
-                String bokTillhorProgramId = programInfo[0];
-                String boktillhorKursId = kursInfo[0];
 
                 SharedPreferences prefs = new SharedPreferences(context);
                 User id = myDb.getUser(prefs.getusername());
@@ -112,7 +111,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
                     Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
                 }
                 else{
-                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes, bokTillhorProgramId, boktillhorKursId);
+                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
 
                     if(isInserted == true){
                         Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
@@ -148,9 +147,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
 
         if(resultCode == 2){
-            kursInfo = data.getStringArrayExtra("kursInfoIntent");
-            kurs.setText(kursInfo[1]);
-            kurs.setVisibility(View.VISIBLE);
+            kurs.setText(data.getStringExtra("kursNamn"));
         }
     }
 }

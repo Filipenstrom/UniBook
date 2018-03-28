@@ -3,20 +3,19 @@ package com.example.filip.unibook;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
-
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,20 +41,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_REPORTS = "reports";
 
 
+
     public DatabaseHelper(Context context) {
         super(context, DATABASE_NAME, null, 1);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE VARCHAR, SCHOOL TEXT)");
-        db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, PROGRAMID INTEGER, COURSEID INTEGER,  FOREIGN KEY (USERID) REFERENCES users_table(ID), FOREIGN KEY (PROGRAMID) REFERENCES program(ID), FOREIGN KEY (COURSEID) REFERENCES courses(ID))");
-        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));"
+        db.execSQL("create table " + TABLE_NAME + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL STRING UNIQUE, PASSWORD TEXT, PIC BLOB, ADRESS TEXT, PHONE INT, SCHOOL TEXT)");
+        //String sqlUsers = "CREATE TABLE users (ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT, SURNAME TEXT, MAIL TEXT UNIQUE, PASSWORD VARCHAR)";
+        //String sqlAds = "CREATE TABLE ads(id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, price INTEGER, description VARCHAR, program TEXT, course TEXT, isdn VARCHAR, pic BLOB, userid INTEGER, FOREIGN KEY(userid) REFERENCES users(id));"; // bookid INTEGER, FOREIGN KEY(bookid) REFERENCED books(id));";
+         db.execSQL("create table " + TABLE_ADS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, TITLE TEXT, PRICE INTEGER, DESCRIPTION VARCHAR, PROGRAM TEXT, COURSE TEXT, ISDN VARCHAR, PIC BLOB, USERID INTEGER, FOREIGN KEY (USERID) REFERENCES users_table(ID))");
+        //  String sqlBooks = "CREATE TABLE books (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, description VARCHAR, isdn VARCHAR, programid INTEGER, FOREIGN KEY(program_id) REFERENCED program(id), courseid INTEGER, FOREIGN(course_id) REFERENCES courses(id));";
+        //  String sqlProgram = "CREATE TABLE program (id INTEGER PRIMARY KEY AUTOINCREMENT, programname TEXT UNIQUE, programcode INTEGER);";
         db.execSQL("create table " + TABLE_PROGRAM + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, PROGRAMCODE VARCHAR)");
-        db.execSQL("create table " + TABLE_REPORTS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, ADTITLE TEXT, AUTHORNAME TEXT, AUTHORMAIL TEXT, MESSAGE TEXT, AUTHORID INTEGER, ADID INTEGER, FOREIGN KEY(ADID) REFERENCES ads(ID), FOREIGN KEY(AUTHORID) REFERENCES users_table(ID))");
+        //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
         db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
-        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
+        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, bookcounter INT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlMessages = "CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, content VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), chatid INTEGER, FOREIGN KEY(chat_id) REFERENCED chats(id));";
     }
@@ -66,7 +69,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_ADS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PROGRAM);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COURSES);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_REPORTS);
 
         onCreate(db);
     }
@@ -80,35 +82,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void addNotis(String notisText, String userid){
+    public void addNotis(String notisText, String userid, int bookcounter){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("adnoti", notisText);
         contentValues.put("userid", userid);
+        contentValues.put("bookcounter", bookcounter);
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
-    public boolean insertReport(String adTitle, String authorName, String authorMail, String message, int authorID, int adID) {
-        SQLiteDatabase sq = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("adTitle", adTitle);
-        contentValues.put("authorName", authorName);
-        contentValues.put("authorMail", authorMail);
-        contentValues.put("message", message);
-        contentValues.put("authorID", authorID);
-        contentValues.put("adID", adID);
-
-        long result = sq.insert(TABLE_REPORTS, null, contentValues);
-        sq.close();
-
-        if (result == -1) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public List<String> getNotis(int userid) {
+    public List<String> getNotis(String userid) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select adnoti from " + TABLE_NOTIFICATIONS + " where userid = " + "'" + userid + "'";
         Cursor cursor = sq.rawQuery(query, null);
@@ -120,11 +103,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             }
             while (cursor.moveToNext());
         }
+
         return notisText;
     }
 
+    public int getNotisCounter(String adnoti){
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select bookcounter from " + TABLE_NOTIFICATIONS + " where adnoti = " + "'" + adnoti + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        int bookcounter = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                bookcounter = cursor.getInt(0);
+            }
+            while (cursor.moveToNext());
+        }
+
+        return bookcounter;
+    }
+
+    public void setNotisCounter(String adnoti, int counter){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("bookcounter", counter);
+
+        db.update(TABLE_NOTIFICATIONS, contentValues, "adnoti='"+adnoti+"'", null);
+    }
+
     //Metod som lägger in användare i databasen
-    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, String phone, String school) {
+    public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, int phone, String school) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(COL_2, name);
@@ -137,17 +145,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("school", school);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
+
         if (result == -1) {
             return false;
         } else {
             return true;
         }
-    }
-
-    //Metod som lägger in användare i databasen
-    public void insertUserTest(String name, String surname, String mail, String password, byte[] imageBytes, String adress, String phone, String school) {
-
-
     }
 
     public void updateUser(String id, String name, String surname, String mail, byte[] bytes){
@@ -186,26 +189,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ////Hämta all information om en användare, INTE HELT KLAR
     public User getUser(String mail) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select * from users_table where mail = '"+ mail + "'";
+        String query = "SELECT * FROM USERS_TABLE WHERE MAIL = '" + mail + "'";
         Cursor cursor = sq.rawQuery(query, null);
         User userInfo = new User();
 
-        if (cursor.moveToFirst()) {
-            do {
-                userInfo.setId(cursor.getString(0));
-                userInfo.setName(cursor.getString(1));
-                userInfo.setSurname(cursor.getString(2));
-                userInfo.setMail(cursor.getString(3));
-                userInfo.setPic(cursor.getBlob(5));
-                userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getString(7));
-                userInfo.setSchool(cursor.getString(8));
-            }
-            while (cursor.moveToNext());
+    if (cursor != null && cursor.moveToFirst()) {
+        do {
+            userInfo.setId(cursor.getString(0));
+            userInfo.setName(cursor.getString(1));
+            userInfo.setSurname(cursor.getString(2));
+            userInfo.setMail(cursor.getString(3));
+            userInfo.setPic(cursor.getBlob(5));
+            userInfo.setAdress(cursor.getString(6));
+            userInfo.setPhone(cursor.getInt(7));
+            userInfo.setSchool(cursor.getString(8));
         }
-
-        return userInfo;
+        while (cursor.moveToNext());
     }
+
+    return userInfo;
+ }
 
     //Hämta all information om en användare, INTE HELT KLAR
     public User getUserWithId(int id) {
@@ -222,7 +225,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 userInfo.setMail(cursor.getString(3));
                 userInfo.setPic(cursor.getBlob(5));
                 userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getString(7));
+                userInfo.setPhone(cursor.getInt(7));
                 userInfo.setSchool(cursor.getString(8));
             }
             while (cursor.moveToNext());
@@ -232,7 +235,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //Metod som skapar en annons för den inloggade användaren
-    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes, String programId, String courseId) {
+    public boolean insertAd(String titel, String pris, String info, String isdn, String program, String kurs, String userid, byte[] imageBytes) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("TITLE", titel);
@@ -243,8 +246,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("COURSE", kurs);
         contentValues.put("USERID", userid);
         contentValues.put("PIC", imageBytes);
-        contentValues.put("PROGRAMID", programId);
-        contentValues.put("COURSEID", courseId);
         long result = db.insert(TABLE_ADS, null, contentValues);
         db.close();
 
@@ -302,47 +303,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.delete(TABLE_ADS,"id="+id, null);
     }
   
-    public List<Ad> getAllAds(String inputQuery, String chosenProgram, String chosenCourse) {
+    public List<Ad> getAllAds(String inputQuery) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
-        if(inputQuery.equals("") && chosenProgram.equals("") && chosenCourse.equals("")){
 
-            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads";
-        } else if(chosenProgram.equals("")) {
+            if (inputQuery == "")
+                query = "select title, price, pic, id, description, program, course from ads";
+            else
+                query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
 
-            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads where title like '%" + inputQuery + "%'";
-        }else if(chosenCourse.equals("")){
+            Cursor cursor = sq.rawQuery(query, null);
+            List<Ad> adsContent = new ArrayList<Ad>();
 
-            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
-                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "'";
-        }
-        else{
-            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
-                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
-        }
-
-
-        Cursor cursor = sq.rawQuery(query, null);
-
-        List<Ad> adsContent = new ArrayList<Ad>();
-
-        if (cursor.moveToFirst())
-        {
-            do {
-                Ad ad = new Ad();
-                ad.setTitle(cursor.getString(0));
-                ad.setPrice(cursor.getString(1));
-                ad.setPic(cursor.getBlob(2));
-                ad.setId(cursor.getString(3));
-                ad.setinfo(cursor.getString(4));
-                ad.setProgram(cursor.getString(5));
-                ad.setCourse(cursor.getString(6));
-                adsContent.add(ad);
+            if (cursor.moveToFirst()) {
+                do {
+                    Ad ad = new Ad();
+                    ad.setTitle(cursor.getString(0));
+                    ad.setPrice(cursor.getString(1));
+                    ad.setPic(cursor.getBlob(2));
+                    ad.setId(cursor.getString(3));
+                    ad.setinfo(cursor.getString(4));
+                    ad.setProgram(cursor.getString(5));
+                    ad.setCourse(cursor.getString(6));
+                    adsContent.add(ad);
+                }
+                while (cursor.moveToNext());
             }
-            while (cursor.moveToNext());
-        }
-        return adsContent;
+            return adsContent;
     }
 
     public Ad getAd(int id)
@@ -376,12 +364,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("name", "Systemvetenskap");
         contentValues.put("programcode", "ik");
-        ContentValues contentValues1 = new ContentValues();
-        contentValues1.put("name", "Ekonomi");
-        contentValues1.put("programcode", "ik");
 
-        db.insert("program", null, contentValues1);
-        db.insert("program", null, contentValues);
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Psykologi");
+        contentValues2.put("programcode", "Ps");
+
+        long result = db.insert("program", null, contentValues);
+        long result2 = db.insert("program", null, contentValues2);
         db.close();
     }
 
@@ -408,7 +397,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Course> getCourses(String programNamn){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select courses.name, courses.id from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        String query;
+        if(!programNamn.equals("")) {
+            query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        }
+        else{
+            query = "select name from courses";
+        }
         Cursor cursor = db.rawQuery(query, null);
 
         List<Course> courses = new ArrayList<Course>();
@@ -417,9 +412,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             do {
                 Course course = new Course();
                 course.setName(cursor.getString(0));
-                String id = Integer.toString(cursor.getInt(1));
-                course.setId(id);
                 courses.add(course);
+
             }
             while(cursor.moveToNext());
         }
@@ -435,14 +429,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("coursecode", "22");
         contentValues.put("programid", "1");
 
-        ContentValues contentValues1 = new ContentValues();
-        contentValues1.put("name", "Redovisning A");
-        contentValues1.put("description", "kuken");
-        contentValues1.put("coursecode", "11");
-        contentValues1.put("programid", "2");
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Hjärnan");
+        contentValues2.put("description", "snopp");
+        contentValues2.put("coursecode", "23");
+        contentValues2.put("programid", "2");
 
-        db.insert("courses", null, contentValues);
-        db.insert("courses", null, contentValues1);
+        long result = db.insert("courses", null, contentValues);
+        long result2 = db.insert("courses", null, contentValues2);
         db.close();
     }
+
 }

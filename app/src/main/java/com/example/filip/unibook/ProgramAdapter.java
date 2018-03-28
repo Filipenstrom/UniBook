@@ -45,14 +45,11 @@ public class ProgramAdapter extends BaseAdapter{
 
         View view = mInflator.inflate(R.layout.program_layout,null);
         TextView program = (TextView) view.findViewById(R.id.txtProgram);
-        TextView programId = view.findViewById(R.id.txtProgramId);
 
 
         String programNamn = items[i];
         String ids = id[i];
-
         program.setText(programNamn);
-        programId.setText(ids);
 
         return view;
     }

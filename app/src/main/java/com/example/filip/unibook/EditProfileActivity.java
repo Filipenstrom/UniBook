@@ -67,7 +67,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editEmail.setText(userInformation.getMail());
         editAdress.setText(userInformation.getAdress());
         editSchool.setText(userInformation.getSchool());
-        editPhone.setText(userInformation.getPhone());
+        editPhone.setText(Integer.toString(userInformation.getPhone()));
         imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
     }
 
@@ -77,21 +77,6 @@ public class EditProfileActivity extends AppCompatActivity {
         User id = db.getUser(sp.getusername());
 
         //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
-
-     // if (editEmail.getText().toString().equals(id)) {
-
-     //     if (editEmail.getText().toString().equals(id.getMail())) {
-     //         db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-     //     } else {
-     //         saveUserInformation();
-
-     //         db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-
-     //         //db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-
-     //     }
-     //     Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-     //     startActivity(intent);
         Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
 
         if(editEmail.getText().toString().equals(id.getMail())) {

@@ -11,12 +11,8 @@ public class User {
     private String mail;
     private byte[] pic;
     private String adress;
-    private String phone;
+    private int phone;
     private String school;
-
-    public User() {
-
-    }
 
     public String getId()
     {
@@ -63,11 +59,11 @@ public class User {
         this.adress = value;
     }
 
-    public String getPhone()
+    public int getPhone()
     {
         return this.phone;
     }
-    public void setPhone(String value)
+    public void setPhone(int value)
     {
         this.phone = value;
     }
