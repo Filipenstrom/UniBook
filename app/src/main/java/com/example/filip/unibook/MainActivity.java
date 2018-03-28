@@ -67,8 +67,16 @@ public class MainActivity extends AppCompatActivity {
 
                             // If sign in fails, display a message to the user.
                             Log.w("message", "signInWithEmail:failure", task.getException());
-                            Toast.makeText(MainActivity.this, "Authentication failed.",
-                                    Toast.LENGTH_SHORT).show();
+
+                            if(task.getException().getMessage().equals("The password is invalid or the user does not have a password.")) {
+
+                                Toast.makeText(MainActivity.this, "Fel lösenord",
+                                        Toast.LENGTH_SHORT).show();
+                            }else {
+
+                                Toast.makeText(MainActivity.this, "Authentication failed.",
+                                        Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
