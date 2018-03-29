@@ -131,6 +131,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.update(TABLE_NOTIFICATIONS, contentValues, "adnoti='"+adnoti+"'", null);
     }
 
+    public boolean insertReport(String adTitle, String authorName, String authorMail, String message, int authorID, int adID) {
+        SQLiteDatabase sq = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adTitle", adTitle);
+        contentValues.put("authorName", authorName);
+        contentValues.put("authorMail", authorMail);
+        contentValues.put("message", message);
+        contentValues.put("authorID", authorID);
+        contentValues.put("adID", adID);
+
+        long result = sq.insert(TABLE_REPORTS, null, contentValues);
+        sq.close();
+
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     //Metod som lägger in användare i databasen
     public boolean insertUser(String name, String surname, String mail, String password, byte[] imageBytes, String adress, int phone, String school) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -302,35 +322,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ADS,"id="+id, null);
     }
-  
-    public List<Ad> getAllAds(String inputQuery) {
+
+    public List<Ad> getAllAds(String inputQuery, String chosenProgram, String chosenCourse) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
+        if(inputQuery.equals("") && chosenProgram.equals("") && chosenCourse.equals("")){
 
-            if (inputQuery == "")
-                query = "select title, price, pic, id, description, program, course from ads";
-            else
-                query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads";
+        } else if(chosenProgram.equals("")) {
 
-            Cursor cursor = sq.rawQuery(query, null);
-            List<Ad> adsContent = new ArrayList<Ad>();
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads where title like '%" + inputQuery + "%'";
+        }else if(chosenCourse.equals("")){
 
-            if (cursor.moveToFirst()) {
-                do {
-                    Ad ad = new Ad();
-                    ad.setTitle(cursor.getString(0));
-                    ad.setPrice(cursor.getString(1));
-                    ad.setPic(cursor.getBlob(2));
-                    ad.setId(cursor.getString(3));
-                    ad.setinfo(cursor.getString(4));
-                    ad.setProgram(cursor.getString(5));
-                    ad.setCourse(cursor.getString(6));
-                    adsContent.add(ad);
-                }
-                while (cursor.moveToNext());
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "'";
+        }
+        else{
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
+        }
+
+
+        Cursor cursor = sq.rawQuery(query, null);
+
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst())
+        {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setId(cursor.getString(3));
+                ad.setinfo(cursor.getString(4));
+                ad.setProgram(cursor.getString(5));
+                ad.setCourse(cursor.getString(6));
+                adsContent.add(ad);
             }
-            return adsContent;
+            while (cursor.moveToNext());
+        }
+        return adsContent;
     }
 
     public Ad getAd(int id)
