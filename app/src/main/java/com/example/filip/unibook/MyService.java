@@ -54,7 +54,7 @@ public class MyService extends Service {
         SharedPreferences sp = new SharedPreferences(this);
         User user = db.getUser(sp.getusername());
         List<String> notis = db.getNotis(user.getId());
-        List<Ad> ads = db.getAllAds("");
+        List<Ad> ads = db.getAllAdsNotis("");
 
         try {
             //Loopa igenom alla ads.

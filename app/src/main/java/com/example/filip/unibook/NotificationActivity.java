@@ -55,7 +55,7 @@ public class NotificationActivity extends AppCompatActivity {
     //Spara ner en ny notis. Om det inte finns ett program som heter så som användaren skrivit in ska det inte sparas.
     public void saveNotisProg(){
         List<Program> allprogram = db.getPrograms();
-        List<Ad> allads = db.getAllAds("");
+        List<Ad> allads = db.getAllAdsNotis("");
 
         if(allads != null){
 
@@ -75,7 +75,7 @@ public class NotificationActivity extends AppCompatActivity {
     //Spara ner en ny notis. Om det inte finns en kurs som heter så som användaren skrivit in ska det inte sparas.
     public void saveNotisCourse(){
         List<Course> allcourses = db.getCourses("");
-        List<Ad> allads = db.getAllAds("");
+        List<Ad> allads = db.getAllAdsNotis("");
 
 
 
