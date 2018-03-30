@@ -1,18 +1,24 @@
 package com.example.filip.unibook;
 
-/**
- * Created by Ludvig on 2018-03-13.
- */
-
-public class User {
+public class FBUser {
     private String id;
     private String name;
     private String surname;
     private String mail;
     private byte[] pic;
     private String adress;
-    private int phone;
+    private String phone;
     private String school;
+
+    public FBUser(String id, String name, String surname, String mail, String adress, String phone, String school) {
+        this.id = id;
+        this.name = name;
+        this.surname = surname;
+        this.mail = mail;
+        this.adress = adress;
+        this.phone = phone;
+        this.school = school;
+    }
 
     public String getId()
     {
@@ -59,11 +65,11 @@ public class User {
         this.adress = value;
     }
 
-    public int getPhone()
+    public String getPhone()
     {
         return this.phone;
     }
-    public void setPhone(int value)
+    public void setPhone(String value)
     {
         this.phone = value;
     }

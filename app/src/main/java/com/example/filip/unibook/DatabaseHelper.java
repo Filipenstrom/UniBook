@@ -3,16 +3,19 @@ package com.example.filip.unibook;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageView;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.sql.Blob;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +38,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TABLE_COURSES = "courses";
     public static final String TABLE_FAVORITES = "favorites";
     public static final String TABLE_NOTIFICATIONS = "notifications";
+    public static final String TABLE_REPORTS = "reports";
 
 
 
@@ -54,7 +58,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //  String sqlCourses = "CREATE TABLE courses (id INTEGER PRIMARY KEY AUTOINCREMENT, coursename TEXT UNIQUE, beskrivning VARCHAR);";
         db.execSQL("create table " + TABLE_COURSES + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, NAME TEXT UNIQUE, DESCRIPTION TEXT, COURSECODE INTEGER, PROGRAMID INTEGER, FOREIGN KEY (PROGRAMID) REFERENCES program(ID))");
         db.execSQL("create table " + TABLE_FAVORITES + "(id INTEGER PRIMARY KEY AUTOINCREMENT, addid INTEGER, userid INTEGER, FOREIGN KEY(addid) REFERENCES adds(id), FOREIGN KEY(userid) REFERENCES users_table(id))");
-        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
+        db.execSQL("create table " + TABLE_NOTIFICATIONS + "(ID INTEGER PRIMARY KEY AUTOINCREMENT, adnoti TEXT, bookcounter INT, userid INTEGER, FOREIGN KEY(userid) REFERENCES users_table(id))");
         //  String sqlChats = "CREATE TABLE chats (id INTEGER PRIMARY KEY AUTOINCREMENT, userid INTEGER, FOREIGNKEY(users_id) REFERENCED users(id), seconduserid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id));";
         //  String sqlMessages = "CREATE TABLE messages (id INTEGER PRIMARY KEY AUTOINCREMENT, content VARCHAR, userid INTEGER, FOREIGN KEY(users_id) REFERENCED users(id), chatid INTEGER, FOREIGN KEY(chat_id) REFERENCED chats(id));";
     }
@@ -78,15 +82,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
-    public void addNotis(String notisText, String userid){
+    public void addNotis(String notisText, String userid, int bookcounter){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put("adnoti", notisText);
         contentValues.put("userid", userid);
+        contentValues.put("bookcounter", bookcounter);
         db.insert(TABLE_NOTIFICATIONS, null, contentValues);
     }
 
-    public List<String> getNotis(int userid) {
+    public List<String> getNotis(String userid) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query = "select adnoti from " + TABLE_NOTIFICATIONS + " where userid = " + "'" + userid + "'";
         Cursor cursor = sq.rawQuery(query, null);
@@ -100,6 +105,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return notisText;
+    }
+
+    public int getNotisCounter(String adnoti){
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query = "select bookcounter from " + TABLE_NOTIFICATIONS + " where adnoti = " + "'" + adnoti + "'";
+        Cursor cursor = sq.rawQuery(query, null);
+        int bookcounter = 0;
+
+        if (cursor.moveToFirst()) {
+            do {
+                bookcounter = cursor.getInt(0);
+            }
+            while (cursor.moveToNext());
+        }
+
+        return bookcounter;
+    }
+
+    public void setNotisCounter(String adnoti, int counter){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("bookcounter", counter);
+
+        db.update(TABLE_NOTIFICATIONS, contentValues, "adnoti='"+adnoti+"'", null);
+    }
+
+    public boolean insertReport(String adTitle, String authorName, String authorMail, String message, int authorID, int adID) {
+        SQLiteDatabase sq = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("adTitle", adTitle);
+        contentValues.put("authorName", authorName);
+        contentValues.put("authorMail", authorMail);
+        contentValues.put("message", message);
+        contentValues.put("authorID", authorID);
+        contentValues.put("adID", adID);
+
+        long result = sq.insert(TABLE_REPORTS, null, contentValues);
+        sq.close();
+
+        if (result == -1) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     //Metod som lägger in användare i databasen
@@ -116,6 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("school", school);
 
         long result = db.insert(TABLE_NAME, null, contentValues);
+
         if (result == -1) {
             return false;
         } else {
@@ -159,26 +209,26 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     ////Hämta all information om en användare, INTE HELT KLAR
     public User getUser(String mail) {
         SQLiteDatabase sq = this.getReadableDatabase();
-        String query = "select * from users_table where mail = '"+ mail + "'";
+        String query = "SELECT * FROM USERS_TABLE WHERE MAIL = '" + mail + "'";
         Cursor cursor = sq.rawQuery(query, null);
         User userInfo = new User();
 
-        if (cursor.moveToFirst()) {
-            do {
-                userInfo.setId(cursor.getString(0));
-                userInfo.setName(cursor.getString(1));
-                userInfo.setSurname(cursor.getString(2));
-                userInfo.setMail(cursor.getString(3));
-                userInfo.setPic(cursor.getBlob(5));
-                userInfo.setAdress(cursor.getString(6));
-                userInfo.setPhone(cursor.getInt(7));
-                userInfo.setSchool(cursor.getString(8));
-            }
-            while (cursor.moveToNext());
+    if (cursor != null && cursor.moveToFirst()) {
+        do {
+            userInfo.setId(cursor.getString(0));
+            userInfo.setName(cursor.getString(1));
+            userInfo.setSurname(cursor.getString(2));
+            userInfo.setMail(cursor.getString(3));
+            userInfo.setPic(cursor.getBlob(5));
+            userInfo.setAdress(cursor.getString(6));
+            userInfo.setPhone(cursor.getInt(7));
+            userInfo.setSchool(cursor.getString(8));
         }
-
-        return userInfo;
+        while (cursor.moveToNext());
     }
+
+    return userInfo;
+ }
 
     //Hämta all information om en användare, INTE HELT KLAR
     public User getUserWithId(int id) {
@@ -272,15 +322,27 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_ADS,"id="+id, null);
     }
-  
-    public List<Ad> getAllAds(String inputQuery) {
+
+    public List<Ad> getAllAds(String inputQuery, String chosenProgram, String chosenCourse) {
         SQLiteDatabase sq = this.getReadableDatabase();
         String query;
 
-        if(inputQuery == "")
-            query = "select title, price, pic, id, description, program, course from ads";
-        else
-            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+        if(inputQuery.equals("") && chosenProgram.equals("") && chosenCourse.equals("")){
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads";
+        } else if(chosenProgram.equals("")) {
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads where title like '%" + inputQuery + "%'";
+        }else if(chosenCourse.equals("")){
+
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "'";
+        }
+        else{
+            query = "select ads.title, ads.price, ads.pic, ads.id, ads.description, ads.program, ads.course from ads join courses on ads.COURSEID = courses.ID \n" +
+                    "\tjoin program on courses.PROGRAMID = program.ID where ads.title like '%" + inputQuery + "%' and program.NAME = '" + chosenProgram + "' and courses.NAME = '" + chosenCourse + "'";
+        }
+
 
         Cursor cursor = sq.rawQuery(query, null);
 
@@ -288,6 +350,36 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
         if (cursor.moveToFirst())
         {
+            do {
+                Ad ad = new Ad();
+                ad.setTitle(cursor.getString(0));
+                ad.setPrice(cursor.getString(1));
+                ad.setPic(cursor.getBlob(2));
+                ad.setId(cursor.getString(3));
+                ad.setinfo(cursor.getString(4));
+                ad.setProgram(cursor.getString(5));
+                ad.setCourse(cursor.getString(6));
+                adsContent.add(ad);
+            }
+            while (cursor.moveToNext());
+        }
+        return adsContent;
+    }
+
+    public List<Ad> getAllAdsNotis(String inputQuery) {
+        SQLiteDatabase sq = this.getReadableDatabase();
+        String query;
+
+
+        if (inputQuery == "")
+            query = "select title, price, pic, id, description, program, course from ads";
+        else
+            query = "select title, price, pic, id, description, program, course from ads where title like '%" + inputQuery + "%'";
+
+        Cursor cursor = sq.rawQuery(query, null);
+        List<Ad> adsContent = new ArrayList<Ad>();
+
+        if (cursor.moveToFirst()) {
             do {
                 Ad ad = new Ad();
                 ad.setTitle(cursor.getString(0));
@@ -336,7 +428,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("name", "Systemvetenskap");
         contentValues.put("programcode", "ik");
 
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Psykologi");
+        contentValues2.put("programcode", "Ps");
+
         long result = db.insert("program", null, contentValues);
+        long result2 = db.insert("program", null, contentValues2);
         db.close();
     }
 
@@ -363,7 +460,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public List<Course> getCourses(String programNamn){
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        String query;
+        if(!programNamn.equals("")) {
+            query = "select courses.name from courses join program on programid = program.id where program.name = '" + programNamn + "'";
+        }
+        else{
+            query = "select name from courses";
+        }
         Cursor cursor = db.rawQuery(query, null);
 
         List<Course> courses = new ArrayList<Course>();
@@ -389,7 +492,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("coursecode", "22");
         contentValues.put("programid", "1");
 
+        ContentValues contentValues2 = new ContentValues();
+        contentValues2.put("name", "Hjärnan");
+        contentValues2.put("description", "snopp");
+        contentValues2.put("coursecode", "23");
+        contentValues2.put("programid", "2");
+
         long result = db.insert("courses", null, contentValues);
+        long result2 = db.insert("courses", null, contentValues2);
         db.close();
     }
+
 }

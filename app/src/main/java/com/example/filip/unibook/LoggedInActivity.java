@@ -1,9 +1,12 @@
 package com.example.filip.unibook;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Button;
@@ -11,6 +14,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import java.util.List;
 
 public class LoggedInActivity extends AppCompatActivity {
 
@@ -22,6 +27,13 @@ public class LoggedInActivity extends AppCompatActivity {
         goToProfile();
         goToSettings();
         goToSearch();
+        //checkForNotis();
+
+
+            if (!isMyServiceRunning()) {
+                Intent serviceIntent = new Intent(LoggedInActivity.this, MyService.class);
+                startService(serviceIntent);
+            }
     }
 
     public void goToProfile() {
@@ -36,7 +48,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToSearch(){
+    public void goToSearch() {
         LinearLayout searchBtn = findViewById(R.id.searchLinearLayout);
 
         searchBtn.setOnClickListener(new View.OnClickListener() {
@@ -48,8 +60,8 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToAdds(){
-        LinearLayout addBtn =  findViewById(R.id.adsLinearLayout);
+    public void goToAdds() {
+        LinearLayout addBtn = findViewById(R.id.adsLinearLayout);
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,8 +71,8 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
-    public void goToSettings(){
-        LinearLayout settingsBtn =  findViewById(R.id.settingsLinearLayout);
+    public void goToSettings() {
+        LinearLayout settingsBtn = findViewById(R.id.settingsLinearLayout);
         settingsBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,5 +80,16 @@ public class LoggedInActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    //Starta background service om den inte redan är igång. Detta föra att skicka notifikationer.
+    private boolean isMyServiceRunning() {
+        ActivityManager manager = (ActivityManager) getSystemService(this.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (MyService.class.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

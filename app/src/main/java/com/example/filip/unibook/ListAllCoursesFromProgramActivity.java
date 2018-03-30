@@ -26,15 +26,29 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         myDb = new DatabaseHelper(this);
         SharedPreferences prefs = new SharedPreferences(context);
 
+        Intent intent = getIntent();
+
+        final String[] extras = intent.getStringArrayExtra("extras");
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String value = listView.getItemAtPosition(position).toString();
-                TextView txtCourse = (TextView) findViewById(R.id.textViewCourses);
-                Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
-                intent.putExtra("kursNamn", txtCourse.getText().toString());
-                setResult(2, intent);
-                finish();
+                TextView txtCourse = (TextView) view.findViewById(R.id.textViewCourses);
+                TextView txtCourseId = view.findViewById(R.id.txtViewCoursesId);
+                if(extras[0].equals("1")) {
+                    Intent data = new Intent();
+                    data.putExtra("kursNamn", txtCourse.getText().toString());
+                    setResult(2, data);
+                    finish();
+                } else {
+                    Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
+                    String kursId = txtCourseId.getText().toString();
+                    String kursNamn = txtCourse.getText().toString();
+                    String[] myExtras = new String[]{kursId, kursNamn};
+                    intent.putExtra("kursInfoIntent", myExtras);
+                    setResult(2, intent);
+                    finish();
+                }
             }
         });
 
@@ -44,8 +58,9 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
     public void getAllCourses(){
 
         Intent intent = getIntent();
-        String programNamn = intent.getStringExtra("programNamn");
-        List<Course> kursLista = myDb.getCourses(programNamn);
+        String[] programNamn = intent.getStringArrayExtra("extras");
+        String programName = programNamn[1];
+        List<Course> kursLista = myDb.getCourses(programName);
         int numberOfCourses = kursLista.size();
         String[] items = new String[numberOfCourses];
         String[] ids = new String[numberOfCourses];
