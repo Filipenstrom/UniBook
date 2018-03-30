@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -20,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     Button loginBtn, registerBtn;
     EditText email, password;
+    ProgressBar pbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         registerBtn = findViewById(R.id.registreraBtn);
         email = findViewById(R.id.editTxtUsername);
         password = findViewById(R.id.editTxtPassword);
+        pbar = findViewById(R.id.pBarLogin);
+
 
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void logIn(){
-
+        pbar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -61,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
                             FirebaseUser user = mAuth.getCurrentUser();
 
                             Intent logInIntent = new Intent(MainActivity.this, LoggedInActivity.class);
+                            pbar.setVisibility(View.INVISIBLE);
                             startActivity(logInIntent);
                             //updateUI(user);
                         } else {
@@ -69,11 +74,11 @@ public class MainActivity extends AppCompatActivity {
                             Log.w("message", "signInWithEmail:failure", task.getException());
 
                             if(task.getException().getMessage().equals("The password is invalid or the user does not have a password.")) {
-
+                                pbar.setVisibility(View.INVISIBLE);
                                 Toast.makeText(MainActivity.this, "Fel lösenord",
                                         Toast.LENGTH_SHORT).show();
                             }else {
-
+                                pbar.setVisibility(View.INVISIBLE);
                                 Toast.makeText(MainActivity.this, "Authentication failed.",
                                         Toast.LENGTH_SHORT).show();
                             }
