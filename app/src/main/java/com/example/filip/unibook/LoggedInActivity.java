@@ -27,6 +27,7 @@ public class LoggedInActivity extends AppCompatActivity {
         goToProfile();
         goToSettings();
         goToSearch();
+        goToFavorites();;
         //checkForNotis();
 
 
@@ -77,6 +78,17 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoggedInActivity.this, SettingsActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void goToFavorites() {
+        LinearLayout favoritesBtn = findViewById(R.id.favouritesLinearLayout);
+        favoritesBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoggedInActivity.this, MyFavorites.class);
                 startActivity(intent);
             }
         });
