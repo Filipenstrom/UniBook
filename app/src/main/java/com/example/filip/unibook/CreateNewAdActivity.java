@@ -6,8 +6,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -16,10 +19,20 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.ByteArrayOutputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 
 public class CreateNewAdActivity extends AppCompatActivity {
+    public static final String TAG = "TAG";
     Context context = this;
     DatabaseHelper myDb;
     EditText titel, pris, info, isdn;
@@ -30,6 +43,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
     Uri imageUri;
     ListView listView;
     byte[] bytes = null;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
 
     @Override
@@ -49,7 +64,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
          listCourseBtn = (Button) findViewById(R.id.btnKurs);
          imageView = (ImageView) findViewById(R.id.imgViewBokbild);
 
-         button.setOnClickListener(new View.OnClickListener() {
+
+        button.setOnClickListener(new View.OnClickListener() {
              @Override
              public void onClick(View v) {
                  choseImg();
@@ -68,28 +84,30 @@ public class CreateNewAdActivity extends AppCompatActivity {
              @Override
              public void onClick(View v) {
                  Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
+                 String[] extras = new String[2];
+                 extras[0] = "2";
+                 intent.putExtra("extras", extras);
                  intent.putExtra("programNamn", program.getText().toString());
                  startActivityForResult(intent, 2);
              }
          });
 
         Intent intent = getIntent();
-        String programNamn = intent.getStringExtra("programNamn");
+        String programNamn = intent.getStringExtra("programInfoIntent");
         TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
         txtProgram.setText(programNamn);
         txtProgram.setVisibility(View.VISIBLE);
 
         Intent kursIntent = getIntent();
-        String kursNamn = kursIntent.getStringExtra("kursNamn");
+        String kursNamn = kursIntent.getStringExtra("kursInfoIntent");
         TextView txtKurs = (TextView) findViewById(R.id.textViewCourses) ;
         txtKurs.setText(kursNamn);
         txtKurs.setVisibility(View.VISIBLE);
 
-        createAd();
     }
 
     //Metod som skapar en ny annons för den inloggade
-    public void createAd(){
+    public void createAdbajs(){
 
         Button bildKnapp = (Button) findViewById(R.id.btnSpara);
         bildKnapp.setOnClickListener(new View.OnClickListener() {
@@ -126,6 +144,52 @@ public class CreateNewAdActivity extends AppCompatActivity {
         });
     }
 
+    public void createAd(View view) {
+        FirebaseUser user = mAuth.getCurrentUser();
+
+        CollectionReference userRef = rootRef.collection("Ads");
+        //CollectionReference userRef = rootRef.collection("User").document();
+
+        String bokTitel = titel.getText().toString();
+        String bokPris = pris.getText().toString();
+        String bokInfo = info.getText().toString();
+        String bokISDN = isdn.getText().toString();
+        TextView program = (TextView) findViewById(R.id.txtViewProgram);
+        String bokTillhorProgram = program.getText().toString();
+        String bokTillhorKurs = kurs.getText().toString();
+
+        Map<String, Object> mapOne = new HashMap<>();
+        mapOne.put("title", bokTitel);
+        mapOne.put("price", bokPris);
+        mapOne.put("info", bokInfo);
+        mapOne.put("ISDN", bokISDN);
+        mapOne.put("program", bokTillhorProgram);
+        mapOne.put("course", bokTillhorKurs);
+        mapOne.put("sellerId", user.getUid().toString());
+
+        if(!bokTitel.trim().equals("") || !bokPris.trim().equals("") || !bokInfo.trim().equals("") || !bokISDN.trim().equals("") ||  !bokTillhorKurs.trim().equals("")) {
+            userRef.document()
+                    .set(mapOne)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Log.d(TAG, "DocumentSnapshot successfully written!");
+                            Intent intent = new Intent(CreateNewAdActivity.this, MyAdsActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+        }
+        else{
+                Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
+        }
+    }
+
     public void choseImg(){
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
         startActivityForResult(photoPickerIntent, PICK_IMAGE);
@@ -147,7 +211,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
 
         if(resultCode == 2){
-            kurs.setText(data.getStringExtra("kursNamn"));
+            kurs.setText(data.getStringExtra("kursInfoIntent"));
         }
     }
 }
