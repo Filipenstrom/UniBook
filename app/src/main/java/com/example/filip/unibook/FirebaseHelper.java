@@ -19,8 +19,8 @@ public class FirebaseHelper {
 
     public void insertUser(String id, String name, String surname, String mail, String adress, String phone, String school) {
 
-        FBUser balle = new FBUser(id, name, surname, mail, adress, phone, school);
+        FBUser user = new FBUser(id, name, surname, mail, adress, phone, school);
 
-        mChildReference.child(id).setValue(balle);
+        mChildReference.child(id).setValue(user);
     }
 }
