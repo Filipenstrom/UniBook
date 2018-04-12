@@ -6,9 +6,11 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,15 +19,28 @@ import android.widget.ListView;
 import android.widget.AdapterView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class MyAdsActivity extends AppCompatActivity {
 
+    public static final String TAG = "TAG";
     Context context = this;
     DatabaseHelper myDb;
     ListView listView;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
+    FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,28 +76,37 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
-    //Hämta data om alla annonser som en användare lagt upp och skicka de till ItemAdapter.
-    public void getAllMyAds() {
-        SharedPreferences prefs = new SharedPreferences(context);
-        User mail = myDb.getUser(prefs.getusername());
-        ListView listView = findViewById(R.id.listViewMyAds);
+    public void getAllMyAds(){
+        CollectionReference adsRef = rootRef.collection("Ads");
+        adsRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
 
-        List<Ad> annonser = myDb.getMyAds(mail.getMail());
-        int numberOfAds = annonser.size();
-        String[] items = new String[numberOfAds];
-        String[] prices = new String[numberOfAds];
-        String[] ids = new String[numberOfAds];
-        List<byte[]> bytes = new ArrayList<>();
+                            int size = task.getResult().size();
 
-        for (int i = 0; i < annonser.size(); i++) {
-            Ad annons = annonser.get(i);
-            ids[i] = annons.getId();
-            items[i] = annons.getTitle();
-            prices[i] = annons.getPrice();
-            bytes.add(annons.getPic());
-        }
+                            String[] items = new String[size];
+                            String[] ids = new String[size];
+                            String[] prices = new String[size];
 
-            ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes, ids);
-            listView.setAdapter(itemAdapter);
+                            List<DocumentSnapshot> minLista = task.getResult().getDocuments();
+
+                            for(int i = 0;i < size;i++){
+                                DocumentSnapshot doc = minLista.get(i);
+                                if(doc.getString("sellerId").equals(user.getUid().toString())) {
+                                    ids[i] = doc.getId().toString();
+                                    items[i] = doc.getString("title");
+                                    prices[i] = doc.getString("price");
+                                }
+                            }
+                            ItemAdapter adapter = new ItemAdapter(context, items, prices, null, ids);
+                            listView.setAdapter(adapter);
+                        }
+                        else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
     }
 }

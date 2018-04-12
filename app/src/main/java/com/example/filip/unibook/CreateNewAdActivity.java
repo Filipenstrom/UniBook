@@ -106,44 +106,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
     }
 
-    //Metod som skapar en ny annons för den inloggade
-    public void createAdbajs(){
-
-        Button bildKnapp = (Button) findViewById(R.id.btnSpara);
-        bildKnapp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                String boktitel = titel.getText().toString();
-                String bokPris = pris.getText().toString();
-                String bokInfo = info.getText().toString();
-                String bokISDN = isdn.getText().toString();
-                TextView program = (TextView) findViewById(R.id.txtViewProgram);
-                String bokTillhorProgram = program.getText().toString();
-                String bokTillhorKurs = kurs.getText().toString();
-
-                SharedPreferences prefs = new SharedPreferences(context);
-                User id = myDb.getUser(prefs.getusername());
-
-                if(boktitel.trim().equals("") || bokPris.trim().equals("") || bokInfo.trim().equals("") || bokISDN.trim().equals("") ||  bokTillhorKurs.trim().equals("") || bytes == null) {
-                    Toast.makeText(CreateNewAdActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
-                }
-                else{
-                    boolean isInserted = myDb.insertAd(boktitel, bokPris, bokInfo, bokISDN, bokTillhorProgram, bokTillhorKurs, id.getId(), bytes);
-
-                    if(isInserted == true){
-                        Toast.makeText(CreateNewAdActivity.this,"Annons skapad", Toast.LENGTH_LONG).show();
-                        Intent intent = new Intent(CreateNewAdActivity.this, MyAdsActivity.class);
-                        startActivity(intent);
-                    }
-                    else {
-                        Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        });
-    }
-
     public void createAd(View view) {
         FirebaseUser user = mAuth.getCurrentUser();
 
