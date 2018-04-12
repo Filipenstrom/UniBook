@@ -81,7 +81,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
 
 
     public void getAllPrograms() {
-
         CollectionReference progRef = rootRef.collection("Program");
         progRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
