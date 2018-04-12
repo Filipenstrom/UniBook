@@ -3,6 +3,7 @@ package com.example.filip.unibook;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,10 +13,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.lang.ref.Reference;
 import java.util.List;
 
 public class ChosenAdPageActivity extends AppCompatActivity {
 
+    public static final String TAG = "TAG";
+    String id;
     Ad chosenAd;
     byte[] bytepic;
     TextView title;
@@ -27,6 +41,9 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     ImageView pic;
     Context context = this;
     final DatabaseHelper db = new DatabaseHelper(this);
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
+    FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,67 +60,63 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", -1);
-
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sharedPreferences = new SharedPreferences(this);
-        User user = db.getUser(sharedPreferences.getusername());
-
-        List<Ad> ads = db.getMyAds(user.getMail());
-
-        //Sök igenom alla annonser tills en matchning sker på index = id på annons.
-        for(int i = 0;i<ads.size();i++){
-            Ad annons = ads.get(i);
-
-                     int adid = Integer.parseInt(annons.getId());
-                     if(id == (adid)){
-                         chosenAd = annons;
-                         bytepic = annons.getPic();
-                         fillAdInformation();
-                 }
-            }
-            deleteAd();
+        id = intent.getStringExtra("id");
+        getAd();
+        deleteAd();
         }
 
-        //Hämtar data om den valda annonsen från listan.
-        public void fillAdInformation(){
-            title.setText(chosenAd.getTitle());
-            pris.setText(chosenAd.getPrice());
-            ISDN.setText(chosenAd.getISDN());
-            info.setText(chosenAd.getInfo());
-            program.setText(chosenAd.getProgram());
-            kurs.setText(chosenAd.getCourse());
-            pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
-        }
+    public void getAd(){
+        final DocumentReference adsRef = rootRef.collection("Ads").document(id);
+        adsRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
 
-        //Metod som uppdaterar ens valda annons
-        public void updateData(View view){
-            DatabaseHelper db = new DatabaseHelper(this);
-            SharedPreferences sharedPreferences = new SharedPreferences(this);
-            User user = db.getUser(sharedPreferences.getusername());
-           int id = Integer.parseInt(chosenAd.getId());
-           int prisInt = Integer.parseInt(pris.getText().toString());
-           int userid = Integer.parseInt(user.getId());
+                            DocumentSnapshot doc = task.getResult();
 
-            db.updateAd(id, title.getText().toString(), prisInt, ISDN.getText().toString(), info.getText().toString(), program.getText().toString(), kurs.getText().toString(), bytepic, userid);
-            Toast.makeText(ChosenAdPageActivity.this,"Update successful", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-            startActivity(intent);
-        }
+
+                            if (doc.getString("sellerId").equals(user.getUid().toString())) {
+                                ISDN.setText(doc.getString("ISDN"));
+                                kurs.setText(doc.getString("course"));
+                                info.setText(doc.getString("info"));
+                                pris.setText(doc.getString("price"));
+                                program.setText(doc.getString("program"));
+                                String seller = doc.getString("seller");
+                                String sellerId = doc.getString("sellerId");
+                                title.setText(doc.getString("title"));
+                            }
+                        }
+                        else{
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+
+                });
+}
+
+    public void updateData(View view) {
+        DocumentReference docRef = rootRef.collection("Ads").document(id);
+        docRef.update("title", title.getText().toString());
+        docRef.update("ISDN", ISDN.getText().toString());
+        docRef.update("course", kurs.getText().toString());
+        docRef.update("info", info.getText().toString());
+        docRef.update("price", pris.getText().toString());
+        docRef.update("program", program.getText().toString());
+
+        Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+        startActivity(intent);
+    }
 
         //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
-
         public void deleteAd(){
-            Button deleteBtn = (Button) findViewById(R.id.btnDelete);
+            Button deleteBtn = findViewById(R.id.btnDelete);
 
             deleteBtn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    SharedPreferences sharedPreferences = new SharedPreferences(context);
-                    User user = db.getUser(sharedPreferences.getusername());
-                    int adId = Integer.parseInt(chosenAd.getId());
+                    rootRef.collection("Ads").document(id).delete();
 
-                    db.deleteAd(adId);
                     Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
                     startActivity(intent);
                 }

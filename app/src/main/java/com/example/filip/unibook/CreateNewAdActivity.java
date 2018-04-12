@@ -84,10 +84,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
              @Override
              public void onClick(View v) {
                  Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
-                 String[] extras = new String[2];
+                 String[] extras = new String[3];
                  extras[0] = "2";
+                 extras[2] = program.getText().toString();
                  intent.putExtra("extras", extras);
-                 intent.putExtra("programNamn", program.getText().toString());
+                 //intent.putExtra("programNamn", program.getText().toString());
                  startActivityForResult(intent, 2);
              }
          });

@@ -59,7 +59,7 @@ public class MyAdsActivity extends AppCompatActivity {
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
                 TextView id = view.findViewById(R.id.txtAdID);
-                showDetailActivity.putExtra("id", Integer.parseInt(id.getText().toString()));
+                showDetailActivity.putExtra("id", id.getText().toString());
                 startActivity(showDetailActivity);
             }
         });

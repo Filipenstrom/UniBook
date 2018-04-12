@@ -43,15 +43,15 @@ public class CourseAdapter extends BaseAdapter{
 
     @Override
     public View getView(int i, View convertView, ViewGroup parent) {
-        View view = mInflator.inflate(R.layout.courses,null);
-        TextView courseName = (TextView) view.findViewById(R.id.textViewCourses);
-        TextView courseId = view.findViewById(R.id.txtViewCoursesId);
+            View view = mInflator.inflate(R.layout.courses, null);
+            TextView courseName = (TextView) view.findViewById(R.id.textViewCourses);
+            TextView courseId = view.findViewById(R.id.txtViewCoursesId);
 
-        String kursNamn = items[i];
-        String kursId = ids[i];
+            String kursNamn = items[i];
+            String kursId = ids[i];
 
-        courseName.setText(kursNamn);
-        courseId.setText(kursId);
-        return view;
+            courseName.setText(kursNamn);
+            courseId.setText(kursId);
+            return view;
     }
 }

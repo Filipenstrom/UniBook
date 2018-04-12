@@ -29,6 +29,7 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
     DatabaseHelper myDb;
     ListView listView;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    String program;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +41,8 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         SharedPreferences prefs = new SharedPreferences(context);
 
         Intent intent = getIntent();
-
         final String[] extras = intent.getStringArrayExtra("extras");
+        program = extras[2].toString();
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -68,28 +69,6 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         getAllCourses();
     }
 
-    public void getAllCoursesBajs(){
-
-        Intent intent = getIntent();
-        String[] programNamn = intent.getStringArrayExtra("extras");
-        String programName = programNamn[1];
-        List<Course> kursLista = myDb.getCourses(programName);
-        int numberOfCourses = kursLista.size();
-        String[] items = new String[numberOfCourses];
-        String[] ids = new String[numberOfCourses];
-        String[] codes = new String[numberOfCourses];
-
-        for (int i = 0; i < kursLista.size(); i++) {
-            Course course = kursLista.get(i);
-            ids[i] = course.getId();
-            items[i] = course.getName();
-            codes[i] = course.getCode();
-
-        }
-        CourseAdapter courseAdapter = new CourseAdapter(this, items, ids, codes);
-        listView.setAdapter(courseAdapter);
-    }
-
     public void getAllCourses() {
 
         CollectionReference courseRef = rootRef.collection("Courses");
@@ -108,12 +87,18 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
 
                             List<DocumentSnapshot> progLista = task.getResult().getDocuments();
 
+                            Intent intent = getIntent();
+                            final String[] extras = intent.getStringArrayExtra("extras");
+
+
                             for(int i = 0;i < size;i++){
                                 DocumentSnapshot doc = progLista.get(i);
-                                ids[i] = doc.getId().toString();
-                                courseName[i] = doc.getString("name");
-                                courseCode[i] = doc.getString("coursecode");
-                                program[i] = doc.getString("program");
+                                if(doc.getString("program").equals(extras[2].toString())) {
+                                    ids[i] = doc.getId().toString();
+                                    courseName[i] = doc.getString("name");
+                                    courseCode[i] = doc.getString("coursecode");
+                                    program[i] = doc.getString("program");
+                                }
                             }
                             CourseAdapter adapter = new CourseAdapter(context, courseName, ids, courseCode);
                             listView.setAdapter(adapter);
