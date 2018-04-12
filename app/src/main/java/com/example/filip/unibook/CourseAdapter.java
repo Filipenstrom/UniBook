@@ -52,6 +52,7 @@ public class CourseAdapter extends BaseAdapter{
 
             courseName.setText(kursNamn);
             courseId.setText(kursId);
+
             return view;
     }
 }

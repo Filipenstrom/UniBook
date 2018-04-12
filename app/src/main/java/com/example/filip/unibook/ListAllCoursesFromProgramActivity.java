@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -78,29 +79,39 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
 
-                            int size = task.getResult().size();
+                            List<DocumentSnapshot> progLista = task.getResult().getDocuments();
+                            int size = 0;
+                            Intent intent = getIntent();
+                            final String[] extras = intent.getStringArrayExtra("extras");
+
+                            for(int i = 0; i<task.getResult().size();i++) {
+                                DocumentSnapshot doc = progLista.get(i);
+                                if(doc.getString("program").equals(extras[2].toString())) {
+                                    size++;
+                                }
+                            }
 
                             String[] courseName = new String[size];
                             String[] ids = new String[size];
                             String[] courseCode = new String[size];
                             String[] program = new String[size];
 
-                            List<DocumentSnapshot> progLista = task.getResult().getDocuments();
+                            size = size - 1;
 
-                            Intent intent = getIntent();
-                            final String[] extras = intent.getStringArrayExtra("extras");
-
-
-                            for(int i = 0;i < size;i++){
+                            for(int i = 0;i < progLista.size();i++){
                                 DocumentSnapshot doc = progLista.get(i);
                                 if(doc.getString("program").equals(extras[2].toString())) {
-                                    ids[i] = doc.getId().toString();
-                                    courseName[i] = doc.getString("name");
-                                    courseCode[i] = doc.getString("coursecode");
-                                    program[i] = doc.getString("program");
+                                    ids[size] = doc.getId().toString();
+                                    courseName[size] = doc.getString("name");
+                                    courseCode[size] = doc.getString("coursecode");
+                                    program[size] = doc.getString("program");
+                                    if(size >= 1) {
+                                        size--;
+                                    }
                                 }
                             }
                             CourseAdapter adapter = new CourseAdapter(context, courseName, ids, courseCode);
+                            //ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_selectable_list_item, courseName);
                             listView.setAdapter(adapter);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
