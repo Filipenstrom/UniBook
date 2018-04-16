@@ -7,17 +7,31 @@
     tools:context="com.example.filip.unibook.SettingsActivity">
 
     <Button
+        android:id="@+id/btnMyMessages"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/colorOrange"
+        android:text="Meddelande"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnlogOut" />
+
+    <Button
         android:id="@+id/btnlogOut"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
+        android:background="@color/colorOrange"
         android:text="Logga ut"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnnotiser"
-        android:background="@color/colorOrange"/>
+        app:layout_constraintTop_toBottomOf="@+id/btnnotiser" />
 
     <Button
         android:id="@+id/btnnotiser"
