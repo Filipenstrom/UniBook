@@ -37,6 +37,10 @@ public class MyMessagesActivity extends AppCompatActivity {
     ListView listView;
     Context context = this;
     String name;
+    String[] id;
+    String[] names;
+    int counter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,8 +76,8 @@ public class MyMessagesActivity extends AppCompatActivity {
 
                             List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
                             int size = task.getResult().size();
-                            String[] id = new String[size];
-                            String[] names = new String[size];
+                            id = new String[size];
+                            names = new String[size];
 
                             for(int i = 0;i < size;i++){
                                 DocumentSnapshot doc = chatLista.get(i);
@@ -82,19 +86,18 @@ public class MyMessagesActivity extends AppCompatActivity {
                                     chatId = chatIdholder;
                                     id[i] = doc.getId().toString();
                                     if(!doc.getString("User1").equals(user.getUid())){
+                                        counter = i;
                                         getUsername(doc.getString("User1"));
-                                        names[i] = name;
                                     }
-                                    else{
+                                    else {
+                                        counter = i;
                                         getUsername(doc.getString("User2"));
-                                        names[i] = name;
                                     }
                                     Toast.makeText(MyMessagesActivity.this, chatId,
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            MessageAdapter adapter = new MessageAdapter(context, id, names);
-                            listView.setAdapter(adapter);
+
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -102,8 +105,8 @@ public class MyMessagesActivity extends AppCompatActivity {
                 });
     }
 
-    public void getUsername(String id){
-        final DocumentReference docRef = rootRef.collection("Users").document(id);
+    public void getUsername(final String userid){
+        final DocumentReference docRef = rootRef.collection("Users").document(userid);
 
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -113,6 +116,9 @@ public class MyMessagesActivity extends AppCompatActivity {
                     if (document != null && document.exists()) {
 
                         name = document.getString("name") + " " + document.getString("surname");
+                        names[counter] = name;
+                        MessageAdapter adapter = new MessageAdapter(context, id, names);
+                        listView.setAdapter(adapter);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
@@ -122,6 +128,8 @@ public class MyMessagesActivity extends AppCompatActivity {
                     Log.d(TAG, "get failed with ", task.getException());
                 }
             }
+
         });
+
     }
 }

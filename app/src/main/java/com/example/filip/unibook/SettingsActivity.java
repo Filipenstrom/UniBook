@@ -18,7 +18,6 @@ public class SettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         logOut();
         goToNotiser();
-        goToMeddelande();
     }
 
     public void logOut(){
@@ -40,17 +39,6 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, NotificationActivity.class);
-                startActivity(intent);
-            }
-        });
-    }
-
-    public void goToMeddelande(){
-        Button btnmessages =  findViewById(R.id.btnMyMessages);
-        btnmessages.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(SettingsActivity.this, MyMessagesActivity.class);
                 startActivity(intent);
             }
         });

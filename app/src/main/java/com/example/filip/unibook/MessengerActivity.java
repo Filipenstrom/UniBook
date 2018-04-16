@@ -52,6 +52,9 @@ public class MessengerActivity extends AppCompatActivity {
     Context context = this;
     ListView listView;
     String iChatId;
+    String[] adaptermessages;
+    String[] adapterids;
+    int idcounter = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -181,10 +184,10 @@ public class MessengerActivity extends AppCompatActivity {
 
         Map<String, Object> mapOne = new HashMap<>();
         mapOne.put("Message", message);
+        mapOne.put("UserId", user.getUid().toString());
 
 
-            chatRef
-                    .set(mapOne)
+            chatRef.set(mapOne)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
@@ -219,6 +222,7 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     public void showMessages(String chatId){
+        idcounter = 0;
         CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
         chatRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -230,8 +234,8 @@ public class MessengerActivity extends AppCompatActivity {
 
                             String[] messages = new String[size];
                             String[] ids = new String[size];
-                            String[] adaptermessages = new String[size-1];
-                            String[] adapterids = new String[size-1];
+                            adaptermessages = new String[size-1];
+
                             int counter = 0;
 
                             List<DocumentSnapshot> messagesLista = task.getResult().getDocuments();
@@ -241,21 +245,58 @@ public class MessengerActivity extends AppCompatActivity {
                                 if(!doc.getId().equals("latest")) {
                                     messages[i] = doc.getString("Message");
                                     ids[i] = doc.getId().toString();
+                                    idcounter++;
                                 }
                             }
                             for(int i = 0;i<messages.length;i++){
                                 if(messages[i] != null) {
+                                    DocumentSnapshot doc = messagesLista.get(i);
                                     adaptermessages[counter] = messages[i];
-                                    adapterids[counter] = ids[i];
+                                    adapterids = new String[idcounter];
+
+                                    //adapterids[counter] = ids[i];
+                                    getUsername(doc.getString("UserId"));
                                     counter++;
+
                                 }
                             }
-                            MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
-                            listView.setAdapter(adapter);
+                            //MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                            //listView.setAdapter(adapter);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
                 });
+    }
+
+
+
+    public void getUsername(String userid){
+        final DocumentReference docRef = rootRef.collection("Users").document(userid);
+
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+
+                        for(int i = 0;i<idcounter;i++) {
+                            adapterids[i] = document.getString("name") + " " + document.getString("surname");
+                        }
+                        MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                        listView.setAdapter(adapter);
+
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+
+        });
+
     }
 }
