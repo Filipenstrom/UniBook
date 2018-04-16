@@ -35,6 +35,7 @@ import java.lang.ref.Reference;
 import java.sql.Array;
 import java.sql.Ref;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,6 +57,10 @@ public class MessengerActivity extends AppCompatActivity {
     String[] adapterids;
     int idcounter = 0;
     int size;
+    String[] userids;
+    int usernamecounter;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,10 +80,9 @@ public class MessengerActivity extends AppCompatActivity {
 
         displayChatMessage();
         //createChat();
-        if(iChatId == null) {
+        if (iChatId == null) {
             getChat();
-        }
-        else{
+        } else {
             chatId = iChatId;
             showMessages(iChatId);
         }
@@ -100,15 +104,12 @@ public class MessengerActivity extends AppCompatActivity {
                     showMessages(chatId);
                     return;
                 }
-
                 showMessages(chatId);
             }
-
         });
-
     }
 
-    public void displayChatMessage(){
+    public void displayChatMessage() {
 
     }
 
@@ -126,15 +127,17 @@ public class MessengerActivity extends AppCompatActivity {
         userRef.document()
                 .set(mapOne)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                           Log.d(TAG, "DocumentSnapshot successfully written!"); }
-                    })
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
                 .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error writing document", e); }
-                    });
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
     }
 
     public void getChat() {
@@ -148,17 +151,15 @@ public class MessengerActivity extends AppCompatActivity {
                             List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
                             int size = task.getResult().size();
 
-
-                            for(int i = 0;i < size;i++){
+                            for (int i = 0; i < size; i++) {
                                 DocumentSnapshot doc = chatLista.get(i);
-                                if(doc.getString("User1").equals(user.getUid().toString()) && doc.getString("User2").equals(sellerId)) {
-                                   String chatIdholder = doc.getId().toString();
-                                   chatId = chatIdholder;
+                                if (doc.getString("User1").equals(user.getUid().toString()) && doc.getString("User2").equals(sellerId)) {
+                                    String chatIdholder = doc.getId().toString();
+                                    chatId = chatIdholder;
                                     showMessages(chatId);
                                     Toast.makeText(MessengerActivity.this, chatId,
                                             Toast.LENGTH_SHORT).show();
-                                }
-                                else if(doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString())){
+                                } else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString())) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
@@ -188,20 +189,20 @@ public class MessengerActivity extends AppCompatActivity {
         mapOne.put("UserId", user.getUid().toString());
 
 
-            chatRef.set(mapOne)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            //showMessages(chatId);
-                            Log.d(TAG, "DocumentSnapshot successfully written!");
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error writing document", e);
-                        }
-                    });
+        chatRef.set(mapOne)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        //showMessages(chatId);
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
 
         chatRefOld.document()
                 .set(mapOne)
@@ -218,11 +219,9 @@ public class MessengerActivity extends AppCompatActivity {
                         Log.w(TAG, "Error writing document", e);
                     }
                 });
-
-
     }
 
-    public void showMessages(String chatId){
+    public void showMessages(String chatId) {
         idcounter = 0;
         CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
         chatRef.get()
@@ -235,67 +234,108 @@ public class MessengerActivity extends AppCompatActivity {
 
                             String[] messages = new String[size];
                             String[] ids = new String[size];
-                            adaptermessages = new String[size-1];
-                            adapterids = new String[size-1];
+                            userids = new String[size];
+                            adaptermessages = new String[size - 1];
+                            adapterids = new String[size - 1];
 
                             int counter = 0;
 
                             List<DocumentSnapshot> messagesLista = task.getResult().getDocuments();
 
-                            for(int i = 0;i < size;i++){
+                            for (int i = 0; i < size; i++) {
                                 DocumentSnapshot doc = messagesLista.get(i);
-                                if(!doc.getId().equals("latest")) {
+                                if (!doc.getId().equals("latest")) {
                                     messages[i] = doc.getString("Message");
-                                    ids[i] = doc.getId().toString();
 
+                                    ids[i] = doc.getId().toString();
                                 }
                             }
-                            for(int i = 0;i<messages.length;i++){
-                                if(messages[i] != null) {
+                            for (int i = 0; i < messages.length; i++) {
+                                if (messages[i] != null) {
                                     DocumentSnapshot doc = messagesLista.get(i);
                                     adaptermessages[counter] = messages[i];
-                                    getUsername(doc.getString("UserId"));
+                                    userids[i] = doc.getString("UserId");
                                     counter++;
+                                    if(i == messages.length-1){
+                                        getUsername(userids);
+                                    }
                                 }
                             }
+
 
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
+
                 });
     }
 
 
+    public void getUsernameOld(String[] userid) {
+        for (int i = 0; i < userid.length; i++) {
+            final DocumentReference docRef = rootRef.collection("Users").document(userid[i]);
 
-    public void getUsername(String userid){
-        final DocumentReference docRef = rootRef.collection("Users").document(userid);
+            docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
 
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-                        if(idcounter < adapterids.length) {
+                        if (idcounter < adapterids.length) {
                             adapterids[idcounter] = document.getString("name") + " " + document.getString("surname");
                         }
-                            if(idcounter == size-2){
-                                MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
-                                listView.setAdapter(adapter);
-                            }
+                        if (idcounter == size - 1) {
+                            MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                            listView.setAdapter(adapter);
+                        }
                         idcounter++;
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d(TAG, "get failed with ", task.getException());
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            }
 
-        });
+            });
+        }
+    }
 
+    public void getUsername(final String[] userids) {
+        usernamecounter = 0;
+        for (int i = 0; i < userids.length; i++) {
+            CollectionReference chatRef = rootRef.collection("Users");
+            chatRef.get()
+                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                            if (task.isSuccessful()) {
+                                List<DocumentSnapshot> usersLista = task.getResult().getDocuments();
+
+                                for (int i = 0; i < userids.length; i++) {
+                                    for(int i2 = 0;i2<usersLista.size();i2++) {
+                                        DocumentSnapshot doc = usersLista.get(i2);
+                                        String id = userids[usernamecounter];
+                                        if(doc.getId().equals(id)) {
+                                            adapterids[usernamecounter] = doc.getString("name") + " " + doc.getString("surname");
+                                            usernamecounter++;
+                                            if (usernamecounter == userids.length) {
+                                                break;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                    MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                                    listView.setAdapter(adapter);
+
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        }
+
+                    });
+        }
     }
 }
