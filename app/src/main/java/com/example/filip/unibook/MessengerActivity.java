@@ -55,6 +55,7 @@ public class MessengerActivity extends AppCompatActivity {
     String[] adaptermessages;
     String[] adapterids;
     int idcounter = 0;
+    int size;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -230,11 +231,12 @@ public class MessengerActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
 
-                            int size = task.getResult().size();
+                            size = task.getResult().size();
 
                             String[] messages = new String[size];
                             String[] ids = new String[size];
                             adaptermessages = new String[size-1];
+                            adapterids = new String[size-1];
 
                             int counter = 0;
 
@@ -245,23 +247,18 @@ public class MessengerActivity extends AppCompatActivity {
                                 if(!doc.getId().equals("latest")) {
                                     messages[i] = doc.getString("Message");
                                     ids[i] = doc.getId().toString();
-                                    idcounter++;
+
                                 }
                             }
                             for(int i = 0;i<messages.length;i++){
                                 if(messages[i] != null) {
                                     DocumentSnapshot doc = messagesLista.get(i);
                                     adaptermessages[counter] = messages[i];
-                                    adapterids = new String[idcounter];
-
-                                    //adapterids[counter] = ids[i];
                                     getUsername(doc.getString("UserId"));
                                     counter++;
-
                                 }
                             }
-                            //MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
-                            //listView.setAdapter(adapter);
+
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -280,12 +277,14 @@ public class MessengerActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document != null && document.exists()) {
-
-                        for(int i = 0;i<idcounter;i++) {
-                            adapterids[i] = document.getString("name") + " " + document.getString("surname");
+                        if(idcounter < adapterids.length) {
+                            adapterids[idcounter] = document.getString("name") + " " + document.getString("surname");
                         }
-                        MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
-                        listView.setAdapter(adapter);
+                            if(idcounter == size-2){
+                                MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                                listView.setAdapter(adapter);
+                            }
+                        idcounter++;
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
