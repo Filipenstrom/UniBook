@@ -261,8 +261,6 @@ public class MessengerActivity extends AppCompatActivity {
                                     }
                                 }
                             }
-
-
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -304,7 +302,7 @@ public class MessengerActivity extends AppCompatActivity {
 
     public void getUsername(final String[] userids) {
         usernamecounter = 0;
-        for (int i = 0; i < userids.length; i++) {
+        //for (int i = 0; i < userids.length; i++) {
             CollectionReference chatRef = rootRef.collection("Users");
             chatRef.get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -317,13 +315,18 @@ public class MessengerActivity extends AppCompatActivity {
                                     for(int i2 = 0;i2<usersLista.size();i2++) {
                                         DocumentSnapshot doc = usersLista.get(i2);
                                         String id = userids[usernamecounter];
-                                        if(doc.getId().equals(id)) {
+                                        if(doc.getId().toString().equals(id)) {
                                             adapterids[usernamecounter] = doc.getString("name") + " " + doc.getString("surname");
-                                            usernamecounter++;
-                                            if (usernamecounter == userids.length) {
-                                                break;
-                                            }
+
                                         }
+                                        if (usernamecounter != userids.length) {
+                                            usernamecounter++;
+
+                                        }
+                                        else{
+                                            break;
+                                        }
+
                                     }
                                 }
 
@@ -336,6 +339,6 @@ public class MessengerActivity extends AppCompatActivity {
                         }
 
                     });
-        }
+       // }
     }
 }
