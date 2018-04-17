@@ -60,8 +60,6 @@ public class MyMessagesActivity extends AppCompatActivity {
                     Intent data = new Intent(MyMessagesActivity.this, MessengerActivity.class);
                     data.putExtra("chatId", chatId.getText().toString());
                     startActivity(data);
-
-
             }
         });
     }

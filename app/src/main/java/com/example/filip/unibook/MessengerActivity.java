@@ -59,7 +59,6 @@ public class MessengerActivity extends AppCompatActivity {
     int idcounter = 0;
     int size;
     String[] userids;
-    int usernamecounter;
 
 
 
@@ -80,9 +79,10 @@ public class MessengerActivity extends AppCompatActivity {
         iChatId = intentchatId.getStringExtra("chatId");
 
         displayChatMessage();
-        //createChat();
+
         if (iChatId == null) {
-            getChat();
+            createChat();
+            chatId = sellerId;
         } else {
             chatId = iChatId;
             showMessages(iChatId);
@@ -95,6 +95,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
+        //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
         final DocumentReference docRef = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
         docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -114,6 +115,7 @@ public class MessengerActivity extends AppCompatActivity {
 
     }
 
+    //Skapa en chatt till en annons. Körs enbart när man går in på en annons som är till salu och trycker på skicka meddelande.
     public void createChat() {
         CollectionReference userRef = rootRef.collection("Chat");
 
@@ -130,6 +132,7 @@ public class MessengerActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        getChat();
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                     }
                 })
@@ -141,6 +144,7 @@ public class MessengerActivity extends AppCompatActivity {
                 });
     }
 
+    //Hämtar chatten efter att den skapats. Körs enbart första gången när man går in på en annons som är till salu och trycker på skicka meddelande.
     public void getChat() {
         CollectionReference chatRef = rootRef.collection("Chat");
         chatRef.get()
@@ -178,8 +182,8 @@ public class MessengerActivity extends AppCompatActivity {
                 });
     }
 
+    //Skickar ett meddelande till en användare och sparar det i databasen.
     public void sendMessage(final String chatId) {
-
         DocumentReference userRef = rootRef.collection("Users").document(user.getUid().toString());
         //CollectionReference userRef = rootRef.collection("User").document();
 
@@ -228,11 +232,11 @@ public class MessengerActivity extends AppCompatActivity {
                                 Log.w(TAG, "Error writing document", e);
                             }
                         });
-
             }
         });
     }
 
+    //Visar alla meddelande i medelandelistan.
     public void showMessages(String chatId) {
         idcounter = 0;
         CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
@@ -242,31 +246,35 @@ public class MessengerActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
 
-                            size = task.getResult().size();
+                            if(task.getResult().size() != 0) {
+                                size = task.getResult().size() - 1;
+                            }
+                            else{
+                                size = 0;
+                            }
 
                             String[] messages = new String[size];
-                            String[] ids = new String[size];
                             userids = new String[size];
-                            adaptermessages = new String[size - 1];
+                            adaptermessages = new String[size];
                             adapterids = new String[size];
 
                             int counter = 0;
 
                             List<DocumentSnapshot> messagesLista = task.getResult().getDocuments();
 
-                            for (int i = 0; i < size; i++) {
+                            //Loopa igenom alla meddelande för att separera bort "latest" då det inte ska visas.
+                            for (int i = 0; i < task.getResult().size(); i++) {
                                 DocumentSnapshot doc = messagesLista.get(i);
                                 if (!doc.getId().equals("latest")) {
-                                    messages[i] = doc.getString("Message");
-
-                                    ids[i] = doc.getId().toString();
+                                    messages[counter] = doc.getString("Message");
+                                    counter++;
                                 }
                             }
+                            //Loopa igenom nya meddelandelistan och hämta namnen på de som skickat meddelande.
                             for (int i = 0; i < messages.length; i++) {
                                 if (messages[i] != null) {
                                     DocumentSnapshot doc = messagesLista.get(i);
-                                    adaptermessages[counter] = messages[i];
-                                    userids[i] = doc.getString("UserId");
+                                    adaptermessages[i] = messages[i];
                                     adapterids[i] = doc.getString("Name");
                                     counter++;
                                 }
