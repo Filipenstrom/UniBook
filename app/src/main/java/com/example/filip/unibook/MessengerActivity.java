@@ -29,6 +29,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.Reference;
@@ -300,9 +301,9 @@ public class MessengerActivity extends AppCompatActivity {
         }
     }
 
-    public void getUsername(final String[] userids) {
+    public void getUsernameOold(final String[] userids) {
         usernamecounter = 0;
-        //for (int i = 0; i < userids.length; i++) {
+        for (int i = 0; i < userids.length; i++) {
             CollectionReference chatRef = rootRef.collection("Users");
             chatRef.get()
                     .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -317,16 +318,11 @@ public class MessengerActivity extends AppCompatActivity {
                                         String id = userids[usernamecounter];
                                         if(doc.getId().toString().equals(id)) {
                                             adapterids[usernamecounter] = doc.getString("name") + " " + doc.getString("surname");
-
-                                        }
-                                        if (usernamecounter != userids.length) {
+                                            if (usernamecounter == userids.length) {
+                                                break;
+                                            }
                                             usernamecounter++;
-
                                         }
-                                        else{
-                                            break;
-                                        }
-
                                     }
                                 }
 
@@ -339,6 +335,35 @@ public class MessengerActivity extends AppCompatActivity {
                         }
 
                     });
-       // }
+        }
     }
+
+    public void getUsername(final String[] userids) {
+        usernamecounter = 0;
+        CollectionReference favouritesRef = rootRef.collection("Users");
+        for (int i = 0; i < userids.length; i++) {
+            Query query = favouritesRef.whereEqualTo("userId", userids[i]);
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+
+                        List<DocumentSnapshot> list = task.getResult().getDocuments();
+                        for (DocumentSnapshot document : list) {
+                                adapterids[usernamecounter] = document.getString("name") + " " + document.getString("surname");
+                                if (usernamecounter == userids.length) {
+                                    break;
+                                }
+                                usernamecounter++;
+                        }
+                        MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                        listView.setAdapter(adapter);
+                    } else {
+                        Log.d(TAG, "Error getting documents: ", task.getException());
+                    }
+                }
+            });
+        }
+    }
+
 }
