@@ -115,7 +115,7 @@ public class MyMessagesActivity extends AppCompatActivity {
 
                         name = document.getString("name") + " " + document.getString("surname");
                         names[counter] = name;
-                        MessageAdapter adapter = new MessageAdapter(context, id, names);
+                        MessageAdapter adapter = new MessageAdapter(context, id, names, null);
                         listView.setAdapter(adapter);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());

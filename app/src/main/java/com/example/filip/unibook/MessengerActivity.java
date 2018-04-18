@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.content.res.TypedArrayUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,9 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,17 +24,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.lang.ref.Reference;
-import java.sql.Array;
-import java.sql.Ref;
-import java.util.Arrays;
-import java.util.Collection;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class MessengerActivity extends AppCompatActivity {
 
@@ -54,8 +47,8 @@ public class MessengerActivity extends AppCompatActivity {
     Context context = this;
     ListView listView;
     String iChatId;
-    String[] adaptermessages;
     String[] adapterids;
+    String[] adapterDate;
     int idcounter = 0;
     int size;
     String[] userids;
@@ -193,11 +186,16 @@ public class MessengerActivity extends AppCompatActivity {
               DocumentSnapshot doc = task.getResult();
               String name = doc.getString("name") + " " + doc.getString("surname");
                 String message = messageTxt.getText().toString();
+                DateFormat dateFormat = new SimpleDateFormat("MM/dd HH:mm");
+                dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Stockholm"));
+                Date date = new Date();
+                System.out.println(dateFormat.format(date));
 
                 Map<String, Object> mapOne = new HashMap<>();
                 mapOne.put("Message", message);
                 mapOne.put("UserId", user.getUid().toString());
                 mapOne.put("Name", name);
+                mapOne.put("Date", "Skickat: " + dateFormat.format(date));
 
                 DocumentReference chatRefLatest = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
                 CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
@@ -255,8 +253,8 @@ public class MessengerActivity extends AppCompatActivity {
 
                             String[] messages = new String[size];
                             userids = new String[size];
-                            adaptermessages = new String[size];
                             adapterids = new String[size];
+                            adapterDate = new String[size];
 
                             int counter = 0;
 
@@ -267,19 +265,12 @@ public class MessengerActivity extends AppCompatActivity {
                                 DocumentSnapshot doc = messagesLista.get(i);
                                 if (!doc.getId().equals("latest")) {
                                     messages[counter] = doc.getString("Message");
+                                    adapterids[counter] = doc.getString("Name");
+                                    adapterDate[counter] = doc.getString("Date");
                                     counter++;
                                 }
                             }
-                            //Loopa igenom nya meddelandelistan och hämta namnen på de som skickat meddelande.
-                            for (int i = 0; i < messages.length; i++) {
-                                if (messages[i] != null) {
-                                    DocumentSnapshot doc = messagesLista.get(i);
-                                    adaptermessages[i] = messages[i];
-                                    adapterids[i] = doc.getString("Name");
-                                    counter++;
-                                }
-                            }
-                            MessageAdapter adapter = new MessageAdapter(context, adaptermessages, adapterids);
+                            MessageAdapter adapter = new MessageAdapter(context, messages, adapterids, adapterDate);
                             listView.setAdapter(adapter);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
