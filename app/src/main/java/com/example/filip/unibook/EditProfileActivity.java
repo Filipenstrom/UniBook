@@ -6,18 +6,30 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.io.ByteArrayOutputStream;
 
 public class EditProfileActivity extends AppCompatActivity {
 
+    public static final String TAG = "Bra meddelande";
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     ImageView imageView;
     Button button;
@@ -25,6 +37,9 @@ public class EditProfileActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     Uri imageUri;
     byte[] bytes;
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,12 +55,9 @@ public class EditProfileActivity extends AppCompatActivity {
         button = findViewById(R.id.btnSpara);
         changePic = findViewById(R.id.btnChangePic);
 
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sp = new SharedPreferences(this);
-        User user = db.getUser(sp.getusername());
-        insertUserInformation(user.getMail());
+        insertUserInformation();
 
-        setByteIfUserDontChangePic();
+        //setByteIfUserDontChangePic();
 
         changePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,41 +67,48 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    public void insertUserInformation(String username){
-        DatabaseHelper db = new DatabaseHelper(this);
-        User userInformation = db.getUser(username);
-        SharedPreferences sharedPreferences = new SharedPreferences(this);
+    public void insertUserInformation() {
+        DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
 
-        imageView = findViewById(R.id.ivProfile);
+                        editName.setText(document.getString("name"));
+                        editSurname.setText(document.getString("surname"));
+                        editEmail.setText(document.getString("email"));
+                        editAdress.setText(document.getString("adress"));
+                        editPhone.setText(document.getString("phone"));
+                        editSchool.setText(document.getString("school"));
 
-        editName.setText(userInformation.getName());
-        editSurname.setText(userInformation.getSurname());
-        editEmail.setText(userInformation.getMail());
-        editAdress.setText(userInformation.getAdress());
-        editSchool.setText(userInformation.getSchool());
-        editPhone.setText(Integer.toString(userInformation.getPhone()));
-        imageView.setImageBitmap(BitmapFactory.decodeByteArray(userInformation.getPic(), 0, userInformation.getPic().length));
+                        //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
+
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 
     public void save(View view) {
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sp = new SharedPreferences(this);
-        User id = db.getUser(sp.getusername());
 
-        //Ifall användaren byter mail måste sharedpreferences variabeln för username ändras.
+        DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
+        docRef.update("name", editName.getText().toString());
+        docRef.update("surname", editSurname.getText().toString());
+        docRef.update("email", editEmail.getText().toString());
+        docRef.update("adress", editAdress.getText().toString());
+        docRef.update("phone", editPhone.getText().toString());
+        docRef.update("school", editSchool.getText().toString());
+
         Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+        startActivity(intent);
 
-        if(editEmail.getText().toString().equals(id.getMail())) {
-
-            db.updateUser(id.getId(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-
-            startActivity(intent);
-        }
-        else{
-            saveUserInformation();
-            db.updateUser(id.getMail(), editName.getText().toString(), editSurname.getText().toString(), editEmail.getText().toString(), bytes);
-            startActivity(intent);
-        }
     }
 
     public void choseImg(){

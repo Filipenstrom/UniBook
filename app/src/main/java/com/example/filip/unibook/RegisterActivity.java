@@ -6,6 +6,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,17 +17,25 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
+import java.sql.Ref;
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    public static final String TAG = "Bra meddelande";
     private FirebaseAuth mAuth;
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     private static final int PICK_IMAGE = 100;
@@ -34,6 +43,7 @@ public class RegisterActivity extends AppCompatActivity {
     ImageView imageView;
     Button button;
     byte[] bytes = null;
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,13 +110,10 @@ public class RegisterActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("message", "createUserWithEmail:success");
 
-                                FirebaseUser user = mAuth.getCurrentUser();
-                                FirebaseHelper helper = new FirebaseHelper();
-
-                                helper.insertUser(user.getUid().toString(), namn, surname, email, adress, phone, school );
-
                                 Toast.makeText(RegisterActivity.this, "Registrering lyckades",
                                         Toast.LENGTH_SHORT).show();
+
+                                createUser(namn, surname, email, adress, phone, school, password);
 
                                 Intent logInIntent = new Intent(RegisterActivity.this, LoggedInActivity.class);
                                 startActivity(logInIntent);
@@ -139,6 +146,37 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
         }
+    }
+
+
+    //Metod som lägger in data i Firestore om den skapade användaren.
+    public void createUser(String namn, String surname, String email, String adress, String phone, String school, String password) {
+        FirebaseUser user = mAuth.getCurrentUser();
+        CollectionReference userRef = rootRef.collection("Users");
+
+        Map<String, Object> mapOne = new HashMap<>();
+        mapOne.put("name", namn);
+        mapOne.put("surname", surname);
+        mapOne.put("email", email);
+        mapOne.put("adress", adress);
+        mapOne.put("phone", phone);
+        mapOne.put("school", school);
+        mapOne.put("password", password);
+
+        userRef.document(user.getUid().toString())
+                .set(mapOne)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
     }
 
     //Metod för att välja profilbild

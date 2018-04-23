@@ -15,29 +15,48 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 import android.Manifest;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import org.w3c.dom.Document;
+
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ChosenAdForSale extends AppCompatActivity {
 
-    Ad chosenAd;
-    TextView title;
-    TextView pris;
-    TextView info;
-    TextView program;
-    TextView kurs;
+    public static final String TAG = "message";
+    TextView title, pris, info, program, kurs, seller, chosenAdId;
     ImageView pic;
-    TextView seller;
     User user;
-    TextView chosenAdId;
-    Button favoriteBtn;
+    Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
+    ProgressBar progressBar;
     Context context;
+    private String sellerId, sellerPhone, adId;
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
-    final DatabaseHelper db = new DatabaseHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,56 +72,99 @@ public class ChosenAdForSale extends AppCompatActivity {
         seller = findViewById(R.id.chosenAdSellerName);
         chosenAdId = findViewById(R.id.txtChosenAdForSale);
         favoriteBtn = findViewById(R.id.btnAddToFavorites);
-        context = this;
+        btnCallAd = findViewById(R.id.btnChosenAdCall);
+        btnReportAd = findViewById(R.id.btnReportAd);
+        btnSendMessage = findViewById(R.id.btnSendMsgAd);
+        //progressBar = findViewById(R.id.progressBarChosenAd);
+
+        //progressBar.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", -1);
+        final String id = intent.getStringExtra("id");
 
-        chosenAd = db.getAd(id);
+        DocumentReference docRef = rootRef.collection("Ads").document(id);
 
-        user = db.getUserWithId(chosenAd.getUserId());
-
-        fillAdInformation();
-
-        Button btnReportAd = findViewById(R.id.btnReportAd);
-
-
-        btnReportAd.setOnClickListener(new View.OnClickListener() {
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChosenAdForSale.this, ReportAd.class);
-                TextView id = findViewById(R.id.txtChosenAdForSale);
-                intent.putExtra("id", Integer.parseInt(id.getText().toString()));
-                startActivity(intent);
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+
+                        title.setText(document.getString("title"));
+                        pris.setText(document.getString("price") + " :-");
+                        info.setText(document.getString("info"));
+                        kurs.setText(document.getString("course"));
+                        chosenAdId.setText(document.getId());
+                        program.setText(document.getString("program"));
+                        seller.setText(document.getString("seller"));
+                        sellerId = document.getString("sellerId");
+                        adId = document.getId();
+
+                        checkFavourites(adId);
+
+                        getNumber(sellerId);
+
+                        //progressBar.setVisibility(View.INVISIBLE);
+                        //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
+
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
             }
         });
 
         favoriteBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SharedPreferences prefs = new SharedPreferences(context);
-                User inloggadAnv = db.getUser(prefs.getusername());
-                String knappText = favoriteBtn.getText().toString();
-                // String userid = Integer.toString(id);
-                String adId = chosenAd.getId();
-                String anvandare = inloggadAnv.getId();
 
-                if(knappText.equals("LÄGG TILL SOM FAVORIT"))
-                {
-                    db.addFavorite(adId, anvandare);
-                    Toast.makeText(ChosenAdForSale.this,"Tillagd i favoriter!", Toast.LENGTH_LONG).show();
-                    favoriteBtn.setText("TA BORT SOM FAVORIT");
-                }
+                CollectionReference favouritesRef = rootRef.collection("Favourites");
 
-                else {
-                    //db.deleteFavorite(adId,anvandare);
-                    Toast.makeText(ChosenAdForSale.this,"Borttagen från favoriter!", Toast.LENGTH_LONG).show();
-                    favoriteBtn.setText("LÄGG TILL SOM FAVORIT");
+                if(favoriteBtn.getText().toString().toLowerCase().equals("lägg till favorit")){
+
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("userId", loggenIn.getUid().toString());
+                    map.put("adId", adId);
+
+                    favouritesRef.document()
+                            .set(map)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(ChosenAdForSale.this, "Favorit tillagd",
+                                            Toast.LENGTH_LONG).show();
+
+                                    favoriteBtn.setText("Ta bort favorit");
+                                    Log.d(TAG, "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error writing document", e);
+                                }
+                            });
+                }else{
+
+                    removeFavourite(adId);
                 }
             }
         });
 
-        Button btnCallAd = findViewById(R.id.btnChosenAdCall);
+        btnReportAd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdForSale.this, ReportAd.class);
+                TextView id = findViewById(R.id.txtChosenAdForSale);
+                intent.putExtra("id", id.getText().toString());
+                startActivity(intent);
+            }
+        });
+
 
         btnCallAd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -110,8 +172,9 @@ public class ChosenAdForSale extends AppCompatActivity {
                 if(ContextCompat.checkSelfPermission(ChosenAdForSale.this,
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
                     //Toast.makeText(ChosenAdForSale.this, "You have already granted this permission", Toast.LENGTH_SHORT).show();
+
                     Intent callIntent = new Intent(Intent.ACTION_CALL);
-                    callIntent.setData(Uri.parse("tel:" + user.getPhone()));
+                    callIntent.setData(Uri.parse("tel:" + sellerPhone));
                     startActivity(callIntent);
                 }else{
                     requestCallPermission();
@@ -119,16 +182,95 @@ public class ChosenAdForSale extends AppCompatActivity {
             }
         });
 
-        //canAddToFavorite();
+        btnSendMessage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdForSale.this, MessengerActivity.class);
+                String id = sellerId;
+                intent.putExtra("userid", id);
+                startActivity(intent);
+            }
+        });
     }
 
-    //Ring
+    public void getNumber(String sellerId){
+
+        DocumentReference userRef = rootRef.collection("Users").document(sellerId);
+
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+
+                        sellerPhone = document.getString("phone");
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void checkFavourites(final String adId){
+
+        CollectionReference favouritesRef =  rootRef.collection("Favourites");
+        Query query = favouritesRef.whereEqualTo("userId", loggenIn.getUid().toString());
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : list) {
+
+                        if (document.getString("adId").equals(adId)) {
+                            favoriteBtn.setText("Ta bort favorit");
+                        }
+                    }
+                }else{
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void removeFavourite(final String adId){
+
+        final CollectionReference favouritesRef =  rootRef.collection("Favourites");
+        Query query = favouritesRef.whereEqualTo("userId", loggenIn.getUid().toString());
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : list) {
+
+                        if (document.getString("adId").equals(adId)) {
+                            favouritesRef.document(document.getId()).delete();
+                            Toast.makeText(ChosenAdForSale.this, "Favorit borttagen",
+                                    Toast.LENGTH_LONG).show();
+                            favoriteBtn.setText("Lägg till favorit");
+                        }
+                    }
+                }else{
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
     private void requestCallPermission(){
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
 
             new AlertDialog.Builder(this)
                     .setTitle("Permission needed")
-                    .setMessage("This permission is needed to make calls from applicaiton")
+                    .setMessage("This permission is needed to make calls from application")
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -156,44 +298,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    //Använder gammal databas, ska göras om för Firebase
-    /*public void canAddToFavorite(){
-        SharedPreferences prefs = new SharedPreferences(context);
-        User anvandare = db.getUser(prefs.getusername());
-        List<Ad> annonser = db.getMyFavoriteAds(anvandare.getId());
-        String adId = chosenAd.getId();
-        String annonsAnvId = Integer.toString(chosenAd.getUserId());
-
-        for (int i = 0; i < annonser.size(); i++) {
-            Ad annons = annonser.get(i);
-            if(annonsAnvId.equals(anvandare.getId())){
-                favoriteBtn.setVisibility(View.INVISIBLE);
-            }
-            else if(annons.getId().equals(adId)){
-
-                favoriteBtn.setText("TA BORT SOM FAVORIT");
-                break;
-            }
-            else {
-                favoriteBtn.setText("LÄGG TILL SOM FAVORIT");
-
-            }
-        }
-    }*/
-
-        //Hämtar data om den valda annonsen från listan.
-    public void fillAdInformation(){
-        String fullName = user.getName() + " " + user.getSurname();
-        chosenAdId.setText(chosenAd.getId());
-        seller.setText(fullName);
-        title.setText(chosenAd.getTitle());
-        pris.setText(chosenAd.getPrice() + ":-");
-        info.setText(chosenAd.getInfo());
-        program.setText(chosenAd.getProgram());
-        kurs.setText(chosenAd.getCourse());
-        pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
     }
 }
 
