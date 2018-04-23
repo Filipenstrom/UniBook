@@ -56,9 +56,11 @@ public class MyMessagesActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView chatId = (TextView) view.findViewById(R.id.txtMessageText);
+                TextView userTalkingTo = view.findViewById(R.id.txtMessageUser);
                 //TextView txtCourseId = view.findViewById(R.id.txtViewCoursesId);
                     Intent data = new Intent(MyMessagesActivity.this, MessengerActivity.class);
                     data.putExtra("chatId", chatId.getText().toString());
+                    data.putExtra("userTalkingTo", userTalkingTo.getText().toString());
                     startActivity(data);
             }
         });

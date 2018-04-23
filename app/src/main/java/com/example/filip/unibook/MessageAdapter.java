@@ -113,9 +113,24 @@ public class MessageAdapter extends BaseAdapter {
             nameTxt.setText(name);
             messageTxt.setText(message);
         }
+
             return v;
 
         //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
+    }
+
+    //Funkar inte
+    public String checkLastToWrite(String lastname, String newname){
+        String sendbackname = "";
+        if(!lastname.equals("") || !newname.equals("")){
+            if(lastname.equals(newname)){
+                sendbackname = "";
+            }
+            else{
+                sendbackname = newname;
+            }
+        }
+        return sendbackname;
     }
 }
 

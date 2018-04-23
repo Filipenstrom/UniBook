@@ -19,7 +19,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_margin="10dp"
-            android:text="content" />
+            android:text="content"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="15sp" />
     </RelativeLayout>
 
     <TextView
@@ -46,20 +48,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:layout_marginEnd="31dp"
+        android:layout_marginEnd="11dp"
         android:layout_weight="1"
         android:text="TextView"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/txtMessageUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginStart="28dp"
+        android:layout_alignStart="@+id/txtMessageTimeSender"
         android:layout_weight="1"
         android:text="TextView"
+        android:textColor="@color/common_google_signin_btn_text_dark_focused"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <RelativeLayout
@@ -78,7 +83,9 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_margin="10dp"
-            android:text="content" />
+            android:text="content"
+            android:textColor="@color/common_google_signin_btn_text_dark_focused"
+            android:textSize="15sp" />
     </RelativeLayout>
 
 </RelativeLayout>
