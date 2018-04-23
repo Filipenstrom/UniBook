@@ -18,19 +18,24 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Time;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -48,7 +53,7 @@ public class MessengerActivity extends AppCompatActivity {
     ListView listView;
     String iChatId;
     String[] adapterids;
-    String[] adapterDate;
+    Date[] adapterDate;
     int idcounter = 0;
     int size;
     String[] userids;
@@ -186,16 +191,22 @@ public class MessengerActivity extends AppCompatActivity {
               DocumentSnapshot doc = task.getResult();
               String name = doc.getString("name") + " " + doc.getString("surname");
                 String message = messageTxt.getText().toString();
-                DateFormat dateFormat = new SimpleDateFormat("MM/dd HH:mm");
-                dateFormat.setTimeZone(TimeZone.getTimeZone("Europe/Stockholm"));
+
+                TimeZone timeZone = TimeZone.getTimeZone("Europe/Stockholm");
+                TimeZone.setDefault(timeZone);
                 Date date = new Date();
-                System.out.println(dateFormat.format(date));
+               /* try {
+                    formattedDate = dateformat.parse(dateString);
+                }catch (ParseException e){
+                    System.out.println(e.getMessage().toString());
+                }*/
+
 
                 Map<String, Object> mapOne = new HashMap<>();
                 mapOne.put("Message", message);
                 mapOne.put("UserId", user.getUid().toString());
                 mapOne.put("Name", name);
-                mapOne.put("Date", "Skickat: " + dateFormat.format(date));
+                mapOne.put("Date", date);
 
                 DocumentReference chatRefLatest = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
                 CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
@@ -238,7 +249,8 @@ public class MessengerActivity extends AppCompatActivity {
     public void showMessages(String chatId) {
         idcounter = 0;
         CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
-        chatRef.get()
+        Query query = chatRef.orderBy("Date", Query.Direction.ASCENDING);
+        query.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -254,7 +266,7 @@ public class MessengerActivity extends AppCompatActivity {
                             String[] messages = new String[size];
                             userids = new String[size];
                             adapterids = new String[size];
-                            adapterDate = new String[size];
+                            adapterDate = new Date[size];
 
                             int counter = 0;
 
@@ -264,13 +276,14 @@ public class MessengerActivity extends AppCompatActivity {
                             for (int i = 0; i < task.getResult().size(); i++) {
                                 DocumentSnapshot doc = messagesLista.get(i);
                                 if (!doc.getId().equals("latest")) {
+                                    userids[counter] = doc.getString("UserId");
                                     messages[counter] = doc.getString("Message");
                                     adapterids[counter] = doc.getString("Name");
-                                    adapterDate[counter] = doc.getString("Date");
+                                    adapterDate[counter] = doc.getDate("Date");
                                     counter++;
                                 }
                             }
-                            MessageAdapter adapter = new MessageAdapter(context, messages, adapterids, adapterDate);
+                            MessageAdapter adapter = new MessageAdapter(context, messages, adapterids, adapterDate, userids);
                             listView.setAdapter(adapter);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
