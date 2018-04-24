@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -35,9 +36,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageException;
+import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Document;
 
+import java.lang.ref.Reference;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -52,9 +58,10 @@ public class ChosenAdForSale extends AppCompatActivity {
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    private String sellerId, sellerPhone, adId, sellerName;
-    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    String sellerId, sellerPhone, adId, id, sellerName, imageId;
+    FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
 
@@ -70,17 +77,16 @@ public class ChosenAdForSale extends AppCompatActivity {
         kurs = findViewById(R.id.chosenAdCourseName);
         pic = findViewById(R.id.chosenAdImg);
         seller = findViewById(R.id.chosenAdSellerName);
-        chosenAdId = findViewById(R.id.txtChosenAdForSale);
         favoriteBtn = findViewById(R.id.btnAddToFavorites);
         btnCallAd = findViewById(R.id.btnChosenAdCall);
         btnReportAd = findViewById(R.id.btnReportAd);
+        progressBar = findViewById(R.id.progressBarChosenAd);
         btnSendMessage = findViewById(R.id.btnSendMsgAd);
-        //progressBar = findViewById(R.id.progressBarChosenAd);
 
-        //progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
-        final String id = intent.getStringExtra("id");
+        id = intent.getStringExtra("id");
 
         DocumentReference docRef = rootRef.collection("Ads").document(id);
 
@@ -95,20 +101,18 @@ public class ChosenAdForSale extends AppCompatActivity {
                         pris.setText(document.getString("price") + " :-");
                         info.setText(document.getString("info"));
                         kurs.setText(document.getString("course"));
-                        chosenAdId.setText(document.getId());
                         program.setText(document.getString("program"));
-                        seller.setText(document.getString("seller"));
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
+                        imageId = document.getString("imageId");
+
+                        setImage(imageId);
 
                         checkFavourites(adId);
 
-                        getNumber(sellerId);
                         getSeller(sellerId);
 
-                        //progressBar.setVisibility(View.INVISIBLE);
-                        //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
-
+                        progressBar.setVisibility(View.INVISIBLE);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d(TAG, "No such document");
@@ -160,8 +164,7 @@ public class ChosenAdForSale extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ChosenAdForSale.this, ReportAd.class);
-                TextView id = findViewById(R.id.txtChosenAdForSale);
-                intent.putExtra("id", id.getText().toString());
+                intent.putExtra("id", adId);
                 startActivity(intent);
             }
         });
@@ -195,10 +198,35 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
-    public void getNumber(String sellerId){
+    public void setImage(String imageId){
+
+        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+        /*
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
+        */
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                pic.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+    }
+
+    public void getSeller(String sellerId){
 
         DocumentReference userRef = rootRef.collection("Users").document(sellerId);
-
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -207,6 +235,9 @@ public class ChosenAdForSale extends AppCompatActivity {
                     if (document != null && document.exists()) {
 
                         sellerPhone = document.getString("phone");
+                        sellerName = document.getString("name") + " " + document.getString("surname");
+                        seller.setText(sellerName);
+
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
                         Log.d(TAG, "No such document");
@@ -300,31 +331,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
-    }
-
-    public void getSeller(String sellerId){
-
-        DocumentReference userRef = rootRef.collection("Users").document(sellerId);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-
-                        sellerPhone = document.getString("phone");
-                        sellerName = document.getString("name") + " " + document.getString("surname");
-                        seller.setText(sellerName);
-
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-        });
     }
 }
 

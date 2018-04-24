@@ -2,7 +2,9 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,6 +17,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import android.widget.*;
+import com.algolia.search.saas.AlgoliaException;
+import com.algolia.search.saas.Client;
+import com.algolia.search.saas.CompletionHandler;
+import com.algolia.search.saas.Index;
+import com.algolia.search.saas.Query;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -26,10 +33,13 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.firestore.WriteBatch;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Document;
 
 public class SearchActivity extends AppCompatActivity {
 
@@ -37,9 +47,17 @@ public class SearchActivity extends AppCompatActivity {
     private SearchView searchView;
     public static final String TAG = "message";
     private ListView listView;
+    private ProgressBar progressbar;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private Context context;
     private List<DocumentSnapshot> programResult;
+    private byte[] img;
+    private String[] items, ids, prices, programs, courses;
+    List<byte[]> pics;
+    private String queryString;
+    Client client;
+    Index index;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,74 +72,74 @@ public class SearchActivity extends AppCompatActivity {
 
         programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
 
+        progressbar = findViewById(R.id.searchProgressBar);
+
         courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
         context = getApplicationContext();
 
-        //Map<String, Object> mapOne = new HashMap<>();
-        //mapOne.put("ISDN", "567-98-00-11");
-        //mapOne.put("course", "Psykologi A");
-        //mapOne.put("info", "Den här boken var inte så bra som jag trodde");
-        //mapOne.put("price", "600");
-        //mapOne.put("program", "Psykologiprogrammet");
-        //mapOne.put("title", "Socialpsykologi med experiment");
-        //mapOne.put("userid", "UMDVQfaNAVxZ5Srzqzg1");
+        queryString = "";
 
-        //Map<String, Object> mapTwo = new HashMap<>();
-        //mapTwo.put("ISDN", "567-98-00-11");
-        //mapTwo.put("course", "Kravhantering");
-        //mapTwo.put("info", "Den här boken kommer hjälpa dig att bli den bästa kravhanteraren");
-        //mapTwo.put("price", "850");
-        //mapTwo.put("program", "Systemvetenskapliga Programmet");
-        //mapTwo.put("title", "Kravhantering deluxe för en noob");
-        //mapTwo.put("sellerId", "UMDVQfaNAVxZ5Srzqzg1");
+        client = new Client("K1KZR7ER1O", "6dea0396ee42fb485fc94cd182f21423");
+        index = client.getIndex("ads");
 
-        //adsRef.document()
-        //        .set(mapOne)
-        //        .addOnSuccessListener(new OnSuccessListener<Void>() {
-        //            @Override
-        //            public void onSuccess(Void aVoid) {
-        //                Log.d(TAG, "DocumentSnapshot successfully written!");
-        //            }
-        //        })
-        //        .addOnFailureListener(new OnFailureListener() {
-        //            @Override
-        //            public void onFailure(@NonNull Exception e) {
-        //                Log.w(TAG, "Error writing document", e);
-        //            }
-        //        });
+        progressbar.setVisibility(View.VISIBLE);
 
-        //adsRef.document()
-        //        .set(mapTwo)
-        //        .addOnSuccessListener(new OnSuccessListener<Void>() {
-        //            @Override
-        //            public void onSuccess(Void aVoid) {
-        //                Log.d(TAG, "DocumentSnapshot successfully written!");
-        //            }
-        //        })
-        //        .addOnFailureListener(new OnFailureListener() {
-        //            @Override
-        //            public void onFailure(@NonNull Exception e) {
-        //                Log.w(TAG, "Error writing document", e);
-        //            }
-        //        });
+        adsRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
 
-        //Client client = new Client("K1KZR7ER1O", "6dea0396ee42fb485fc94cd182f21423");
-        //final Index index = client.getIndex("ads");
+                            final int size = task.getResult().size();
 
-        //Map<String, Object> mapTwo = new HashMap<>();
-        //mapTwo.put("title", "Teknik");
-        //mapTwo.put("price", "500");
-        //mapTwo.put("id", "ftYAM9xLRIRH9A74myYx");
-        //Map<String, Object> mapThree = new HashMap<>();
-        //mapThree.put("title", "Socialpsykologi");
-        //mapThree.put("price", "600");
-        //mapThree.put("id", "n3dtvFC13y9LFZlgWFLd");
-        //List<JSONObject> adsList = new ArrayList<>();
-        //adsList.add(new JSONObject(mapTwo));
-        //adsList.add(new JSONObject(mapThree));
+                            items = new String[size];
+                            ids = new String[size];
+                            prices = new String[size];
+                            programs = new String[size];
+                            courses = new String[size];
+                            pics = new ArrayList<>();
 
-        //index.addObjectsAsync(new JSONArray(adsList), null);
+                            List<DocumentSnapshot> minLista = task.getResult().getDocuments();
+
+                            for(int i = 0;i < size;i++){
+
+                                DocumentSnapshot doc = minLista.get(i);
+                                ids[i] = doc.getId().toString();
+                                items[i] = doc.getString("title");
+                                prices[i] = doc.getString("price");
+                                programs[i] = doc.getString("program");
+                                courses[i] = doc.getString("course");
+                            }
+                            index.clearIndexAsync(new CompletionHandler() {
+                                @Override
+                                public void requestCompleted(JSONObject jsonObject, AlgoliaException e) {
+
+                                    List<JSONObject> adsList = new ArrayList<>();
+
+                                    for(int i = 0;i < size;i++){
+
+                                        Map<String, Object> map = new HashMap<>();
+                                        map.put("title", items[i]);
+                                        map.put("price", prices[i]);
+                                        map.put("id", ids[i]);
+                                        map.put("program", programs[i]);
+                                        map.put("course", courses[i]);
+
+                                        adsList.add(new JSONObject(map));
+                                    }
+                                    index.addObjectsAsync(new JSONArray(adsList), null);
+                                }
+                            });
+                            ItemAdapter itemAdapter = new ItemAdapter(context, items, prices, null, ids);
+                            listView.setAdapter(itemAdapter);
+
+                            progressbar.setVisibility(View.INVISIBLE);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+                });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -133,118 +151,112 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        adsRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            int size = task.getResult().size();
-
-                            String[] items = new String[size];
-                            String[] ids = new String[size];
-                            String[] prices = new String[size];
-
-                            List<DocumentSnapshot> minLista = task.getResult().getDocuments();
-
-                            for(int i = 0;i < size;i++){
-
-                                DocumentSnapshot doc = minLista.get(i);
-                                ids[i] = doc.getId().toString();
-                                items[i] = doc.getString("title");
-                                prices[i] = doc.getString("price");
-
-                            }
-                            ItemAdapter adapter = new ItemAdapter(context, items, prices, null, ids);
-                            listView.setAdapter(adapter);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-                });
-
-        /*searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                Query query1 = new Query(query)
-                        .setAttributesToRetrieve("title")
-                        .setHitsPerPage(50);
-                index.searchAsync(query1, new CompletionHandler() {
-                    @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
-                        try {
-                            JSONArray hits = content.getJSONArray("hits");
-                            List<String> list = new ArrayList<>();
-                            for(int i = 0; i < hits.length(); i++){
-                                JSONObject jsonObject = hits.getJSONObject(i);
-                                String productName = jsonObject.getString("title");
-                                list.add(productName);
-                            }
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, list);
-                            listView.setAdapter(arrayAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                queryString = query;
+
+                searchQuery();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                Query query = new Query(newText)
-                        .setAttributesToRetrieve("title", "id", "price")
-                        .setHitsPerPage(50);
-                index.searchAsync(query, new CompletionHandler() {
-                    @Override
-                    public void requestCompleted(JSONObject content, AlgoliaException error) {
-                        try {
-                            JSONArray hits = content.getJSONArray("hits");
+                queryString = newText;
 
-                            int size = hits.length();
-                            String[] items = new String[size];
-                            String[] ids = new String[size];
-                            String[] prices = new String[size];
-
-                            for(int i = 0; i < hits.length(); i++){
-                                JSONObject jsonObject = hits.getJSONObject(i);
-                                items[i] = jsonObject.getString("title");
-                                ids[i] = jsonObject.getString("id");
-                                prices[i] = jsonObject.getString("price");
-                            }
-                            ItemAdapter itemAdapter = new ItemAdapter(context, items, prices, null, ids);
-                            listView.setAdapter(itemAdapter);
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
+                searchQuery();
                 return false;
             }
-        });*/
+        });
+
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Intent goToSearchProgram = new Intent(context, ListAllProgramsActivity.class);
                 goToSearchProgram.putExtra("activityCode", 1);
                 startActivityForResult(goToSearchProgram, 1);
+                courseSearchBtn.setText("");
             }
         });
 
         courseSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goToSearchCourse = new Intent(context, ListAllCoursesFromProgramActivity.class);
+                if(programSearchBtn.getText().toString().equals("")){
+                    Toast.makeText(SearchActivity.this, "Du måste välja program först",
+                            Toast.LENGTH_LONG).show();
+                }else{
 
-                String chosenProgram = programSearchBtn.getText().toString();
+                    Intent goToSearchCourse = new Intent(context, ListAllCoursesFromProgramActivity.class);
 
-                String[] myExtras = new String[]{"1", chosenProgram};
-                goToSearchCourse.putExtra("extras", myExtras);
-                startActivityForResult(goToSearchCourse, 2);
+                    String chosenProgram = programSearchBtn.getText().toString();
+
+                    String[] myExtras = new String[]{"1", chosenProgram};
+                    goToSearchCourse.putExtra("extras", myExtras);
+                    startActivityForResult(goToSearchCourse, 2);
+                }
+            }
+        });
+    }
+
+    public void searchQuery(){
+
+        Query query1 = new Query(queryString)
+                .setAttributesToRetrieve("title", "id", "price")
+                .setHitsPerPage(50);
+        index.searchAsync(query1, new CompletionHandler() {
+            @Override
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                try {
+                    JSONArray hits = content.getJSONArray("hits");
+
+                    int size = hits.length();
+
+                    String[] onChangeItems = new String[size];
+                    String[] onChangeIds = new String[size];
+                    String[] onChangePrices = new String[size];
+
+                    for(int i = 0; i < size; i++){
+                        JSONObject jsonObject = hits.getJSONObject(i);
+                        onChangeItems[i] = jsonObject.getString("title");
+                        onChangeIds[i] = jsonObject.getString("id");
+                        onChangePrices[i] = jsonObject.getString("price");
+                    }
+                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, null, onChangeIds);
+                    listView.setAdapter(itemAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    public void setImage(){
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReferenceFromUrl("gs://unibook-41e0f.appspot.com").child("images").child("152a1281-2366-4f3a-a50e-7d7c1e7019b4");
+
+        /*
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
+        */
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                int size = bytes.length;
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
             }
         });
     }
@@ -258,38 +270,18 @@ public class SearchActivity extends AppCompatActivity {
 
             programSearchBtn.setText(programName);
 
-            CollectionReference favouritesRef =  rootRef.collection("Ads");
+            if(queryString.equals("")){
 
-            com.google.firebase.firestore.Query query = favouritesRef.whereEqualTo("program", programName);
-            query.get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
+                queryString = programName;
+            }else if(queryString.toLowerCase().equals("psykologi") || queryString.toLowerCase().equals("systemvetenskap")){
 
-                                int size = task.getResult().size();
+                queryString = programName;
+            }else{
 
-                                String[] items = new String[size];
-                                String[] ids = new String[size];
-                                String[] prices = new String[size];
+                queryString = queryString + " " + programName;
+            }
 
-                                programResult = task.getResult().getDocuments();
-
-                                for(int i = 0;i < size;i++){
-
-                                    DocumentSnapshot doc = programResult.get(i);
-                                    ids[i] = doc.getId().toString();
-                                    items[i] = doc.getString("title");
-                                    prices[i] = doc.getString("price");
-
-                                }
-                                ItemAdapter adapter = new ItemAdapter(context, items, prices, null, ids);
-                                listView.setAdapter(adapter);
-                            }else{
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        }
-                    });
+            searchQuery();
         }
         if(resultCode == 2){
 
@@ -297,7 +289,11 @@ public class SearchActivity extends AppCompatActivity {
 
             courseSearchBtn.setText(courseName);
 
+            String[] search = queryString.split(" ");
 
+            queryString = search[0] + " " + courseName;
+
+            searchQuery();
         }
     }
 }

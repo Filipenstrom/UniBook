@@ -84,11 +84,10 @@ public class CreateNewAdActivity extends AppCompatActivity {
              @Override
              public void onClick(View v) {
                  Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
-                 String[] extras = new String[3];
+                 String[] extras = new String[2];
                  extras[0] = "2";
-                 extras[2] = program.getText().toString();
+                 extras[1] = program.getText().toString();
                  intent.putExtra("extras", extras);
-                 //intent.putExtra("programNamn", program.getText().toString());
                  startActivityForResult(intent, 2);
              }
          });
@@ -98,13 +97,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
         TextView txtProgram = (TextView) findViewById(R.id.txtViewProgram);
         txtProgram.setText(programNamn);
         txtProgram.setVisibility(View.VISIBLE);
-
-        Intent kursIntent = getIntent();
-        String kursNamn = kursIntent.getStringExtra("kursInfoIntent");
-        TextView txtKurs = (TextView) findViewById(R.id.textViewCourses) ;
-        txtKurs.setText(kursNamn);
-        txtKurs.setVisibility(View.VISIBLE);
-
     }
 
     public void createAd(View view) {
@@ -174,7 +166,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
 
         if(resultCode == 2){
-            kurs.setText(data.getStringExtra("kursInfoIntent"));
+            String[] kursnamn = data.getStringArrayExtra("kursInfoIntent");
+            kurs.setText(kursnamn[1]);
+            kurs.setVisibility(View.VISIBLE);
         }
     }
 }
