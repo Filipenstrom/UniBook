@@ -81,7 +81,7 @@ public class MessageAdapter extends BaseAdapter {
             String dateText = dateTextSplit[1] + " " + dateTextSplit[2] + " " + dateTextSplit[3];
 
             if (Uid.equals(user.getUid().toString())) {
-                Drawable drawable = res.getDrawable(R.drawable.bubblesender);
+                Drawable drawable = res.getDrawable(R.drawable.bubblesenderorange);
                 relativeLayoutsender.setBackground(drawable);
                 relativeLayout.setVisibility(View.INVISIBLE);
                 nameTxt.setVisibility(View.INVISIBLE);
@@ -113,9 +113,24 @@ public class MessageAdapter extends BaseAdapter {
             nameTxt.setText(name);
             messageTxt.setText(message);
         }
+
             return v;
 
         //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
+    }
+
+    //Funkar inte
+    public String checkLastToWrite(String lastname, String newname){
+        String sendbackname = "";
+        if(!lastname.equals("") || !newname.equals("")){
+            if(lastname.equals(newname)){
+                sendbackname = "";
+            }
+            else{
+                sendbackname = newname;
+            }
+        }
+        return sendbackname;
     }
 }
 

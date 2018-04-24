@@ -2,15 +2,18 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
+import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -18,7 +21,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ServerValue;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -28,24 +30,23 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.sql.Time;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.lang.ref.Reference;
+import java.sql.Ref;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
 public class MessengerActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    Button sendbtn;
+    ImageView sendbtn;
     EditText messageTxt;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    TextView userTalkingTo;
     String sellerId;
+    String loggedinusername;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseUser user;
     String chatId;
@@ -64,13 +65,18 @@ public class MessengerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
-        sendbtn = findViewById(R.id.sendBtn);
+
         messageTxt = findViewById(R.id.etMessage);
         listView = findViewById(R.id.listViewMessages);
+        sendbtn = findViewById(R.id.sendBtn);
+        userTalkingTo = findViewById(R.id.txtUserTalkingTo);
 
-        Intent intent = getIntent();
+        final Intent intent = getIntent();
         sellerId = intent.getStringExtra("userid");
+        //Sätter texten i toolbaren till den personen man chattar med.
+        userTalkingTo.setText(intent.getStringExtra("userTalkingTo"));
         user = mAuth.getCurrentUser();
 
         Intent intentchatId = getIntent();
@@ -115,31 +121,46 @@ public class MessengerActivity extends AppCompatActivity {
 
     //Skapa en chatt till en annons. Körs enbart när man går in på en annons som är till salu och trycker på skicka meddelande.
     public void createChat() {
-        CollectionReference userRef = rootRef.collection("Chat");
+        DocumentReference loggedInRef = rootRef.collection("Users").document(user.getUid().toString());
+        loggedInRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    loggedinusername = documentSnapshot.getString("name") + " " + documentSnapshot.getString("surname");
+                    String user1 = user.getUid().toString();
+                    String user2 = sellerId;
+                    Intent intent = getIntent();
 
-        String user1 = user.getUid().toString();
-        String user2 = sellerId;
+                    CollectionReference userRef = rootRef.collection("Chat");
 
+                    Map<String, Object> mapOne = new HashMap<>();
+                    mapOne.put("User1", user1);
+                    mapOne.put("User2", user2);
+                    mapOne.put("User1Name", intent.getStringExtra("sellerName"));
+                    mapOne.put("User2Name", loggedinusername);
 
-        Map<String, Object> mapOne = new HashMap<>();
-        mapOne.put("User1", user1);
-        mapOne.put("User2", user2);
-
-        userRef.document()
-                .set(mapOne)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        getChat();
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                    userRef.document()
+                            .set(mapOne)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    getChat();
+                                    Log.d(TAG, "DocumentSnapshot successfully written!");
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error writing document", e);
+                                }
+                            });
+                }
+                else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 
     //Hämtar chatten efter att den skapats. Körs enbart första gången när man går in på en annons som är till salu och trycker på skicka meddelande.
@@ -195,12 +216,6 @@ public class MessengerActivity extends AppCompatActivity {
                 TimeZone timeZone = TimeZone.getTimeZone("Europe/Stockholm");
                 TimeZone.setDefault(timeZone);
                 Date date = new Date();
-               /* try {
-                    formattedDate = dateformat.parse(dateString);
-                }catch (ParseException e){
-                    System.out.println(e.getMessage().toString());
-                }*/
-
 
                 Map<String, Object> mapOne = new HashMap<>();
                 mapOne.put("Message", message);
@@ -283,8 +298,12 @@ public class MessengerActivity extends AppCompatActivity {
                                     counter++;
                                 }
                             }
+
                             MessageAdapter adapter = new MessageAdapter(context, messages, adapterids, adapterDate, userids);
                             listView.setAdapter(adapter);
+                            //Ser till att listvyn inte åker tillbaka längst upp efter att ett meddelande har skickats.
+                            listView.setSelection(adapter.getCount() - 1);
+                            messageTxt.setText("");
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }

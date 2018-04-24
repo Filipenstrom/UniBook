@@ -55,10 +55,12 @@ public class MyMessagesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                TextView chatId = (TextView) view.findViewById(R.id.txtMessageText);
+                TextView chatId = (TextView) view.findViewById(R.id.txtChatId);
+                TextView userTalkingTo = view.findViewById(R.id.txtUserTalkingTo);
                 //TextView txtCourseId = view.findViewById(R.id.txtViewCoursesId);
                     Intent data = new Intent(MyMessagesActivity.this, MessengerActivity.class);
                     data.putExtra("chatId", chatId.getText().toString());
+                    data.putExtra("userTalkingTo", userTalkingTo.getText().toString());
                     startActivity(data);
             }
         });
@@ -85,14 +87,15 @@ public class MyMessagesActivity extends AppCompatActivity {
                                     id[i] = doc.getId().toString();
                                     if(!doc.getString("User1").equals(user.getUid())){
                                         counter = i;
-                                        getUsername(doc.getString("User1"));
+                                        names[counter] = doc.getString("User2Name");
                                     }
                                     else {
                                         counter = i;
-                                        getUsername(doc.getString("User2"));
+                                        names[counter] = doc.getString("User1Name");
                                     }
-                                    Toast.makeText(MyMessagesActivity.this, chatId,
-                                            Toast.LENGTH_SHORT).show();
+
+                                    MyMessagesAdapter adapter = new MyMessagesAdapter(context, names, id,null);
+                                    listView.setAdapter(adapter);
                                 }
                             }
 
@@ -101,33 +104,5 @@ public class MyMessagesActivity extends AppCompatActivity {
                         }
                     }
                 });
-    }
-
-    public void getUsername(final String userid){
-        final DocumentReference docRef = rootRef.collection("Users").document(userid);
-
-        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document != null && document.exists()) {
-
-                        name = document.getString("name") + " " + document.getString("surname");
-                        names[counter] = name;
-                        MessageAdapter adapter = new MessageAdapter(context, id, names, null, null);
-                        listView.setAdapter(adapter);
-
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
-                    } else {
-                        Log.d(TAG, "No such document");
-                    }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
-                }
-            }
-
-        });
-
     }
 }

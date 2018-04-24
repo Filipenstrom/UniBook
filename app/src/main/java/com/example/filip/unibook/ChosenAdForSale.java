@@ -52,7 +52,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    private String sellerId, sellerPhone, adId;
+    private String sellerId, sellerPhone, adId, sellerName;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser loggenIn = mAuth.getCurrentUser();
@@ -104,6 +104,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         checkFavourites(adId);
 
                         getNumber(sellerId);
+                        getSeller(sellerId);
 
                         //progressBar.setVisibility(View.INVISIBLE);
                         //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
@@ -188,6 +189,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                 Intent intent = new Intent(ChosenAdForSale.this, MessengerActivity.class);
                 String id = sellerId;
                 intent.putExtra("userid", id);
+                intent.putExtra("sellerName", sellerName);
                 startActivity(intent);
             }
         });
@@ -298,6 +300,31 @@ public class ChosenAdForSale extends AppCompatActivity {
                 Toast.makeText(this, "Permission DENIED", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void getSeller(String sellerId){
+
+        DocumentReference userRef = rootRef.collection("Users").document(sellerId);
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
+
+                        sellerPhone = document.getString("phone");
+                        sellerName = document.getString("name") + " " + document.getString("surname");
+                        seller.setText(sellerName);
+
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
     }
 }
 
