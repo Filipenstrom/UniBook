@@ -2,6 +2,8 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -29,6 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.lang.ref.Reference;
 import java.sql.Ref;
@@ -42,12 +46,15 @@ public class MessengerActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
     ImageView sendbtn;
+    ImageView profilepic;
     EditText messageTxt;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     TextView userTalkingTo;
     String sellerId;
     String loggedinusername;
+    String imageId;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser user;
     String chatId;
     Context context = this;
@@ -72,6 +79,7 @@ public class MessengerActivity extends AppCompatActivity {
         listView = findViewById(R.id.listViewMessages);
         sendbtn = findViewById(R.id.sendBtn);
         userTalkingTo = findViewById(R.id.txtUserTalkingTo);
+        profilepic = findViewById(R.id.ivUserTalkingTo);
 
         final Intent intent = getIntent();
         sellerId = intent.getStringExtra("userid");
@@ -113,10 +121,43 @@ public class MessengerActivity extends AppCompatActivity {
                 showMessages(chatId);
             }
         });
+        setImage(intent.getStringExtra("userTalkingToId"));
     }
 
     public void displayChatMessage() {
 
+    }
+
+    public void setImage(String userId){
+        final DocumentReference docRef = rootRef.collection("Users").document(userId);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                        DocumentSnapshot doc = task.getResult();
+                        imageId = doc.getString("imageId");
+
+                    //Hämta profilbild.
+                    StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+                    final long ONE_MEGABYTE = 1024 * 1024;
+
+                    storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+                        @Override
+                        public void onSuccess(byte[] bytes) {
+                            // Data for "images/island.jpg" is returns, use this as needed
+                            Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                            profilepic.setImageBitmap(bitmap);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });
+                }
+            }
+        });
     }
 
     //Skapa en chatt till en annons. Körs enbart när man går in på en annons som är till salu och trycker på skicka meddelande.
