@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -52,6 +53,7 @@ public class MyMessagesActivity extends AppCompatActivity {
     String[] id;
     String[] names;
     String[] userid;
+    String[] boktitel;
     int counter;
 
 
@@ -94,6 +96,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                             id = new String[size];
                             userid = new String[size];
                             names = new String[size];
+                            boktitel = new String[size];
 
                             for(int i = 0;i < size;i++){
                                 DocumentSnapshot doc = chatLista.get(i);
@@ -101,6 +104,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     id[i] = doc.getId().toString();
+                                    boktitel[i] = doc.getString("BokTitel");
                                     if(!doc.getString("User1").equals(user.getUid())){
                                         counter = i;
                                         names[counter] = doc.getString("User2Name");
@@ -114,7 +118,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                                         userid[counter] = userTalkingToId;
                                     }
 
-                                    MyMessagesAdapter adapter = new MyMessagesAdapter(context, names, id, userid, null);
+                                    MyMessagesAdapter adapter = new MyMessagesAdapter(context, names, id, userid, boktitel, null);
                                     listView.setAdapter(adapter);
                                 }
                             }

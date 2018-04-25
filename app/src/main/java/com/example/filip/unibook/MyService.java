@@ -3,8 +3,29 @@ package com.example.filip.unibook;
 
 import android.app.Service;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.lang.ref.Reference;
+import java.sql.Ref;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,6 +35,10 @@ import java.util.TimerTask;
  */
 
 public class MyService extends Service {
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    String chatId;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
 
     private Timer mTimer;
     TimerTask timerTask = new TimerTask() {
@@ -21,6 +46,7 @@ public class MyService extends Service {
         public void run() {
             Log.e("Log", "Running");
             checkForNotis();
+            checkForNewMessage();
         }
     };
 
@@ -101,8 +127,58 @@ public class MyService extends Service {
         }
     }
 
+    public void checkForNewMessage() {
+        //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
+        final CollectionReference colRef = rootRef.collection("Chat");
+        colRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
+                            int size = task.getResult().size();
+                            String[] chatlista = new String[size];
+
+                            for (int i = 0; i < size; i++) {
+                                DocumentSnapshot doc = chatLista.get(i);
+                                if (doc.getString("User1").equals(user.getUid().toString())) {
+                                    chatlista[i] = doc.getString(doc.getId().toString());
+                                } else {
+                                    chatlista[i] = doc.getString(doc.getId().toString());
+                                }
+                            }
+
+                            for(int i = 0; i<chatlista.length;i++){
+                                final DocumentReference chatRef = rootRef.collection("Chat").document(chatlista[i]).collection("Messages").document("latest");
+                                chatRef.get()
+                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    DocumentSnapshot documentSnapshot = task.getResult();
+                                                    if(!documentSnapshot.getString("UserId").equals(user.getUid())) {
+                                                        try {
+                                                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                                                            r.play();
+                                                        } catch (Exception ex) {
+                                                            ex.printStackTrace();
+                                                        }
+                                                    }
+
+                                                }
+                                            }
+                                        });
+                        }
+
+                    }
+                }
+    });
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 }
+

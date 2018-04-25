@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -180,6 +183,7 @@ public class MessengerActivity extends AppCompatActivity {
                     mapOne.put("User2", user2);
                     mapOne.put("User1Name", intent.getStringExtra("sellerName"));
                     mapOne.put("User2Name", loggedinusername);
+                    mapOne.put("BokTitel", intent.getStringExtra("boktitel"));
 
                     userRef.document()
                             .set(mapOne)

@@ -54,11 +54,11 @@ public class ChosenAdForSale extends AppCompatActivity {
     public static final String TAG = "message";
     TextView title, pris, info, program, kurs, seller, chosenAdId;
     ImageView pic;
-    User user;
+    FirebaseUser user;
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    String sellerId, sellerPhone, adId, id, sellerName, imageId;
+    String sellerId, sellerPhone, adId, id, sellerName, imageId, boktitel;
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -69,6 +69,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chosen_ad_for_sale);
+        user = mAuth.getCurrentUser();
 
         title = findViewById(R.id.chosenAdTitle);
         pris = findViewById(R.id.chosenAdPrice);
@@ -105,6 +106,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
+                        boktitel = document.getString("title");
 
                         setImage(imageId);
 
@@ -193,9 +195,13 @@ public class ChosenAdForSale extends AppCompatActivity {
                 String id = sellerId;
                 intent.putExtra("userid", id);
                 intent.putExtra("sellerName", sellerName);
+                intent.putExtra("userTalkingToId", sellerId);
+                intent.putExtra("boktitel", boktitel);
                 startActivity(intent);
             }
         });
+
+        checkIfChatAlreadyExist();
     }
 
     public void setImage(String imageId){
@@ -263,6 +269,34 @@ public class ChosenAdForSale extends AppCompatActivity {
 
                         if (document.getString("adId").equals(adId)) {
                             favoriteBtn.setText("Ta bort favorit");
+                        }
+                    }
+                }else{
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void checkIfChatAlreadyExist(){
+
+        CollectionReference chatRef =  rootRef.collection("Chat");
+        //Query query = favouritesRef.whereEqualTo("userId", loggenIn.getUid().toString());
+        chatRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : list) {
+
+                        if (document.getString("User1").equals(user.getUid().toString()) && document.getString("User2").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
+                            btnSendMessage.setText("En chat är redan startad");
+                            btnSendMessage.setClickable(false);
+                        }
+                        else if (document.getString("User2").equals(user.getUid().toString()) && document.getString("User1").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
+                            btnSendMessage.setText("En chat är redan startad");
+                            btnSendMessage.setClickable(false);
                         }
                     }
                 }else{

@@ -4,25 +4,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/ivMessages"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginBottom="11dp"
-        android:layout_marginStart="13dp"
-        android:layout_marginTop="11dp"
-        android:layout_weight="1"
-        app:srcCompat="@mipmap/ic_launcher_round" />
+        android:src="@drawable/profile"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/colorOrange"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="8dp"/>
 
     <TextView
         android:id="@+id/txtUserTalkingTo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_alignTop="@+id/ivMessages"
-        android:layout_marginStart="99dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginStart="81dp"
+        android:layout_marginTop="17dp"
         android:text="TextView"
         android:textColor="@color/common_google_signin_btn_text_dark_focused"
         android:textStyle="bold" />
@@ -36,4 +37,13 @@
         android:layout_marginEnd="32dp"
         android:text="TextView"
         android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/txtChatForAd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/txtUserTalkingTo"
+        android:layout_marginTop="37dp"
+        android:text="TextView" />
 </RelativeLayout>

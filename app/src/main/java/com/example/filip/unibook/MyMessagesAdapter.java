@@ -41,6 +41,7 @@ public class MyMessagesAdapter extends BaseAdapter {
     LayoutInflater mInflator;
     String[] items;
     String[] chatids;
+    String[] boktitel;
     Blob[] blobs;
     String[] userid;
     Context context;
@@ -49,10 +50,11 @@ public class MyMessagesAdapter extends BaseAdapter {
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
 
-    public MyMessagesAdapter(Context c, String[] items, String[] chatids, String[] userid, Blob[] blobs) {
+    public MyMessagesAdapter(Context c, String[] items, String[] chatids, String[] userid, String[] boktitel, Blob[] blobs) {
         this.items = items;
         this.chatids = chatids;
         this.userid = userid;
+        this.boktitel = boktitel;
         if(blobs != null) {
             this.blobs = blobs;
         }
@@ -80,14 +82,17 @@ public class MyMessagesAdapter extends BaseAdapter {
         View v = mInflator.inflate(R.layout.mymessages_listview, null);
         TextView nameTxt = v.findViewById(R.id.txtUserTalkingTo);
         TextView chatId = v.findViewById(R.id.txtChatId);
+        TextView boktitlar = v.findViewById(R.id.txtChatForAd);
         final ImageView imageView = v.findViewById(R.id.ivMessages);
 
         String name = items[i];
         String ids = chatids[i];
         String user = userid[i];
+        String titel = boktitel[i];
 
         nameTxt.setText(name);
         chatId.setText(ids);
+        boktitlar.setText("Ämne: " + titel);
 
         final DocumentReference docRef = rootRef.collection("Users").document(user);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
