@@ -2,6 +2,7 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,6 +25,8 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.lang.ref.Reference;
 import java.util.List;
@@ -30,8 +35,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
     String id;
-    Ad chosenAd;
-    byte[] bytepic;
     TextView title;
     TextView pris;
     TextView ISDN;
@@ -40,10 +43,11 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     TextView kurs;
     ImageView pic;
     Context context = this;
-    final DatabaseHelper db = new DatabaseHelper(this);
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseStorage storage;
+    StorageReference storageReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +61,17 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         program = findViewById(R.id.etchosenAdProgram);
         kurs = findViewById(R.id.etchosenAdCourse);
         pic = findViewById(R.id.ivchosenAdImage);
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
 
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         getAd();
         deleteAd();
-        }
+
+    }
 
     public void getAd(){
         final DocumentReference adsRef = rootRef.collection("Ads").document(id);
@@ -76,16 +84,16 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             DocumentSnapshot doc = task.getResult();
 
 
-                            if (doc.getString("sellerId").equals(user.getUid().toString())) {
-                                ISDN.setText(doc.getString("ISDN"));
-                                kurs.setText(doc.getString("course"));
-                                info.setText(doc.getString("info"));
-                                pris.setText(doc.getString("price"));
-                                program.setText(doc.getString("program"));
-                                String seller = doc.getString("seller");
-                                String sellerId = doc.getString("sellerId");
-                                title.setText(doc.getString("title"));
-                            }
+                            ISDN.setText(doc.getString("ISDN"));
+                            kurs.setText(doc.getString("course"));
+                            info.setText(doc.getString("info"));
+                            pris.setText(doc.getString("price"));
+                            program.setText(doc.getString("program"));
+                            title.setText(doc.getString("title"));
+                            String imageId = doc.getString("imageId");
+
+                            setImage(imageId);
+
                         }
                         else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -93,7 +101,33 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                     }
 
                 });
-}
+    }
+
+    public void setImage(String imageId){
+
+        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+        /*
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
+        */
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                pic.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+    }
 
     public void updateData(View view) {
         DocumentReference docRef = rootRef.collection("Ads").document(id);
