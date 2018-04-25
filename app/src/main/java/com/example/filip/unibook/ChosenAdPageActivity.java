@@ -29,6 +29,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
 import java.lang.ref.Reference;
@@ -38,7 +39,7 @@ import java.util.UUID;
 public class ChosenAdPageActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    String id, imageRandomNumber;
+    String id, imageRandomNumber, imageId;
     TextView title;
     TextView pris;
     TextView ISDN;
@@ -104,7 +105,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             pris.setText(doc.getString("price"));
                             program.setText(doc.getString("program"));
                             title.setText(doc.getString("title"));
-                            String imageId = doc.getString("imageId");
+                            imageId = doc.getString("imageId");
 
                             setImage(imageId);
 
@@ -120,11 +121,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     public void setImage(String imageId){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
 
         final long ONE_MEGABYTE = 1024 * 1024;
 
@@ -144,6 +140,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     }
 
     public void updateData(View view) {
+        
         DocumentReference docRef = rootRef.collection("Ads").document(id);
         docRef.update("title", title.getText().toString());
         docRef.update("ISDN", ISDN.getText().toString());
@@ -151,17 +148,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         docRef.update("info", info.getText().toString());
         docRef.update("price", pris.getText().toString());
         docRef.update("program", program.getText().toString());
-        uploadImage();
-        docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(ChosenAdPageActivity.this, "Annonsen uppdaterad",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-        startActivity(intent);
+        uploadImage(docRef);
     }
 
     /*
@@ -189,43 +176,43 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    private void uploadImage() {
+    private void uploadImage(final DocumentReference docRef) {
 
         if(filePath != null)
         {
-            /*
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-            */
+            StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
             imageRandomNumber = UUID.randomUUID().toString();
 
-            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
-            ref.putFile(filePath);
-                    /*
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            storageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                    StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+                    ref.putFile(filePath)
+                        .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+
+                            docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    Toast.makeText(ChosenAdPageActivity.this, "Annonsen uppdaterad",
+                                            Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+                                    startActivity(intent);
+                                }
+                            });
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                            Toast.makeText(ChosenAdPageActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                    */
+                }
+            });
         }
     }
 
