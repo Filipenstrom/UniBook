@@ -105,7 +105,7 @@
         android:textColor="@android:color/background_light"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintEnd_toStartOf="@+id/btnChangeImgChosenAd"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -169,16 +169,20 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btnChangeImgChosenAd"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
         android:layout_marginStart="16dp"
-        android:text="Button"
+        android:background="@color/colorOrange"
+        android:text="Byt bild"
+        android:textColor="@android:color/background_light"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnchosenAdUpdate"
-        tools:layout_editor_absoluteY="515dp" />
+        app:layout_constraintStart_toEndOf="@+id/btnchosenAdUpdate" />
 
 </android.support.constraint.ConstraintLayout>

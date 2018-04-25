@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,18 +30,22 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.util.List;
+import java.util.UUID;
 
 public class ChosenAdPageActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    String id;
+    String id, imageRandomNumber;
     TextView title;
     TextView pris;
     TextView ISDN;
     TextView info;
     TextView program;
+    public static final int PICK_IMAGE_REQUEST = 71;
+    private Uri filePath;
     TextView kurs;
     ImageView pic;
     Context context = this;
@@ -48,6 +54,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
+    Button changeImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +70,21 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         pic = findViewById(R.id.ivchosenAdImage);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
+        changeImg = findViewById(R.id.btnChangeImgChosenAd);
+
+        changeImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choseImg();
+            }
+        });
 
 
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         getAd();
-        deleteAd();
-
+        //deleteAd();
     }
 
     public void getAd(){
@@ -137,11 +151,20 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         docRef.update("info", info.getText().toString());
         docRef.update("price", pris.getText().toString());
         docRef.update("program", program.getText().toString());
+        uploadImage();
+        docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(ChosenAdPageActivity.this, "Annonsen uppdaterad",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
         startActivity(intent);
     }
 
+    /*
         //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
         public void deleteAd(){
             Button deleteBtn = findViewById(R.id.btnDelete);
@@ -156,5 +179,73 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 }
             });
         }
+        */
+
+    //Metod för att välja profilbild
+    public void choseImg(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void uploadImage() {
+
+        if(filePath != null)
+        {
+            /*
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+            */
+            imageRandomNumber = UUID.randomUUID().toString();
+
+            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+            ref.putFile(filePath);
+                    /*
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+                    */
+        }
+    }
+
+    //Metod som fäster den valda bilden i en imageview
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+        {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                pic.setImageBitmap(bitmap);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
 }
 

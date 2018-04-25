@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -119,7 +120,13 @@ public class EditProfileActivity extends AppCompatActivity {
         docRef.update("phone", editPhone.getText().toString());
         docRef.update("school", editSchool.getText().toString());
         uploadImage();
-        docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber);
+        docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(EditProfileActivity.this, "Profil uppdaterad",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
 
         Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
         startActivity(intent);
