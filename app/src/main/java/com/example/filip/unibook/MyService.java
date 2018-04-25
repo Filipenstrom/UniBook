@@ -39,13 +39,14 @@ public class MyService extends Service {
     String chatId;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
+    String[] chats;
 
     private Timer mTimer;
     TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             Log.e("Log", "Running");
-            checkForNotis();
+            //checkForNotis();
             checkForNewMessage();
         }
     };
@@ -54,7 +55,7 @@ public class MyService extends Service {
     public void onCreate(){
         super.onCreate();
         mTimer = new Timer();
-        mTimer.schedule(timerTask, 20000, 2 * 8000);
+        mTimer.schedule(timerTask, 2000, 2 * 8000);
     }
 
     @Override
@@ -129,51 +130,50 @@ public class MyService extends Service {
 
     public void checkForNewMessage() {
         //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
-        final CollectionReference colRef = rootRef.collection("Chat");
+        final CollectionReference colRef = rootRef.collection("Chat").document().collection("Messages");
         colRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
-                            int size = task.getResult().size();
-                            String[] chatlista = new String[size];
+                            List<DocumentSnapshot> list = task.getResult().getDocuments();
 
-                            for (int i = 0; i < size; i++) {
-                                DocumentSnapshot doc = chatLista.get(i);
-                                if (doc.getString("User1").equals(user.getUid().toString())) {
-                                    chatlista[i] = doc.getString(doc.getId().toString());
-                                } else {
-                                    chatlista[i] = doc.getString(doc.getId().toString());
+                            chats = new String[task.getResult().size()];
+
+                            for(int i = 0; i<list.size();i++){
+                                DocumentSnapshot documentSnapshot = list.get(i);
+                                if(documentSnapshot.getString("User1").equals(user.getUid())){
+                                    chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                }
+                                else if(documentSnapshot.getString("User2").equals(user.getUid())){
+                                    chats[i] = documentSnapshot.getString(documentSnapshot.getId());
                                 }
                             }
-
-                            for(int i = 0; i<chatlista.length;i++){
-                                final DocumentReference chatRef = rootRef.collection("Chat").document(chatlista[i]).collection("Messages").document("latest");
-                                chatRef.get()
-                                        .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                                            @Override
-                                            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                                                if (task.isSuccessful()) {
-                                                    DocumentSnapshot documentSnapshot = task.getResult();
-                                                    if(!documentSnapshot.getString("UserId").equals(user.getUid())) {
-                                                        try {
-                                                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                                                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                                                            r.play();
-                                                        } catch (Exception ex) {
-                                                            ex.printStackTrace();
-                                                        }
-                                                    }
-
-                                                }
-                                            }
-                                        });
                         }
+                        checkLatest(chats);
+                 }
+             });
+    }
 
+    public void checkLatest(String[] chatsWithUser){
+        for(int i = 0;i<chatsWithUser.length;i++) {
+            final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser[i]).collection("Messages").document("latest");
+            colRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(!documentSnapshot.getString("UserId").equals(user.getUid().toString())){
+                        try {
+                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
+                            r.play();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
                     }
                 }
-    });
+            });
+        }
     }
 
     @Override
