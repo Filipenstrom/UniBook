@@ -59,7 +59,8 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                     String myExtras = program;
                     intent.putExtra("programInfoIntent", myExtras);
 
-                    startActivity(intent);
+                    setResult(1, intent);
+                    finish();
                 }
             }
         });

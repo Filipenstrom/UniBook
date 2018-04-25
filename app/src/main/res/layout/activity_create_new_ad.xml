@@ -11,7 +11,7 @@
         android:layout_height="match_parent">
 
         <ImageView
-            android:id="@+id/chosenAdImg"
+            android:id="@+id/imgViewBokbild"
             android:layout_width="0dp"
             android:layout_height="225dp"
             android:background="@android:color/background_dark"
@@ -25,10 +25,11 @@
             android:layout_height="48dp"
             android:layout_marginLeft="120dp"
             android:layout_marginStart="120dp"
+            android:layout_marginTop="8dp"
             android:background="@color/colorOrange"
             android:text="Välj Bild"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="235dp" />
+            app:layout_constraintTop_toBottomOf="@+id/imgViewBokbild" />
 
         <EditText
             android:id="@+id/editTxtTitel"
@@ -75,7 +76,7 @@
             app:layout_constraintTop_toBottomOf="@+id/editTxtInfo" />
 
         <Button
-            android:id="@+id/bthGoToProgram"
+            android:id="@+id/btnGoToProgram"
             android:layout_width="145dp"
             android:layout_height="48dp"
             android:layout_marginLeft="120dp"
@@ -88,13 +89,13 @@
 
         <TextView
             android:id="@+id/txtViewProgram"
-            android:layout_width="60dp"
+            android:layout_width="250dp"
             android:layout_height="22dp"
             android:layout_marginLeft="76dp"
             android:layout_marginStart="76dp"
             android:layout_marginTop="4dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bthGoToProgram" />
+            app:layout_constraintTop_toBottomOf="@+id/btnGoToProgram" />
 
         <Button
             android:id="@+id/btnKurs"
@@ -110,7 +111,7 @@
 
         <TextView
             android:id="@+id/textViewCourses"
-            android:layout_width="60dp"
+            android:layout_width="250dp"
             android:layout_height="22dp"
             android:layout_marginLeft="76dp"
             android:layout_marginStart="76dp"
@@ -122,23 +123,21 @@
             android:id="@+id/btnSpara"
             android:layout_width="100dp"
             android:layout_height="48dp"
-            android:layout_marginLeft="84dp"
-            android:layout_marginStart="84dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginLeft="76dp"
+            android:layout_marginStart="76dp"
+            android:layout_marginTop="12dp"
             android:background="@android:color/holo_green_dark"
             android:text="Spara"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textViewCourses"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintTop_toBottomOf="@+id/textViewCourses" />
 
         <Button
             android:id="@+id/btnAvbryt"
             android:layout_width="98dp"
             android:layout_height="48dp"
-            android:layout_marginEnd="88dp"
-            android:layout_marginRight="88dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginEnd="76dp"
+            android:layout_marginRight="76dp"
+            android:layout_marginTop="12dp"
             android:background="@android:color/holo_red_dark"
             android:text="Avbryt"
             app:layout_constraintEnd_toEndOf="parent"

@@ -86,7 +86,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllProgramsActivity.class);
-                startActivity(intent);
+
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -225,6 +226,13 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+
+        if(resultCode == 1){
+            String programNamn = data.getStringExtra("programInfoIntent");
+            program.setText(programNamn);
+            program.setVisibility(View.VISIBLE);
+        }
+
         if(resultCode == 2){
             String[] kursnamn = data.getStringArrayExtra("kursInfoIntent");
             kurs.setText(kursnamn[1]);
