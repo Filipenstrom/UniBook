@@ -93,7 +93,7 @@ public class MyAdsActivity extends AppCompatActivity {
                     List<DocumentSnapshot> minLista = task.getResult().getDocuments();
 
                     for(int i = 0;i < size;i++){
-                        
+
                         DocumentSnapshot doc = minLista.get(i);
                         ids[i] = doc.getId().toString();
                         items[i] = doc.getString("title");
