@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -15,7 +16,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
-
+import com.google.firebase.storage.FirebaseStorage;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -23,27 +24,34 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.sql.Ref;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class RegisterActivity extends AppCompatActivity {
 
     public static final String TAG = "Bra meddelande";
+    private Uri filePath;
+    public static final int PICK_IMAGE_REQUEST = 71;
     private FirebaseAuth mAuth;
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
-    private static final int PICK_IMAGE = 100;
     Uri imageUri;
     ImageView imageView;
     Button button;
     byte[] bytes = null;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    String imageRandomNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +68,10 @@ public class RegisterActivity extends AppCompatActivity {
         editPhone = findViewById(R.id.edittxtPhone);
         editSchool = findViewById(R.id.edittxtSchool);
         mAuth = FirebaseAuth.getInstance();
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -113,6 +125,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 Toast.makeText(RegisterActivity.this, "Registrering lyckades",
                                         Toast.LENGTH_SHORT).show();
 
+                                uploadImage();
+
                                 createUser(namn, surname, email, adress, phone, school, password);
 
                                 Intent logInIntent = new Intent(RegisterActivity.this, LoggedInActivity.class);
@@ -162,6 +176,7 @@ public class RegisterActivity extends AppCompatActivity {
         mapOne.put("phone", phone);
         mapOne.put("school", school);
         mapOne.put("password", password);
+        mapOne.put("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber);
 
         userRef.document(user.getUid().toString())
                 .set(mapOne)
@@ -181,22 +196,68 @@ public class RegisterActivity extends AppCompatActivity {
 
     //Metod för att välja profilbild
     public void choseImg(){
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(photoPickerIntent, PICK_IMAGE);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void uploadImage() {
+
+        if(filePath != null)
+        {
+            /*
+            final ProgressDialog progressDialog = new ProgressDialog(this);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+            */
+            imageRandomNumber = UUID.randomUUID().toString();
+
+            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+            ref.putFile(filePath);
+                    /*
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+                    */
+        }
     }
 
     //Metod som fäster den valda bilden i en imageview
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == RESULT_OK && requestCode == PICK_IMAGE){
-            imageUri = data.getData();
-            imageView.setImageURI(imageUri);
-            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageInByte = baos.toByteArray();
-            bytes = imageInByte;
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+        {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
         }
     }
 }

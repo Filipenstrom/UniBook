@@ -100,7 +100,7 @@ public class MyAdsActivity extends AppCompatActivity {
                                     prices[i] = doc.getString("price");
                                 }
                             }
-                            ItemAdapter adapter = new ItemAdapter(context, items, prices, null, ids);
+                            ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
                             listView.setAdapter(adapter);
                         }
                         else {

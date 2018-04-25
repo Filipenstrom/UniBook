@@ -131,7 +131,7 @@ public class SearchActivity extends AppCompatActivity {
                                     index.addObjectsAsync(new JSONArray(adsList), null);
                                 }
                             });
-                            ItemAdapter itemAdapter = new ItemAdapter(context, items, prices, null, ids);
+                            ItemAdapter itemAdapter = new ItemAdapter(context, items, prices, ids);
                             listView.setAdapter(itemAdapter);
 
                             progressbar.setVisibility(View.INVISIBLE);
@@ -225,7 +225,7 @@ public class SearchActivity extends AppCompatActivity {
                         onChangeIds[i] = jsonObject.getString("id");
                         onChangePrices[i] = jsonObject.getString("price");
                     }
-                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, null, onChangeIds);
+                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, onChangeIds);
                     listView.setAdapter(itemAdapter);
                 } catch (JSONException e) {
                     e.printStackTrace();

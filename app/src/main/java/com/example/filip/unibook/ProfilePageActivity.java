@@ -55,31 +55,31 @@ public class ProfilePageActivity extends AppCompatActivity {
     }
 
 
-public void insertUserInformation() {
-    DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
-    docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-        @Override
-        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document != null && document.exists()) {
+    public void insertUserInformation() {
+        DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document != null && document.exists()) {
 
-                    name.setText(document.getString("name") + " " + document.getString("surname"));
-                    mail.setText(document.getString("email"));
-                    adress.setText(document.getString("adress"));
-                    phone.setText(document.getString("phone"));
-                    school.setText(document.getString("school"));
+                        name.setText(document.getString("name") + " " + document.getString("surname"));
+                        mail.setText(document.getString("email"));
+                        adress.setText(document.getString("adress"));
+                        phone.setText(document.getString("phone"));
+                        school.setText(document.getString("school"));
 
-                    //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
+                        //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
 
-                    Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
                 } else {
-                    Log.d(TAG, "No such document");
+                    Log.d(TAG, "get failed with ", task.getException());
                 }
-            } else {
-                Log.d(TAG, "get failed with ", task.getException());
             }
-        }
-    });
-}
+        });
+    }
 }
