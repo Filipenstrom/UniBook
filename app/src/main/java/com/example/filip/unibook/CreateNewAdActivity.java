@@ -110,6 +110,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtProgram.setVisibility(View.VISIBLE);
     }
 
+    //Metod för att skapa en annons
     public void createAd(View view) {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -161,6 +162,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för att ladda upp en bild till annonsen
     private void uploadImage() {
 
         if(filePath != null)
@@ -201,6 +203,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för att välja bild
     public void choseImg(){
         Intent intent = new Intent();
         intent.setType("image/*");

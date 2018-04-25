@@ -68,6 +68,7 @@ public class ListAllProgramsActivity extends AppCompatActivity {
         getAllPrograms();
     }
 
+    //Metod för att hämta alla program
     public void getAllPrograms() {
         CollectionReference progRef = rootRef.collection("Program");
         progRef.get()
