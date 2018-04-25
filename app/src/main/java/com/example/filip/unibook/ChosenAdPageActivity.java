@@ -80,8 +80,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             }
         });
 
-
-
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         getAd();
@@ -108,7 +106,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             imageId = doc.getString("imageId");
 
                             setImage(imageId);
-
                         }
                         else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -140,7 +137,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     }
 
     public void updateData(View view) {
-        
+
         DocumentReference docRef = rootRef.collection("Ads").document(id);
         docRef.update("title", title.getText().toString());
         docRef.update("ISDN", ISDN.getText().toString());

@@ -61,7 +61,6 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     }
 
-
     public void insertUserInformation() {
         DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -94,11 +93,6 @@ public class ProfilePageActivity extends AppCompatActivity {
     public void setImage(String imageId){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
 
         final long ONE_MEGABYTE = 1024 * 1024;
 

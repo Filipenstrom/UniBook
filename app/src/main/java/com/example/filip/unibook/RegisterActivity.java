@@ -44,10 +44,8 @@ public class RegisterActivity extends AppCompatActivity {
     public static final int PICK_IMAGE_REQUEST = 71;
     private FirebaseAuth mAuth;
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
-    Uri imageUri;
     ImageView imageView;
     Button button;
-    byte[] bytes = null;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -82,14 +80,6 @@ public class RegisterActivity extends AppCompatActivity {
         register();
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-    }
-
     public void register(){
         Button registerBtn = findViewById(R.id.registerBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -122,15 +112,9 @@ public class RegisterActivity extends AppCompatActivity {
                                 // Sign in success, update UI with the signed-in user's information
                                 Log.d("message", "createUserWithEmail:success");
 
-                                Toast.makeText(RegisterActivity.this, "Registrering lyckades",
-                                        Toast.LENGTH_SHORT).show();
-
                                 uploadImage();
 
                                 createUser(namn, surname, email, adress, phone, school, password);
-
-                                Intent logInIntent = new Intent(RegisterActivity.this, LoggedInActivity.class);
-                                startActivity(logInIntent);
                             } else {
 
                                 Log.w("Exception", "createUserWithEmail:failure", task.getException());
@@ -162,7 +146,6 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-
     //Metod som lägger in data i Firestore om den skapade användaren.
     public void createUser(String namn, String surname, String email, String adress, String phone, String school, String password) {
         FirebaseUser user = mAuth.getCurrentUser();
@@ -183,6 +166,9 @@ public class RegisterActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                        Toast.makeText(RegisterActivity.this, "Registrering lyckades", Toast.LENGTH_SHORT).show();
+                        Intent logInIntent = new Intent(RegisterActivity.this, LoggedInActivity.class);
+                        startActivity(logInIntent);
                         Log.d(TAG, "DocumentSnapshot successfully written!");
                     }
                 })
@@ -206,39 +192,22 @@ public class RegisterActivity extends AppCompatActivity {
 
         if(filePath != null)
         {
-            /*
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-            */
             imageRandomNumber = UUID.randomUUID().toString();
 
             StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
-            ref.putFile(filePath);
-                    /*
+            ref.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                            //Toast.makeText(RegisterActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                            //Toast.makeText(RegisterActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                    */
         }
     }
 

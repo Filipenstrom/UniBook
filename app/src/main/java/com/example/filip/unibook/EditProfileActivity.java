@@ -29,6 +29,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -37,7 +38,7 @@ import java.util.UUID;
 public class EditProfileActivity extends AppCompatActivity {
 
     public static final String TAG = "Bra meddelande";
-    EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
+    EditText editName, editSurname, editEmail, editAdress, editPhone, editSchool;
     ImageView imageView;
     Button button;
     Button changePic;
@@ -48,7 +49,7 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseUser user = mAuth.getCurrentUser();
     FirebaseStorage storage;
     StorageReference storageReference;
-    String imageRandomNumber;
+    String imageRandomNumber, imageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editPhone =  findViewById(R.id.etphonenumber);
         editSchool = findViewById(R.id.etSchool);
         editAdress =  findViewById(R.id.etAdress);
-        button = findViewById(R.id.btnSpara);
+        button = findViewById(R.id.btnSave);
         changePic = findViewById(R.id.btnChangePic);
         imageView = findViewById(R.id.ivProfile);
 
@@ -70,6 +71,12 @@ public class EditProfileActivity extends AppCompatActivity {
 
         insertUserInformation();
 
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                save();
+            }
+        });
 
         changePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,10 +101,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         editAdress.setText(document.getString("adress"));
                         editPhone.setText(document.getString("phone"));
                         editSchool.setText(document.getString("school"));
-                        String imageId = document.getString("imageId");
+                        imageId = document.getString("imageId");
 
                         setImage(imageId);
-
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
@@ -110,7 +116,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    public void save(View view) {
+    public void save() {
 
         DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
         docRef.update("name", editName.getText().toString());
@@ -119,28 +125,13 @@ public class EditProfileActivity extends AppCompatActivity {
         docRef.update("adress", editAdress.getText().toString());
         docRef.update("phone", editPhone.getText().toString());
         docRef.update("school", editSchool.getText().toString());
-        uploadImage();
-        docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                Toast.makeText(EditProfileActivity.this, "Profil uppdaterad",
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
 
-        Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-        startActivity(intent);
-
+        uploadImage(docRef);
     }
 
     public void setImage(String imageId){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
 
         final long ONE_MEGABYTE = 1024 * 1024;
 
@@ -167,43 +158,45 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    private void uploadImage() {
+    private void uploadImage(final DocumentReference docRef) {
 
         if(filePath != null)
         {
-            /*
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-            */
+            StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
             imageRandomNumber = UUID.randomUUID().toString();
 
-            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
-            ref.putFile(filePath);
-                    /*
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            storageRef.delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
-                        }
-                    });
-                    */
+                        public void onSuccess(Void aVoid) {
+
+                            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+                            ref.putFile(filePath)
+                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                            docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(EditProfileActivity.this, "Profilen uppdaterad",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            Toast.makeText(EditProfileActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                            }
+                        });
         }
     }
 
@@ -225,5 +218,4 @@ public class EditProfileActivity extends AppCompatActivity {
             }
         }
     }
-
 }

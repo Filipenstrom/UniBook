@@ -89,7 +89,6 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:background="@color/colorOrange"
-        android:onClick="save"
         android:text="Spara Ändringar"
         android:textColor="@color/colorBackground"
         app:layout_constraintBottom_toBottomOf="parent"
