@@ -26,7 +26,7 @@ public final class Notification{
         context = c;
 
         //Intent för att öppna UniBook om man trycker på notifikationen.
-        Intent notifyIntent = new Intent(context, MainActivity.class);
+        Intent notifyIntent = new Intent(context, LoggedInActivity.class);
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent notifyPendingIntent = PendingIntent.getActivity(
@@ -38,7 +38,7 @@ public final class Notification{
         //Bygger notifikationen
         mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.schjool)
-                .setContentTitle("En bok för programmet " + program + " har lagts till.")
+                .setContentTitle(program)
                 .setContentText(text)
                 .setContentIntent(notifyPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);

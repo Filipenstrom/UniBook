@@ -2,9 +2,31 @@ package com.example.filip.unibook;
 
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.lang.ref.Reference;
+import java.sql.Ref;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -14,13 +36,19 @@ import java.util.TimerTask;
  */
 
 public class MyService extends Service {
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    String chatId;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
+    String[] chats;
 
     private Timer mTimer;
     TimerTask timerTask = new TimerTask() {
         @Override
         public void run() {
             Log.e("Log", "Running");
-            checkForNotis();
+            //checkForNotis();
+            checkForNewMessage();
         }
     };
 
@@ -28,7 +56,7 @@ public class MyService extends Service {
     public void onCreate(){
         super.onCreate();
         mTimer = new Timer();
-        mTimer.schedule(timerTask, 20000, 2 * 8000);
+        mTimer.schedule(timerTask, 2000, 2 * 8000);
     }
 
     @Override
@@ -99,6 +127,69 @@ public class MyService extends Service {
         } catch (Exception e) {
             Log.d("Broken", "Index out of bounds");
         }
+    }
+
+    public void checkForNewMessage() {
+        //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
+        final CollectionReference colRef = rootRef.collection("Chat");
+        colRef.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            List<DocumentSnapshot> list = task.getResult().getDocuments();
+
+                            if (list.size() > 0) {
+
+                                chats = new String[task.getResult().size()];
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    DocumentSnapshot documentSnapshot = list.get(i);
+                                    if (documentSnapshot.getString("User1").equals(user.getUid().toString())) {
+                                        chats[i] = documentSnapshot.getId().toString();
+                                    } else if (documentSnapshot.getString("User2").equals(user.getUid().toString())) {
+                                        chats[i] = documentSnapshot.getId().toString();
+                                    }
+
+                                    if (chats[i] != null) {
+                                        checkLatest(chats[i]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+    }
+
+    public void checkLatest(String chatsWithUser){
+        final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser).collection("Messages").document("latest");
+        colRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                DocumentSnapshot documentSnapshot = task.getResult();
+                if(documentSnapshot.getString("NotiSent") != null) {
+                    if (!documentSnapshot.getString("UserId").equals(user.getUid().toString()) && documentSnapshot.getString("NotiSent").equals("Not Sent")) {
+                        colRef.update("NotiSent", "Sent");
+                        try {
+                            Uri urinotification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), urinotification);
+                            String name = documentSnapshot.getString("Name");
+                            String message = documentSnapshot.getString("Message");
+                            sendNoti(name, message);
+                            r.play();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    public void sendNoti(String name, String message){
+        String notimeg = name + " har skickat ett meddelande: " + message;
+        Notification notification = new Notification(this, notimeg, "Tryck för att öppna UniBook");
+        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
     }
 
     @Override

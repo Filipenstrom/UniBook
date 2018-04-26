@@ -114,7 +114,7 @@ public class MessageAdapter extends BaseAdapter {
             messageTxt.setText(message);
         }
 
-            return v;
+        return v;
 
         //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
     }
@@ -133,4 +133,3 @@ public class MessageAdapter extends BaseAdapter {
         return sendbackname;
     }
 }
-
