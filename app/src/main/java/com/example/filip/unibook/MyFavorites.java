@@ -47,7 +47,7 @@ public class MyFavorites extends AppCompatActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent showDetailActivity = new Intent(MyFavorites.this, ChosenAdForSale.class);
                 TextView adId = view.findViewById(R.id.txtAdID);
-                showDetailActivity.putExtra("id", Integer.parseInt(adId.getText().toString()));
+                showDetailActivity.putExtra("id", adId.getText().toString());
                 startActivity(showDetailActivity);
             }
         });
@@ -59,6 +59,7 @@ public class MyFavorites extends AppCompatActivity {
 
     public void getMyFavoriteAds(){
         CollectionReference favouritesRef =  rootRef.collection("Favourites");
+
         Query query = favouritesRef.whereEqualTo("userId", user.getUid().toString());
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -78,7 +79,7 @@ public class MyFavorites extends AppCompatActivity {
                         prices[i] = doc.getString("price");
                     }
 
-                    ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
+                    FavoriteAdapter adapter = new FavoriteAdapter(context, items, prices, ids);
                     listView.setAdapter(adapter);
 
                 }

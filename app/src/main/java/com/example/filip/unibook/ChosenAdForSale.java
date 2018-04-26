@@ -134,6 +134,10 @@ public class ChosenAdForSale extends AppCompatActivity {
                     Map<String, Object> map = new HashMap<>();
                     map.put("userId", loggenIn.getUid().toString());
                     map.put("adId", adId);
+                    map.put("price", pris.getText().toString());
+                    map.put("title", title.getText().toString());
+                    map.put("imageId", imageId);
+
 
                     favouritesRef.document()
                             .set(map)

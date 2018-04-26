@@ -122,7 +122,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="100dp"
             android:background="@android:color/holo_green_dark"
-            android:text="Lägg till som favorit"
+            android:text="Lägg till favorit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.578"
             app:layout_constraintStart_toEndOf="@+id/btnSendMsgAd"
