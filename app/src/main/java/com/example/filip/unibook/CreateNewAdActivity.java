@@ -45,9 +45,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
     TextView kurs, program;
     Button button, listProgramBtn, listCourseBtn;
     ImageView imageView;
-    Uri imageUri;
-    ListView listView;
-    byte[] bytes = null;
     private Uri filePath;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
@@ -61,47 +58,46 @@ public class CreateNewAdActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_new_ad);
 
-         titel = findViewById(R.id.editTxtTitel);
-         pris = findViewById(R.id.editTxtPris);
-         info = findViewById(R.id.editTxtInfo);
-         isdn = findViewById(R.id.editTxtISDN);
-         program = findViewById(R.id.txtViewProgram);
-         kurs = findViewById(R.id.textViewCourses);
-         button = findViewById(R.id.btnBildKnapp);
-         listProgramBtn = findViewById(R.id.btnGoToProgram);
-         listCourseBtn = findViewById(R.id.btnKurs);
-         imageView = findViewById(R.id.imgViewBokbild);
+        titel = findViewById(R.id.editTxtTitel);
+        pris = findViewById(R.id.editTxtPris);
+        info = findViewById(R.id.editTxtInfo);
+        isdn = findViewById(R.id.editTxtISDN);
+        program = findViewById(R.id.txtViewProgram);
+        kurs = findViewById(R.id.textViewCourses);
+        button = findViewById(R.id.btnBildKnapp);
+        listProgramBtn = findViewById(R.id.btnGoToProgram);
+        listCourseBtn = findViewById(R.id.btnKurs);
+        imageView = findViewById(R.id.imgViewBokbild);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
         button.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 choseImg();
-             }
-         });
+            @Override
+            public void onClick(View v) {
+                choseImg();
+            }
+        });
 
-         listProgramBtn.setOnClickListener(new View.OnClickListener() {
+        listProgramBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllProgramsActivity.class);
-
                 startActivityForResult(intent, 1);
             }
         });
 
-         listCourseBtn.setOnClickListener(new View.OnClickListener() {
-             @Override
-             public void onClick(View v) {
-                 Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
-                 String[] extras = new String[2];
-                 extras[0] = "2";
-                 extras[1] = program.getText().toString();
-                 intent.putExtra("extras", extras);
-                 startActivityForResult(intent, 2);
-             }
-         });
+        listCourseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(CreateNewAdActivity.this, ListAllCoursesFromProgramActivity.class);
+                String[] extras = new String[2];
+                extras[0] = "2";
+                extras[1] = program.getText().toString();
+                intent.putExtra("extras", extras);
+                startActivityForResult(intent, 2);
+            }
+        });
 
         Intent intent = getIntent();
         String programNamn = intent.getStringExtra("programInfoIntent");
@@ -110,7 +106,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtProgram.setVisibility(View.VISIBLE);
     }
 
-    //Metod för att skapa en annons
     public void createAd(View view) {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -158,52 +153,36 @@ public class CreateNewAdActivity extends AppCompatActivity {
                     });
         }
         else{
-                Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
+            Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
         }
     }
 
-    //Metod för att ladda upp en bild till annonsen
     private void uploadImage() {
 
         if(filePath != null)
         {
-            /*
-            final ProgressDialog progressDialog = new ProgressDialog(this);
-            progressDialog.setTitle("Uploading...");
-            progressDialog.show();
-            */
             imageRandomNumber = UUID.randomUUID().toString();
 
             StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
-            ref.putFile(filePath);
-                    /*
+            ref.putFile(filePath)
+
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
+
+                            //Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
-                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
-                                    .getTotalByteCount());
-                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                            //Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
-                    */
+
         }
     }
 
-    //Metod för att välja bild
     public void choseImg(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -229,13 +208,11 @@ public class CreateNewAdActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
-
         if(resultCode == 1){
-            String programNamn = data.getStringExtra("programInfoIntent");
-            program.setText(programNamn);
+            String programnamn = data.getStringExtra("programInfoIntent");
+            program.setText(programnamn);
             program.setVisibility(View.VISIBLE);
         }
-
         if(resultCode == 2){
             String[] kursnamn = data.getStringArrayExtra("kursInfoIntent");
             kurs.setText(kursnamn[1]);

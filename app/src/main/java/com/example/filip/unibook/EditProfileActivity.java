@@ -16,30 +16,40 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.UUID;
 
 public class EditProfileActivity extends AppCompatActivity {
 
     public static final String TAG = "Bra meddelande";
-    EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
+    EditText editName, editSurname, editEmail, editAdress, editPhone, editSchool;
     ImageView imageView;
     Button button;
     Button changePic;
-    private static final int PICK_IMAGE = 100;
-    Uri imageUri;
-    byte[] bytes;
+    private Uri filePath;
+    public static final int PICK_IMAGE_REQUEST = 71;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    String imageRandomNumber, imageId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +62,21 @@ public class EditProfileActivity extends AppCompatActivity {
         editPhone =  findViewById(R.id.etphonenumber);
         editSchool = findViewById(R.id.etSchool);
         editAdress =  findViewById(R.id.etAdress);
-        button = findViewById(R.id.btnSpara);
+        button = findViewById(R.id.btnSave);
         changePic = findViewById(R.id.btnChangePic);
+        imageView = findViewById(R.id.ivProfile);
+
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
 
         insertUserInformation();
 
-        //setByteIfUserDontChangePic();
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                save();
+            }
+        });
 
         changePic.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,8 +101,9 @@ public class EditProfileActivity extends AppCompatActivity {
                         editAdress.setText(document.getString("adress"));
                         editPhone.setText(document.getString("phone"));
                         editSchool.setText(document.getString("school"));
+                        imageId = document.getString("imageId");
 
-                        //pic.setImageBitmap(BitmapFactory.decodeByteArray(chosenAd.getPic(), 0, chosenAd.getPic().length));
+                        setImage(imageId);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
@@ -96,7 +116,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    public void save(View view) {
+    public void save() {
 
         DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
         docRef.update("name", editName.getText().toString());
@@ -106,45 +126,96 @@ public class EditProfileActivity extends AppCompatActivity {
         docRef.update("phone", editPhone.getText().toString());
         docRef.update("school", editSchool.getText().toString());
 
-        Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-        startActivity(intent);
-
+        uploadImage(docRef);
     }
 
+    public void setImage(String imageId){
+
+        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                imageView.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+    }
+
+    //Metod för att välja profilbild
     public void choseImg(){
-        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI);
-        startActivityForResult(photoPickerIntent, PICK_IMAGE);
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data){
-        super.onActivityResult(requestCode, resultCode, data);
+    private void uploadImage(final DocumentReference docRef) {
 
-        if(resultCode == RESULT_OK && requestCode == PICK_IMAGE){
-            imageUri = data.getData();
-            imageView.setImageURI(imageUri);
-            Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-            byte[] imageInByte = baos.toByteArray();
-            bytes = imageInByte;
+        if(filePath != null)
+        {
+            StorageReference storageRef = storage.getReferenceFromUrl(imageId);
 
+            imageRandomNumber = UUID.randomUUID().toString();
+
+            storageRef.delete()
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+
+                            StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+                            ref.putFile(filePath)
+                                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                        @Override
+                                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                            docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                                @Override
+                                                public void onSuccess(Void aVoid) {
+                                                    Toast.makeText(EditProfileActivity.this, "Profilen uppdaterad",
+                                                            Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+                                                    startActivity(intent);
+                                                }
+                                            });
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+
+                                            Toast.makeText(EditProfileActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    });
         }
     }
 
-    public void saveUserInformation(){
-        SharedPreferences sp = new SharedPreferences(this);
-        sp.setusername(editEmail.getText().toString());
+    //Metod som fäster den valda bilden i en imageview
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+        {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                imageView.setImageBitmap(bitmap);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
     }
-
-    //Så det inte krachar om anvndaren inte byter profilbild.
-    public void setByteIfUserDontChangePic(){
-        imageView.setImageURI(imageUri);
-        Bitmap bitmap = ((BitmapDrawable) imageView.getDrawable()).getBitmap();
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
-        byte[] imageInByte = baos.toByteArray();
-        bytes = imageInByte;
-    }
-
 }

@@ -2,7 +2,10 @@ package com.example.filip.unibook;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -22,28 +27,35 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.IOException;
 import java.lang.ref.Reference;
 import java.util.List;
+import java.util.UUID;
 
 public class ChosenAdPageActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    String id;
-    Ad chosenAd;
-    byte[] bytepic;
+    String id, imageRandomNumber, imageId;
     TextView title;
     TextView pris;
     TextView ISDN;
     TextView info;
     TextView program;
+    public static final int PICK_IMAGE_REQUEST = 71;
+    private Uri filePath;
     TextView kurs;
     ImageView pic;
     Context context = this;
-    final DatabaseHelper db = new DatabaseHelper(this);
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    FirebaseStorage storage;
+    StorageReference storageReference;
+    Button changeImg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +69,22 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         program = findViewById(R.id.etchosenAdProgram);
         kurs = findViewById(R.id.etchosenAdCourse);
         pic = findViewById(R.id.ivchosenAdImage);
+        storage = FirebaseStorage.getInstance();
+        storageReference = storage.getReference();
+        changeImg = findViewById(R.id.btnChangeImgChosenAd);
 
+        changeImg.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                choseImg();
+            }
+        });
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         getAd();
-        deleteAd();
-        }
+        //deleteAd();
+    }
 
     public void getAd(){
         final DocumentReference adsRef = rootRef.collection("Ads").document(id);
@@ -76,16 +97,15 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             DocumentSnapshot doc = task.getResult();
 
 
-                            if (doc.getString("sellerId").equals(user.getUid().toString())) {
-                                ISDN.setText(doc.getString("ISDN"));
-                                kurs.setText(doc.getString("course"));
-                                info.setText(doc.getString("info"));
-                                pris.setText(doc.getString("price"));
-                                program.setText(doc.getString("program"));
-                                String seller = doc.getString("seller");
-                                String sellerId = doc.getString("sellerId");
-                                title.setText(doc.getString("title"));
-                            }
+                            ISDN.setText(doc.getString("ISDN"));
+                            kurs.setText(doc.getString("course"));
+                            info.setText(doc.getString("info"));
+                            pris.setText(doc.getString("price"));
+                            program.setText(doc.getString("program"));
+                            title.setText(doc.getString("title"));
+                            imageId = doc.getString("imageId");
+
+                            setImage(imageId);
                         }
                         else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -93,9 +113,31 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                     }
 
                 });
-}
+    }
+
+    public void setImage(String imageId){
+
+        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                // Data for "images/island.jpg" is returns, use this as needed
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                pic.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                // Handle any errors
+            }
+        });
+    }
 
     public void updateData(View view) {
+
         DocumentReference docRef = rootRef.collection("Ads").document(id);
         docRef.update("title", title.getText().toString());
         docRef.update("ISDN", ISDN.getText().toString());
@@ -103,11 +145,10 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         docRef.update("info", info.getText().toString());
         docRef.update("price", pris.getText().toString());
         docRef.update("program", program.getText().toString());
-
-        Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-        startActivity(intent);
+        uploadImage(docRef);
     }
 
+    /*
         //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
         public void deleteAd(){
             Button deleteBtn = findViewById(R.id.btnDelete);
@@ -122,5 +163,72 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 }
             });
         }
-}
+        */
 
+    //Metod för att välja profilbild
+    public void choseImg(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
+    }
+
+    private void uploadImage(final DocumentReference docRef) {
+
+        if(filePath != null)
+        {
+            StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+            imageRandomNumber = UUID.randomUUID().toString();
+
+            storageRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+
+                    StorageReference ref = storageReference.child("images/"+ imageRandomNumber);
+                    ref.putFile(filePath)
+                            .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                                    docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Toast.makeText(ChosenAdPageActivity.this, "Annonsen uppdaterad",
+                                                    Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Toast.makeText(ChosenAdPageActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                }
+            });
+        }
+    }
+
+    //Metod som fäster den valda bilden i en imageview
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null )
+        {
+            filePath = data.getData();
+            try {
+                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
+                pic.setImageBitmap(bitmap);
+            }
+            catch (IOException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+}

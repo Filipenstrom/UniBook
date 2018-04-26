@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -36,7 +37,6 @@ public class MyAdsActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
     Context context = this;
-    DatabaseHelper myDb;
     ListView listView;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
@@ -47,7 +47,6 @@ public class MyAdsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ads);
 
-        myDb = new DatabaseHelper(this);
         listView = findViewById(R.id.listViewMyAds);
 
         goToCreateAd();
@@ -66,7 +65,7 @@ public class MyAdsActivity extends AppCompatActivity {
     }
 
     public void goToCreateAd() {
-        Button button = (Button) findViewById(R.id.btnSkapaAnnons);
+        Button button = findViewById(R.id.btnSkapaAnnons);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,36 +76,35 @@ public class MyAdsActivity extends AppCompatActivity {
     }
 
     public void getAllMyAds(){
-        CollectionReference adsRef = rootRef.collection("Ads");
-        adsRef.get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
 
-                            int size = task.getResult().size();
+        CollectionReference favouritesRef =  rootRef.collection("Ads");
+        Query query = favouritesRef.whereEqualTo("sellerId", user.getUid().toString());
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
 
-                            String[] items = new String[size];
-                            String[] ids = new String[size];
-                            String[] prices = new String[size];
+                    int size = task.getResult().size();
 
-                            List<DocumentSnapshot> minLista = task.getResult().getDocuments();
+                    String[] items = new String[size];
+                    String[] ids = new String[size];
+                    String[] prices = new String[size];
 
-                            for(int i = 0;i < size;i++){
-                                DocumentSnapshot doc = minLista.get(i);
-                                if(doc.getString("sellerId").equals(user.getUid().toString())) {
-                                    ids[i] = doc.getId().toString();
-                                    items[i] = doc.getString("title");
-                                    prices[i] = doc.getString("price");
-                                }
-                            }
-                            ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
-                            listView.setAdapter(adapter);
-                        }
-                        else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
+                    List<DocumentSnapshot> minLista = task.getResult().getDocuments();
+
+                    for(int i = 0;i < size;i++){
+
+                        DocumentSnapshot doc = minLista.get(i);
+                        ids[i] = doc.getId().toString();
+                        items[i] = doc.getString("title");
+                        prices[i] = doc.getString("price");
                     }
-                });
+                    ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
+                    listView.setAdapter(adapter);
+                }else{
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
     }
 }

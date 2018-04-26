@@ -92,19 +92,20 @@
 
     <Button
         android:id="@+id/btnchosenAdUpdate"
-        android:layout_width="200dp"
-        android:layout_height="51dp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginStart="16dp"
         android:background="@color/colorOrange"
         android:onClick="updateData"
         android:text="Updatera Annons"
         android:textColor="@android:color/background_light"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btnDelete"
-        app:layout_constraintHorizontal_bias="0.906"
+        app:layout_constraintEnd_toStartOf="@+id/btnChangeImgChosenAd"
         app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
@@ -168,10 +169,20 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="wrap_content"
+        android:id="@+id/btnChangeImgChosenAd"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="X"
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginStart="16dp"
+        android:background="@color/colorOrange"
+        android:text="Byt bild"
+        android:textColor="@android:color/background_light"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnchosenAdUpdate" />
+
 </android.support.constraint.ConstraintLayout>
