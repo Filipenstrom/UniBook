@@ -130,7 +130,7 @@ public class MyService extends Service {
 
     public void checkForNewMessage() {
         //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
-        final CollectionReference colRef = rootRef.collection("Chat").document().collection("Messages");
+        final CollectionReference colRef = rootRef.collection("Chat");
         colRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -138,26 +138,30 @@ public class MyService extends Service {
                         if (task.isSuccessful()) {
                             List<DocumentSnapshot> list = task.getResult().getDocuments();
 
-                            chats = new String[task.getResult().size()];
+                            if (list.size() > 0) {
 
-                            for(int i = 0; i<list.size();i++){
-                                DocumentSnapshot documentSnapshot = list.get(i);
-                                if(documentSnapshot.getString("User1").equals(user.getUid())){
-                                    chats[i] = documentSnapshot.getString(documentSnapshot.getId());
-                                }
-                                else if(documentSnapshot.getString("User2").equals(user.getUid())){
-                                    chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                chats = new String[task.getResult().size()];
+
+                                for (int i = 0; i < list.size(); i++) {
+                                    DocumentSnapshot documentSnapshot = list.get(i);
+                                    if (documentSnapshot.getString("User1").equals(user.getUid().toString())) {
+                                        chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                    } else if (documentSnapshot.getString("User2").equals(user.getUid().toString())) {
+                                        chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                    }
+                                    if (task.isComplete()) {
+                                        checkLatest(chats);
+                                    }
                                 }
                             }
                         }
-                        checkLatest(chats);
                  }
              });
     }
 
     public void checkLatest(String[] chatsWithUser){
         for(int i = 0;i<chatsWithUser.length;i++) {
-            final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser[i]).collection("Messages").document("latest");
+            final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser[i].toString()).collection("Messages").document("latest");
             colRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
