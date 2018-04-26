@@ -74,12 +74,12 @@ public class MyFavorites extends AppCompatActivity {
                     List<DocumentSnapshot> list = task.getResult().getDocuments();
                     for (int i = 0; i < task.getResult().size(); i++) {
                         DocumentSnapshot doc = list.get(i);
-                        ids[i] = doc.getId().toString();
+                        ids[i] = doc.getString("adId");
                         items[i] = doc.getString("title");
                         prices[i] = doc.getString("price");
                     }
 
-                    FavoriteAdapter adapter = new FavoriteAdapter(context, items, prices, ids);
+                    ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
                     listView.setAdapter(adapter);
 
                 }
