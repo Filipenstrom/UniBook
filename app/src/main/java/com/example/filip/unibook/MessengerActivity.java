@@ -268,10 +268,17 @@ public class MessengerActivity extends AppCompatActivity {
                 mapOne.put("Name", name);
                 mapOne.put("Date", date);
 
+                Map<String, Object> mapTwo = new HashMap<>();
+                mapTwo.put("Message", message);
+                mapTwo.put("UserId", user.getUid().toString());
+                mapTwo.put("Name", name);
+                mapTwo.put("Date", date);
+                mapTwo.put("NotiSent", "Not Sent");
+
                 DocumentReference chatRefLatest = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
                 CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");
 
-                chatRefLatest.set(mapOne)
+                chatRefLatest.set(mapTwo)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {

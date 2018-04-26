@@ -2,6 +2,7 @@ package com.example.filip.unibook;
 
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -145,12 +146,13 @@ public class MyService extends Service {
                                 for (int i = 0; i < list.size(); i++) {
                                     DocumentSnapshot documentSnapshot = list.get(i);
                                     if (documentSnapshot.getString("User1").equals(user.getUid().toString())) {
-                                        chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                        chats[i] = documentSnapshot.getId().toString();
                                     } else if (documentSnapshot.getString("User2").equals(user.getUid().toString())) {
-                                        chats[i] = documentSnapshot.getString(documentSnapshot.getId());
+                                        chats[i] = documentSnapshot.getId().toString();
                                     }
-                                    if (task.isComplete()) {
-                                        checkLatest(chats);
+
+                                    if (chats[i] != null) {
+                                        checkLatest(chats[i]);
                                     }
                                 }
                             }
@@ -159,25 +161,35 @@ public class MyService extends Service {
              });
     }
 
-    public void checkLatest(String[] chatsWithUser){
-        for(int i = 0;i<chatsWithUser.length;i++) {
-            final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser[i].toString()).collection("Messages").document("latest");
+    public void checkLatest(String chatsWithUser){
+            final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser).collection("Messages").document("latest");
             colRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     DocumentSnapshot documentSnapshot = task.getResult();
-                    if(!documentSnapshot.getString("UserId").equals(user.getUid().toString())){
-                        try {
-                            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                            Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), notification);
-                            r.play();
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                    if(documentSnapshot.getString("NotiSent") != null) {
+                        if (!documentSnapshot.getString("UserId").equals(user.getUid().toString()) && documentSnapshot.getString("NotiSent").equals("Not Sent")) {
+                            colRef.update("NotiSent", "Sent");
+                            try {
+                                Uri urinotification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                Ringtone r = RingtoneManager.getRingtone(getApplicationContext(), urinotification);
+                                String name = documentSnapshot.getString("Name");
+                                String message = documentSnapshot.getString("Message");
+                                sendNoti(name, message);
+                                r.play();
+                            } catch (Exception ex) {
+                                ex.printStackTrace();
+                            }
                         }
                     }
                 }
             });
-        }
+    }
+
+    public void sendNoti(String name, String message){
+        String notimeg = name + " har skickat ett meddelande: " + message;
+        Notification notification = new Notification(this, notimeg, "Tryck för att öppna UniBook");
+        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
     }
 
     @Override

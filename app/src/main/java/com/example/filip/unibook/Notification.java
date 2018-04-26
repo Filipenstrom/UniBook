@@ -38,7 +38,7 @@ public final class Notification{
         //Bygger notifikationen
         mBuilder = new NotificationCompat.Builder(context, CHANNEL_ID)
                 .setSmallIcon(R.drawable.schjool)
-                .setContentTitle("En bok för programmet " + program + " har lagts till.")
+                .setContentTitle(program)
                 .setContentText(text)
                 .setContentIntent(notifyPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT);
