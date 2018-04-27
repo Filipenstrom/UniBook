@@ -53,12 +53,12 @@ public class ChosenAdForSale extends AppCompatActivity {
 
     public static final String TAG = "message";
     TextView title, pris, info, program, kurs, seller, chosenAdId;
-    ImageView pic;
+    ImageView pic, sellerpic;
     User user;
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    String sellerId, sellerPhone, adId, id, sellerName, imageId;
+    String sellerId, sellerPhone, adId, id, sellerName, imageId, profilepicId;
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -82,6 +82,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnReportAd = findViewById(R.id.btnReportAd);
         progressBar = findViewById(R.id.progressBarChosenAd);
         btnSendMessage = findViewById(R.id.btnSendMsgAd);
+        sellerpic = findViewById(R.id.ivsellerprofile);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -106,11 +107,10 @@ public class ChosenAdForSale extends AppCompatActivity {
                         adId = document.getId();
                         imageId = document.getString("imageId");
 
-                        setImage(imageId);
-
-                        checkFavourites(adId);
-
                         getSeller(sellerId);
+
+                        setImage(imageId, pic);
+                        checkFavourites(adId);
 
                         progressBar.setVisibility(View.INVISIBLE);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
@@ -200,9 +200,20 @@ public class ChosenAdForSale extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        sellerpic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdForSale.this, ProfilePageActivity.class);
+                String id = sellerId;
+                intent.putExtra("userid", id);
+                intent.putExtra("adid", adId);
+                startActivity(intent);
+            }
+        });
     }
 
-    public void setImage(String imageId){
+    public void setImage(String imageId, final ImageView imageView){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
 
@@ -218,7 +229,7 @@ public class ChosenAdForSale extends AppCompatActivity {
             public void onSuccess(byte[] bytes) {
                 // Data for "images/island.jpg" is returns, use this as needed
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                pic.setImageBitmap(bitmap);
+                imageView.setImageBitmap(bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -240,7 +251,11 @@ public class ChosenAdForSale extends AppCompatActivity {
 
                         sellerPhone = document.getString("phone");
                         sellerName = document.getString("name") + " " + document.getString("surname");
+                        profilepicId = document.getString("imageId");
                         seller.setText(sellerName);
+
+                        setImage(profilepicId, sellerpic);
+
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
