@@ -13,11 +13,11 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="30dp"
+        android:background="@color/colorOrange"
         android:text="Logga ut"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnnotiser"
-        android:background="@color/colorOrange"/>
+        app:layout_constraintTop_toBottomOf="@+id/btnnotiser" />
 
     <Button
         android:id="@+id/btnnotiser"

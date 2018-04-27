@@ -27,7 +27,8 @@ public class LoggedInActivity extends AppCompatActivity {
         goToProfile();
         goToSettings();
         goToSearch();
-        goToFavorites();;
+        goToFavorites();
+        goToMeddelande();
         //checkForNotis();
 
 
@@ -89,6 +90,17 @@ public class LoggedInActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(LoggedInActivity.this, MyFavorites.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void goToMeddelande(){
+        LinearLayout btnmessages =  findViewById(R.id.messagesLinearLayout);
+        btnmessages.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoggedInActivity.this, MyMessagesActivity.class);
                 startActivity(intent);
             }
         });

@@ -1,98 +1,152 @@
 package com.example.filip.unibook;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class ReportAd extends AppCompatActivity {
 
-    private TextView adTitle;
-    private FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-    private DatabaseReference mRootReference = firebaseDatabase.getReference();
-    private DatabaseReference mChildReference = mRootReference.child("users");
-    private DatabaseReference mittBarn = mRootReference.child("users").child("1").child("adress");
+    public static final String TAG = "message";
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+    private TextView adName, adId;
+    private EditText authorName, authorMail, message;
+    private Button btnReportAd;
+    private String adSellerId, id, loggedInUserName, loggedInUserMail, loggedInUser;
+    FirebaseAuth auth = FirebaseAuth.getInstance();
+    FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report_ad);
 
-        adTitle = findViewById(R.id.txtAdTitle);
-
-        final DatabaseHelper db = new DatabaseHelper(this);
-
+        adName = findViewById(R.id.txtReportAdName);
+        adId = findViewById(R.id.txtReportAdID);
+        authorName = findViewById(R.id.txtReportAuthorName);
+        authorMail = findViewById(R.id.txtReportAdAuthorMail);
+        message = findViewById(R.id.txtReportAdMessage);
+        btnReportAd = findViewById(R.id.btnReportSendReportAd);
         Intent intent = getIntent();
-        int id = intent.getIntExtra("id", -1);
+        id = intent.getStringExtra("id");
+        user = auth.getCurrentUser();
+        loggedInUser = user.getUid().toString();
 
-        final Ad ad = db.getAd(id);
+        DocumentReference userRef = rootRef.collection("Users").document(loggedInUser);
 
-        TextView adTitle = findViewById(R.id.txtReportAdName);
-        TextView adID = findViewById(R.id.txtReportAdID);
-        final EditText authorName = findViewById(R.id.txtReportAuthorName);
-        final EditText authorMail = findViewById(R.id.txtReportAdAuthorMail);
-        final EditText message = findViewById(R.id.txtReportAdMessage);
+        userRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
 
-        SharedPreferences sp = new SharedPreferences(this);
-        final User user = db.getUser(sp.getusername());
+                                loggedInUserName = document.getString("name") + " " + document.getString("surname");
+                                loggedInUserMail = document.getString("email");
 
+                                fillInfo();
 
-        adTitle.setText(ad.getTitle());
-        adID.setText(ad.getId());
-        final String fullName = user.getName() + " " + user.getSurname();
-        authorName.setText(fullName);
-        authorMail.setText(user.getMail());
-        Button reportBtn = findViewById(R.id.btnReportSendReportAd);
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
 
-        reportBtn.setOnClickListener(new View.OnClickListener() {
+        btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                boolean isInserted = db.insertReport(ad.getTitle(), authorName.getText().toString(), authorMail.getText().toString(), message.getText().toString(), Integer.parseInt(user.getId()), Integer.parseInt(ad.getId()));
+                CollectionReference reportsRef = rootRef.collection("Reports");
 
-                if(isInserted == true){
-                    Toast.makeText(ReportAd.this,"Anmälan skapad", Toast.LENGTH_LONG).show();
-                    finish();
-                }
-                else {
-                    Toast.makeText(ReportAd.this, "Något gick fel", Toast.LENGTH_LONG).show();
-                }
+                Map<String, Object> mapTwo = new HashMap<>();
+                mapTwo.put("sellerId", adSellerId);
+                mapTwo.put("reporterId", loggedInUser);
+                mapTwo.put("adId", id);
+                mapTwo.put("reporterMail", loggedInUserMail);
+                mapTwo.put("reportMessage", message.getText().toString());
+                mapTwo.put("reporterName", loggedInUserName);
+
+                reportsRef.document()
+                        .set(mapTwo)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+
+                                Toast.makeText(ReportAd.this, "Anmälan skapad",
+                                        Toast.LENGTH_LONG).show();
+
+                                finish();
+                                Log.d(TAG, "DocumentSnapshot successfully written!");
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
             }
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
+    public void fillInfo(){
 
-        mittBarn.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
+        DocumentReference docRef = rootRef.collection("Ads").document(id);
 
-                String message = "";
+        docRef.get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document != null && document.exists()) {
 
-                message = dataSnapshot.getValue(String.class);
+                                adSellerId = document.getString("sellerId");
+                                adName.setText(document.getString("title"));
+                                adId.setText(document.getId());
+                                authorName.setText(loggedInUserName);
+                                authorMail.setText(loggedInUserMail);
 
-                adTitle.setText(message);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+                                Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                            } else {
+                                Log.d(TAG, "No such document");
+                            }
+                        } else {
+                            Log.d(TAG, "get failed with ", task.getException());
+                        }
+                    }
+                });
     }
 }

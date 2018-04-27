@@ -1,21 +1,26 @@
 package com.example.filip.unibook;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.example.filip.unibook.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -24,26 +29,36 @@ import com.google.firebase.storage.StorageReference;
 
 import org.w3c.dom.Text;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.sql.Blob;
+import java.util.Date;
 
 /**
  * Created by Ludvig on 2018-03-12.
  */
 
-public class ItemAdapter extends BaseAdapter {
+public class MyMessagesAdapter extends BaseAdapter {
 
     LayoutInflater mInflator;
     String[] items;
-    String[] prices;
-    String[] id;
+    String[] chatids;
+    String[] boktitel;
+    Blob[] blobs;
+    String[] userid;
+    Context context;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
 
-    public ItemAdapter(Context c, String[] i, String[] p, String[] id){
-        items = i;
-        prices = p;
-        this.id = id;
+
+    public MyMessagesAdapter(Context c, String[] items, String[] chatids, String[] userid, String[] boktitel, Blob[] blobs) {
+        this.items = items;
+        this.chatids = chatids;
+        this.userid = userid;
+        this.boktitel = boktitel;
+        if(blobs != null) {
+            this.blobs = blobs;
+        }
+        this.context = c;
         mInflator = (LayoutInflater) c.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
@@ -62,24 +77,24 @@ public class ItemAdapter extends BaseAdapter {
         return i;
     }
 
-    //Fyller listview med data om annonser, körs en gång för varje listitem.
     @Override
     public View getView(int i, View view, ViewGroup viewGroup) {
-        View v = mInflator.inflate(R.layout.my_listview_ad, null);
-        TextView nameTextView = v.findViewById(R.id.txtAdTitle);
-        TextView priceTextView =  v.findViewById(R.id.txtAdPris);
-        TextView idsTextView = v.findViewById(R.id.txtAdID);
-        final ImageView imageView = v.findViewById(R.id.ivAdsListPicture);
+        View v = mInflator.inflate(R.layout.mymessages_listview, null);
+        TextView nameTxt = v.findViewById(R.id.txtUserTalkingTo);
+        TextView chatId = v.findViewById(R.id.txtChatId);
+        TextView boktitlar = v.findViewById(R.id.txtChatForAd);
+        final ImageView imageView = v.findViewById(R.id.ivMessages);
 
         String name = items[i];
-        String cost = prices[i];
-        String adid = id[i];
+        String ids = chatids[i];
+        String user = userid[i];
+        String titel = boktitel[i];
 
-        nameTextView.setText(name);
-        priceTextView.setText(cost + ":-");
-        idsTextView.setText(adid);
+        nameTxt.setText(name);
+        chatId.setText(ids);
+        boktitlar.setText("Ämne: " + titel);
 
-        final DocumentReference docRef = rootRef.collection("Ads").document(adid);
+        final DocumentReference docRef = rootRef.collection("Users").document(user);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
@@ -109,6 +124,9 @@ public class ItemAdapter extends BaseAdapter {
             }
         });
 
+
         return v;
+
+        //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
     }
 }
