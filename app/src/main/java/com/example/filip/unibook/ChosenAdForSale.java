@@ -291,6 +291,34 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
+    public void checkIfChatAlreadyExist(){
+
+        CollectionReference chatRef =  rootRef.collection("Chat");
+        //Query query = favouritesRef.whereEqualTo("userId", loggenIn.getUid().toString());
+        chatRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : list) {
+
+                        if (document.getString("User1").equals(loggenIn.getUid().toString()) && document.getString("User2").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
+                            btnSendMessage.setText("En chat är redan startad");
+                            btnSendMessage.setClickable(false);
+                        }
+                        else if (document.getString("User2").equals(loggenIn.getUid().toString()) && document.getString("User1").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
+                            btnSendMessage.setText("En chat är redan startad");
+                            btnSendMessage.setClickable(false);
+                        }
+                    }
+                }else{
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
     public void removeFavourite(final String adId){
 
         final CollectionReference favouritesRef =  rootRef.collection("Favourites");
