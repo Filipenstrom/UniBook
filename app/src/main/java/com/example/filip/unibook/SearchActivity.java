@@ -270,12 +270,10 @@ public class SearchActivity extends AppCompatActivity {
 
             programSearchBtn.setText(programName);
 
-            if(queryString.equals("")){
+            if(queryString.equals("") || queryString.toLowerCase().equals("psykologi") || queryString.toLowerCase().equals("systemvetenskap")){
 
                 queryString = programName;
-            }else if(queryString.toLowerCase().equals("psykologi") || queryString.toLowerCase().equals("systemvetenskap")){
 
-                queryString = programName;
             }else{
 
                 queryString = queryString + " " + programName;
