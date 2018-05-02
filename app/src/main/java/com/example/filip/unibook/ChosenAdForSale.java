@@ -131,7 +131,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                 CollectionReference favouritesRef = rootRef.collection("Favourites");
 
                 if(favoriteBtn.getText().toString().toLowerCase().equals("lägg till favorit")){
-
                     Map<String, Object> map = new HashMap<>();
                     map.put("userId", loggenIn.getUid().toString());
                     map.put("adId", adId);
@@ -180,7 +179,6 @@ public class ChosenAdForSale extends AppCompatActivity {
             public void onClick(View v) {
                 if(ContextCompat.checkSelfPermission(ChosenAdForSale.this,
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    //Toast.makeText(ChosenAdForSale.this, "You have already granted this permission", Toast.LENGTH_SHORT).show();
 
                     Intent callIntent = new Intent(Intent.ACTION_CALL);
                     callIntent.setData(Uri.parse("tel:" + sellerPhone));

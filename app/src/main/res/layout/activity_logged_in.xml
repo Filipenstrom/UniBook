@@ -11,8 +11,8 @@
 
     <ImageView
         android:id="@+id/uniBook"
-        android:layout_width="218dp"
-        android:layout_height="76dp"
+        android:layout_width="173dp"
+        android:layout_height="74dp"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"

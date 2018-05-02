@@ -39,9 +39,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public static final String TAG = "Bra meddelande";
     EditText editName, editSurname, editEmail, editAdress, editPhone, editSchool;
+    TextView changePic;
     ImageView imageView;
     Button button;
-    Button changePic;
     private Uri filePath;
     public static final int PICK_IMAGE_REQUEST = 71;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
@@ -63,7 +63,7 @@ public class EditProfileActivity extends AppCompatActivity {
         editSchool = findViewById(R.id.etSchool);
         editAdress =  findViewById(R.id.etAdress);
         button = findViewById(R.id.btnSave);
-        changePic = findViewById(R.id.btnChangePic);
+        changePic = findViewById(R.id.txtChangePic);
         imageView = findViewById(R.id.ivProfile);
 
         storage = FirebaseStorage.getInstance();

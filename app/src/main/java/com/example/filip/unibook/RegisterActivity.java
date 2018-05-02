@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -45,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     EditText editName, editSurname, editEmail, editPassword, editAdress, editPhone, editSchool;
     ImageView imageView;
-    Button button;
+    TextView väljProfilbild;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
@@ -60,7 +61,7 @@ public class RegisterActivity extends AppCompatActivity {
         editSurname = findViewById(R.id.editTxtSurname);
         editEmail = findViewById(R.id.editTxtMail);
         editPassword = findViewById(R.id.editTxtPass);
-        button = findViewById(R.id.btnImage);
+        väljProfilbild = findViewById(R.id.txtVäljProfilbild);
         imageView = findViewById(R.id.ivProfile);
         editAdress = findViewById(R.id.edittxtAdress);
         editPhone = findViewById(R.id.edittxtPhone);
@@ -71,7 +72,7 @@ public class RegisterActivity extends AppCompatActivity {
         storageReference = storage.getReference();
 
 
-        button.setOnClickListener(new View.OnClickListener() {
+        väljProfilbild.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 choseImg();
