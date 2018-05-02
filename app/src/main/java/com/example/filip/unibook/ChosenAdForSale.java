@@ -58,7 +58,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    String sellerId, sellerPhone, adId, id, sellerName, imageId, profilepicId;
+    String sellerId, sellerPhone, adId, id, sellerName, imageId, profilepicId, boktitel;
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -106,6 +106,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
+                        boktitel = document.getString("title");
 
                         getSeller(sellerId);
 
@@ -197,9 +198,13 @@ public class ChosenAdForSale extends AppCompatActivity {
                 String id = sellerId;
                 intent.putExtra("userid", id);
                 intent.putExtra("sellerName", sellerName);
+                intent.putExtra("userTalkingToId", sellerId);
+                intent.putExtra("boktitel", boktitel);
                 startActivity(intent);
             }
         });
+
+        checkIfChatAlreadyExist();
 
         sellerpic.setOnClickListener(new View.OnClickListener() {
             @Override
