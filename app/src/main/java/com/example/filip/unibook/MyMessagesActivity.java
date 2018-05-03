@@ -50,10 +50,7 @@ public class MyMessagesActivity extends AppCompatActivity {
     ListView listView;
     Context context = this;
     String name;
-    String[] id;
-    String[] names;
-    String[] userid;
-    String[] boktitel;
+    String[] id, names, userid, boktitel;
     int counter;
 
 
