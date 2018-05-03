@@ -6,6 +6,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -46,10 +47,12 @@ import org.w3c.dom.Document;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private Button programSearchBtn, courseSearchBtn;
+    private ConstraintLayout programSearchBtn, courseSearchBtn;
     private SearchView searchView;
+    private TextView chosenProgramText, chosenCourseText;
     public static final String TAG = "message";
     private ListView listView;
+    private ImageView clearChosenProgram, clearChosenCourse;
     private ProgressBar progressbar;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private Context context;
@@ -72,11 +75,25 @@ public class SearchActivity extends AppCompatActivity {
 
         searchView = findViewById(R.id.searchViewBooks);
 
+        searchView.setQueryHint("Sök efter böcker...");
+
         programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
 
         progressbar = findViewById(R.id.searchProgressBar);
 
         courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
+
+        chosenProgramText = findViewById(R.id.txtChosenProgram);
+
+        chosenProgramText.setHint("Välj Program");
+
+        chosenCourseText = findViewById(R.id.txtChosenCourse);
+
+        chosenCourseText.setHint("Välj Kurs");
+
+        clearChosenProgram = findViewById(R.id.imgClearProgram);
+
+        clearChosenCourse = findViewById(R.id.imgClearCourse);
 
         context = getApplicationContext();
 
@@ -143,6 +160,28 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 });
 
+        clearChosenProgram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                chosenProgramText.setText("");
+                clearChosenProgram.setVisibility(View.INVISIBLE);
+
+                searchQuery(searchView.getQuery().toString());
+            }
+        });
+
+        clearChosenCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                chosenCourseText.setText("");
+                clearChosenCourse.setVisibility(View.INVISIBLE);
+
+                searchQuery(searchView.getQuery().toString());
+            }
+        });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -175,21 +214,21 @@ public class SearchActivity extends AppCompatActivity {
                 Intent goToSearchProgram = new Intent(context, ListAllProgramsActivity.class);
                 goToSearchProgram.putExtra("activityCode", 1);
                 startActivityForResult(goToSearchProgram, 1);
-                courseSearchBtn.setText("");
+                chosenCourseText.setText("");
             }
         });
 
         courseSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(programSearchBtn.getText().toString().equals("")){
+                if(chosenProgramText.getText().toString().equals("")){
                     Toast.makeText(SearchActivity.this, "Du måste välja program först",
                             Toast.LENGTH_LONG).show();
                 }else{
 
                     Intent goToSearchCourse = new Intent(context, ListAllCoursesFromProgramActivity.class);
 
-                    String chosenProgram = programSearchBtn.getText().toString();
+                    String chosenProgram = chosenProgramText.getText().toString();
 
                     String[] myExtras = new String[]{"1", chosenProgram};
                     goToSearchCourse.putExtra("extras", myExtras);
@@ -204,71 +243,7 @@ public class SearchActivity extends AppCompatActivity {
         Query query1 = new Query(text)
                 .setAttributesToRetrieve("title", "id", "price")
                 .setHitsPerPage(50);
-        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programSearchBtn.getText().toString()).put("course: " + courseSearchBtn.getText().toString())), new CompletionHandler() {
-            @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
-                try {
-                    hits = content.getJSONArray("hits");
-
-                    int size = hits.length();
-
-                    String[] onChangeItems = new String[size];
-                    String[] onChangeIds = new String[size];
-                    String[] onChangePrices = new String[size];
-
-                    for(int i = 0; i < size; i++){
-                        JSONObject jsonObject = hits.getJSONObject(i);
-                        onChangeItems[i] = jsonObject.getString("title");
-                        onChangeIds[i] = jsonObject.getString("id");
-                        onChangePrices[i] = jsonObject.getString("price");
-                    }
-                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, onChangeIds);
-                    listView.setAdapter(itemAdapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public void searchProgram(String programFacet){
-
-        Query query1 = new Query()
-                .setAttributesToRetrieve("title", "id", "price")
-                .setHitsPerPage(50);
-        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programFacet)), new CompletionHandler() {
-            @Override
-            public void requestCompleted(JSONObject content, AlgoliaException error) {
-                try {
-                    hits = content.getJSONArray("hits");
-
-                    int size = hits.length();
-
-                    String[] onChangeItems = new String[size];
-                    String[] onChangeIds = new String[size];
-                    String[] onChangePrices = new String[size];
-
-                    for(int i = 0; i < size; i++){
-                        JSONObject jsonObject = hits.getJSONObject(i);
-                        onChangeItems[i] = jsonObject.getString("title");
-                        onChangeIds[i] = jsonObject.getString("id");
-                        onChangePrices[i] = jsonObject.getString("price");
-                    }
-                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, onChangeIds);
-                    listView.setAdapter(itemAdapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-    public void searchCourse(String programFacet, String courseFacet){
-
-        Query query1 = new Query()
-                .setAttributesToRetrieve("title", "id", "price")
-                .setHitsPerPage(50);
-        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programFacet).put("course: " + courseFacet)), new CompletionHandler() {
+        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + chosenProgramText.getText().toString()).put("course: " + chosenCourseText.getText().toString())), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 try {
@@ -305,18 +280,20 @@ public class SearchActivity extends AppCompatActivity {
 
             programName = data.getStringExtra("programNamn");
 
-            programSearchBtn.setText(programName);
+            chosenProgramText.setText(programName);
+            clearChosenProgram.setVisibility(View.VISIBLE);
 
-            searchProgram(programName);
+            searchQuery(searchView.getQuery().toString());
 
         }
         if(resultCode == 2){
 
             courseName = data.getStringExtra("kursNamn");
 
-            courseSearchBtn.setText(courseName);
+            chosenCourseText.setText(courseName);
+            clearChosenCourse.setVisibility(View.VISIBLE);
 
-            searchCourse(programName, courseName);
+            searchQuery(searchView.getQuery().toString());
 
         }
     }
