@@ -11,7 +11,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -50,13 +53,12 @@ public class SearchActivity extends AppCompatActivity {
     private ProgressBar progressbar;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private Context context;
-    private List<DocumentSnapshot> programResult;
-    private byte[] img;
     private String[] items, ids, prices, programs, courses;
     List<byte[]> pics;
     private String queryString;
     Client client;
     Index index;
+    JSONArray hits;
 
 
     @Override
@@ -117,7 +119,7 @@ public class SearchActivity extends AppCompatActivity {
 
                                     List<JSONObject> adsList = new ArrayList<>();
 
-                                    for(int i = 0;i < size;i++){
+                                    for (int i = 0; i < size; i++) {
 
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("title", items[i]);
@@ -155,22 +157,17 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                queryString = query;
-
-                searchQuery();
+                searchQuery(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                queryString = newText;
-
-                searchQuery();
+                searchQuery(newText);
                 return false;
             }
         });
-
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -202,16 +199,16 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void searchQuery(){
+    public void searchQuery(String text){
 
-        Query query1 = new Query(queryString)
+        Query query1 = new Query(text)
                 .setAttributesToRetrieve("title", "id", "price")
                 .setHitsPerPage(50);
-        index.searchAsync(query1, new CompletionHandler() {
+        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programSearchBtn.getText().toString()).put("course: " + courseSearchBtn.getText().toString())), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 try {
-                    JSONArray hits = content.getJSONArray("hits");
+                    hits = content.getJSONArray("hits");
 
                     int size = hits.length();
 
@@ -234,29 +231,66 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void setImage(){
+    public void searchProgram(String programFacet){
 
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://unibook-41e0f.appspot.com").child("images").child("152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+        Query query1 = new Query()
+                .setAttributesToRetrieve("title", "id", "price")
+                .setHitsPerPage(50);
+        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programFacet)), new CompletionHandler() {
             @Override
-            public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                int size = bytes.length;
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                try {
+                    hits = content.getJSONArray("hits");
+
+                    int size = hits.length();
+
+                    String[] onChangeItems = new String[size];
+                    String[] onChangeIds = new String[size];
+                    String[] onChangePrices = new String[size];
+
+                    for(int i = 0; i < size; i++){
+                        JSONObject jsonObject = hits.getJSONObject(i);
+                        onChangeItems[i] = jsonObject.getString("title");
+                        onChangeIds[i] = jsonObject.getString("id");
+                        onChangePrices[i] = jsonObject.getString("price");
+                    }
+                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, onChangeIds);
+                    listView.setAdapter(itemAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }).addOnFailureListener(new OnFailureListener() {
+        });
+    }
+
+    public void searchCourse(String programFacet, String courseFacet){
+
+        Query query1 = new Query()
+                .setAttributesToRetrieve("title", "id", "price")
+                .setHitsPerPage(50);
+        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + programFacet).put("course: " + courseFacet)), new CompletionHandler() {
             @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
+            public void requestCompleted(JSONObject content, AlgoliaException error) {
+                try {
+                    hits = content.getJSONArray("hits");
+
+                    int size = hits.length();
+
+                    String[] onChangeItems = new String[size];
+                    String[] onChangeIds = new String[size];
+                    String[] onChangePrices = new String[size];
+
+                    for(int i = 0; i < size; i++){
+                        JSONObject jsonObject = hits.getJSONObject(i);
+                        onChangeItems[i] = jsonObject.getString("title");
+                        onChangeIds[i] = jsonObject.getString("id");
+                        onChangePrices[i] = jsonObject.getString("price");
+                    }
+                    ItemAdapter itemAdapter = new ItemAdapter(context, onChangeItems, onChangePrices, onChangeIds);
+                    listView.setAdapter(itemAdapter);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -264,34 +298,26 @@ public class SearchActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        String programName = "";
+        String courseName = "";
         if(resultCode == 1){
 
-            String programName = data.getStringExtra("programNamn");
+            programName = data.getStringExtra("programNamn");
 
             programSearchBtn.setText(programName);
 
-            if(queryString.equals("") || queryString.toLowerCase().equals("psykologi") || queryString.toLowerCase().equals("systemvetenskap")){
+            searchProgram(programName);
 
-                queryString = programName;
-
-            }else{
-
-                queryString = queryString + " " + programName;
-            }
-
-            searchQuery();
         }
         if(resultCode == 2){
 
-            String courseName = data.getStringExtra("kursNamn");
+            courseName = data.getStringExtra("kursNamn");
 
             courseSearchBtn.setText(courseName);
 
-            String[] search = queryString.split(" ");
+            searchCourse(programName, courseName);
 
-            queryString = search[0] + " " + courseName;
-
-            searchQuery();
         }
     }
 }
