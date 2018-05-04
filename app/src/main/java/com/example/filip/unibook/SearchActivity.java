@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -58,7 +59,6 @@ public class SearchActivity extends AppCompatActivity {
     private Context context;
     private String[] items, ids, prices, programs, courses;
     List<byte[]> pics;
-    private String queryString;
     Client client;
     Index index;
     JSONArray hits;
@@ -96,8 +96,6 @@ public class SearchActivity extends AppCompatActivity {
         clearChosenCourse = findViewById(R.id.imgClearCourse);
 
         context = getApplicationContext();
-
-        queryString = "";
 
         client = new Client("K1KZR7ER1O", "6dea0396ee42fb485fc94cd182f21423");
         index = client.getIndex("ads");
@@ -165,7 +163,9 @@ public class SearchActivity extends AppCompatActivity {
             public void onClick(View v) {
 
                 chosenProgramText.setText("");
+                chosenCourseText.setText("");
                 clearChosenProgram.setVisibility(View.INVISIBLE);
+                clearChosenCourse.setVisibility(View.INVISIBLE);
 
                 searchQuery(searchView.getQuery().toString());
             }
@@ -186,9 +186,21 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent chosenAdForSale = new Intent(context, ChosenAdForSale.class);
+                ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
-                chosenAdForSale.putExtra("id", id.getText().toString());
-                startActivity(chosenAdForSale);
+
+                try{
+
+                    Bitmap bitmap = ((BitmapDrawable)adPic.getDrawable()).getBitmap();
+                    chosenAdForSale.putExtra("img", bitmap);
+                    chosenAdForSale.putExtra("id", id.getText().toString());
+                    startActivity(chosenAdForSale);
+
+                }catch(Exception e){
+
+                    Log.d("Error", e.getMessage().toString());
+
+                }
             }
         });
 
@@ -242,6 +254,7 @@ public class SearchActivity extends AppCompatActivity {
 
         Query query1 = new Query(text)
                 .setAttributesToRetrieve("title", "id", "price")
+                .setRestrictSearchableAttributes("title")
                 .setHitsPerPage(50);
         index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + chosenProgramText.getText().toString()).put("course: " + chosenCourseText.getText().toString())), new CompletionHandler() {
             @Override

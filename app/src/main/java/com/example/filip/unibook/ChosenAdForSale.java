@@ -64,6 +64,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
+    Bitmap img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +87,8 @@ public class ChosenAdForSale extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
+
+        img = intent.getParcelableExtra("img");
         id = intent.getStringExtra("id");
 
         DocumentReference docRef = rootRef.collection("Ads").document(id);
@@ -106,7 +109,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         adId = document.getId();
                         imageId = document.getString("imageId");
 
-                        setImage(imageId);
+                        pic.setImageBitmap(img);
 
                         checkFavourites(adId);
 
@@ -198,32 +201,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                 intent.putExtra("userid", id);
                 intent.putExtra("sellerName", sellerName);
                 startActivity(intent);
-            }
-        });
-    }
-
-    public void setImage(String imageId){
-
-        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                pic.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
             }
         });
     }

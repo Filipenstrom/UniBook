@@ -55,8 +55,8 @@
 
         <ImageView
             android:id="@+id/imgClearProgram"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
@@ -95,8 +95,8 @@
 
         <ImageView
             android:id="@+id/imgClearCourse"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:layout_marginBottom="15dp"
             android:layout_marginEnd="8dp"
             android:layout_marginRight="8dp"
