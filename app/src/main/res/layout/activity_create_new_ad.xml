@@ -21,13 +21,16 @@
 
         <Button
             android:id="@+id/btnBildKnapp"
-            android:layout_width="145dp"
-            android:layout_height="48dp"
-            android:layout_marginLeft="120dp"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="12dp"
             android:background="@color/colorOrange"
             android:text="Välj Bild"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgViewBokbild" />
 
@@ -56,7 +59,7 @@
         <EditText
             android:id="@+id/editTxtInfo"
             android:layout_width="231dp"
-            android:layout_height="69dp"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="76dp"
             android:layout_marginStart="76dp"
             android:layout_marginTop="8dp"
@@ -77,13 +80,16 @@
 
         <Button
             android:id="@+id/btnGoToProgram"
-            android:layout_width="145dp"
-            android:layout_height="48dp"
-            android:layout_marginLeft="120dp"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="12dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
             android:background="@color/colorOrange"
             android:text="Välj Program"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTxtISDN" />
 
@@ -99,13 +105,16 @@
 
         <Button
             android:id="@+id/btnKurs"
-            android:layout_width="145dp"
-            android:layout_height="48dp"
-            android:layout_marginLeft="120dp"
-            android:layout_marginStart="120dp"
-            android:layout_marginTop="8dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
             android:background="@color/colorOrange"
             android:text="Välj Kurs"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtViewProgram" />
 
