@@ -238,23 +238,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         }
     }
 
-    /*
-        //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
-        public void deleteAd(){
-            Button deleteBtn = findViewById(R.id.btnDelete);
-
-            deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rootRef.collection("Ads").document(id).delete();
-
-                    Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-                    startActivity(intent);
-                }
-            });
-        }
-        */
-
     //Metod för att välja profilbild
     public void choseImg(){
         Intent intent = new Intent();
