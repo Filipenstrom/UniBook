@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -136,16 +137,42 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         });
     }
 
+    public boolean validate(){
+
+        boolean valid = true;
+        if(title.length() > 50 || title.getText().toString().trim() == ""){
+            title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
+            pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
+            valid = false;
+        }
+        if(info.length() > 100 || info.getText().toString().trim() == ""){
+            info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
+            valid = false;
+        }
+        if(ISDN.length() > 30 || ISDN.getText().toString().trim() == ""){
+            ISDN.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
     public void updateData(View view) {
 
-        DocumentReference docRef = rootRef.collection("Ads").document(id);
-        docRef.update("title", title.getText().toString());
-        docRef.update("ISDN", ISDN.getText().toString());
-        docRef.update("course", kurs.getText().toString());
-        docRef.update("info", info.getText().toString());
-        docRef.update("price", pris.getText().toString());
-        docRef.update("program", program.getText().toString());
-        uploadImage(docRef);
+        if(validate()) {
+            DocumentReference docRef = rootRef.collection("Ads").document(id);
+            docRef.update("title", title.getText().toString());
+            docRef.update("ISDN", ISDN.getText().toString());
+            docRef.update("course", kurs.getText().toString());
+            docRef.update("info", info.getText().toString());
+            docRef.update("price", pris.getText().toString());
+            docRef.update("program", program.getText().toString());
+            uploadImage(docRef);
+        }
     }
 
     /*
