@@ -127,6 +127,7 @@
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:ems="10"
+        android:digits="0123456789"
         android:hint="Tele"
         android:inputType="number"
         app:layout_constraintBottom_toTopOf="@+id/edittxtSchool"

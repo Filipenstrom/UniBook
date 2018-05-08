@@ -10,7 +10,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -50,6 +52,9 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     String imageRandomNumber;
+    String regexEmail = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +71,7 @@ public class RegisterActivity extends AppCompatActivity {
         editPhone = findViewById(R.id.edittxtPhone);
         editSchool = findViewById(R.id.edittxtSchool);
         mAuth = FirebaseAuth.getInstance();
+
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
@@ -90,6 +96,47 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    public boolean validate(){
+
+        boolean valid = true;
+
+        if(editName.length() > 15 || editName.getText().toString().trim() == ""){
+            editName.setError("Fältet får inte vara tomt eller ha mer än 15 tecken.");
+            valid = false;
+        }
+        if(editSurname.length() > 20 || editSurname.getText().toString().trim() == ""){
+            editSurname.setError("Fältet får inte vara tomt, får inte innehålla mer än 20 tecken.");
+            valid = false;
+        }
+        if(editEmail.length() > 50 || editEmail.getText().toString().trim() == "" ){
+            editEmail.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+        if(!editEmail.getText().toString().trim().matches(regexEmail)){
+            editEmail.setError("Du måste skriva en giltig emailadress.");
+            valid = false;
+        }
+        if(editPassword.length() > 15 || editPassword.getText().toString().trim() == ""){
+            editPassword.setError("Fältet får inte vara tomt eller ha mer än 15 tecken.");
+            valid = false;
+        }
+        if(editAdress.length() > 25 || editAdress.getText().toString().trim() == ""){
+            editPassword.setError("Fältet får inte vara tomt eller ha mer än 25 tecken.");
+            valid = false;
+        }
+        if(editPhone.length() > 25 || editPassword.getText().toString().trim() == "" || TextUtils.isDigitsOnly(editPhone.getText().toString())){
+            editPassword.setError("Fältet får inte vara tomt, inte ha mer än 25 tecken och får endast innehålla siffror.");
+            valid = false;
+        }
+        if(editSchool.length() > 50 || editAdress.getText().toString().trim() == ""){
+            editPassword.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
+
     public void addUser(){
         final String namn = editName.getText().toString();
         final String surname = editSurname.getText().toString();
@@ -99,11 +146,12 @@ public class RegisterActivity extends AppCompatActivity {
         final String phone = editPhone.getText().toString();
         final String school = editSchool.getText().toString();
 
-        if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || password.trim().equals("") || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
+        /*if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || password.trim().equals("") || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
 
             Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
-        }else {
+        }else {*/
 
+        if(validate()){
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                         @Override
@@ -121,12 +169,12 @@ public class RegisterActivity extends AppCompatActivity {
 
                                 if(task.getException().getMessage().equals("The email address is badly formatted.")) {
 
-                                    //Om emailen redan existerar i databasem, visa meddelande för användaren.
+                                    //Om emailen redan existerar i databasen, visa meddelande för användaren.
                                     Toast.makeText(RegisterActivity.this, "Det måste vara en giltig e-mail adress",
                                             Toast.LENGTH_LONG).show();
                                 }else if(task.getException().getMessage().equals("The email address is already in use by another account.")) {
 
-                                    //Om emailen redan existerar i databasem, visa meddelande för användaren.
+                                    //Om emailen redan existerar i databasen, visa meddelande för användaren.
                                     Toast.makeText(RegisterActivity.this, "Denna e-mail finns redan registrerad",
                                             Toast.LENGTH_LONG).show();
                                 }else if(task.getException().getMessage().equals("The given password is invalid. [ Password should be at least 6 characters ]")) {
@@ -145,6 +193,7 @@ public class RegisterActivity extends AppCompatActivity {
                     });
         }
     }
+
 
     //Metod som lägger in data i Firestore om den skapade användaren.
     public void createUser(String namn, String surname, String email, String adress, String phone, String school, String password) {

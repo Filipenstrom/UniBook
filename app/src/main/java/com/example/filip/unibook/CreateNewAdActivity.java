@@ -11,7 +11,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -106,6 +108,30 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtProgram.setVisibility(View.VISIBLE);
     }
 
+    public boolean validate(){
+
+        boolean valid = true;
+        if(titel.length() > 50 || titel.getText().toString().trim() == ""){
+            titel.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
+            pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
+            valid = false;
+        }
+        if(info.length() > 100 || info.getText().toString().trim() == ""){
+            info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
+            valid = false;
+        }
+        if(isdn.length() > 30 || isdn.getText().toString().trim() == ""){
+            isdn.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
     public void createAd(View view) {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -130,7 +156,8 @@ public class CreateNewAdActivity extends AppCompatActivity {
         mapOne.put("sellerId", user.getUid().toString());
 
 
-        if(!bokTitel.trim().equals("") || !bokPris.trim().equals("") || !bokInfo.trim().equals("") || !bokISDN.trim().equals("") ||  !bokTillhorKurs.trim().equals("")) {
+        //if(!bokTitel.trim().equals("") || !bokPris.trim().equals("") || !bokInfo.trim().equals("") || !bokISDN.trim().equals("") ||  !bokTillhorKurs.trim().equals("")) {
+          if(validate()){
 
             uploadImage();
             mapOne.put("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber);
@@ -152,9 +179,9 @@ public class CreateNewAdActivity extends AppCompatActivity {
                         }
                     });
         }
-        else{
+       /* else{
             Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
-        }
+        }*/
     }
 
     private void uploadImage() {
