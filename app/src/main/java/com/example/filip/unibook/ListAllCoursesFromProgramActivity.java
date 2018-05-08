@@ -52,7 +52,17 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                     setResult(2, data);
                     finish();
 
-                } else {
+                }
+                else if(extras[0].equals("3")){
+                    Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, ChosenAdPageActivity.class);
+                    String kursId = txtCourseId.getText().toString();
+                    String kursNamn = txtCourse.getText().toString();
+                    String[] myExtras = new String[]{kursId, kursNamn};
+                    intent.putExtra("kursInfoIntent", myExtras);
+                    setResult(2, intent);
+                    finish();
+                }
+                else {
                     Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
                     String kursId = txtCourseId.getText().toString();
                     String kursNamn = txtCourse.getText().toString();

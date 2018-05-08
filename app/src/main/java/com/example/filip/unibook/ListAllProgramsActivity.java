@@ -52,7 +52,18 @@ public class ListAllProgramsActivity extends AppCompatActivity {
                     data.putExtra("programNamn", programNamn);
                     setResult(1, data);
                     finish();
-                }else {
+                }
+                else if (activityCode == 2){
+                    Intent intent = new Intent(ListAllProgramsActivity.this, ChosenAdPageActivity.class);
+                    //String programId = txtProgramId.getText().toString();
+                    String program = txtProgram.getText().toString();
+                    String myExtras = program;
+                    intent.putExtra("programInfoIntent", myExtras);
+
+                    setResult(1, intent);
+                    finish();
+                }
+                else {
                     Intent intent = new Intent(ListAllProgramsActivity.this, CreateNewAdActivity.class);
                     String programId = txtProgramId.getText().toString();
                     String program = txtProgram.getText().toString();

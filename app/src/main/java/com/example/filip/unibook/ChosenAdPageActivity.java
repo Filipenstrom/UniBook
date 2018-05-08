@@ -57,7 +57,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
-    Button changeImg;
+    Button changeImg, listCourseBtn, listProgramBtn;
     ConstraintLayout bottomLayout;
 
     @Override
@@ -69,14 +69,16 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         pris = findViewById(R.id.etchosenAdPris);
         ISDN = findViewById(R.id.etchosenAdISDN);
         info = findViewById(R.id.etchosenAdInfo);
-        program = findViewById(R.id.etchosenAdProgram);
-        kurs = findViewById(R.id.etchosenAdCourse);
+        program = findViewById(R.id.txtProgram);
+        kurs = findViewById(R.id.txtCourse);
         pic = findViewById(R.id.ivchosenAdImage);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         changeImg = findViewById(R.id.btnChangeImgChosenAd);
         bottomLayout = findViewById(R.id.bottomlayout);
         delete = findViewById(R.id.ivdelete);
+        listProgramBtn = findViewById(R.id.listProgramBtn);
+        listCourseBtn = findViewById(R.id.listCourseBtn);
 
         changeImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +95,27 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 updateData();
+            }
+        });
+
+        listProgramBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdPageActivity.this, ListAllProgramsActivity.class);
+                intent.putExtra("activityCode", 2);
+                startActivityForResult(intent, 1);
+            }
+        });
+
+        listCourseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdPageActivity.this, ListAllCoursesFromProgramActivity.class);
+                String[] extras = new String[2];
+                extras[0] = "3";
+                extras[1] = program.getText().toString();
+                intent.putExtra("extras", extras);
+                startActivityForResult(intent, 2);
             }
         });
 
@@ -176,16 +199,18 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
     public void updateData() {
 
-        DocumentReference docRef = rootRef.collection("Ads").document(id);
-        docRef.update("title", title.getText().toString());
-        docRef.update("ISDN", ISDN.getText().toString());
-        docRef.update("course", kurs.getText().toString());
-        docRef.update("info", info.getText().toString());
-        docRef.update("price", pris.getText().toString());
-        docRef.update("program", program.getText().toString());
-        uploadImage(docRef);
-        Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-        startActivity(intent);
+        if (!kurs.getText().equals("")) {
+            DocumentReference docRef = rootRef.collection("Ads").document(id);
+            docRef.update("title", title.getText().toString());
+            docRef.update("ISDN", ISDN.getText().toString());
+            docRef.update("course", kurs.getText().toString());
+            docRef.update("info", info.getText().toString());
+            docRef.update("price", pris.getText().toString());
+            docRef.update("program", program.getText().toString());
+            uploadImage(docRef);
+            Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+            startActivity(intent);
+        }
     }
 
     /*
@@ -269,6 +294,17 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             {
                 e.printStackTrace();
             }
+        }
+
+        if(resultCode == 1) {
+            String programName = data.getStringExtra("programInfoIntent");
+            program.setText(programName);
+            kurs.setText("");
+        }
+
+        if(resultCode == 2) {
+            String[] kursName = data.getStringArrayExtra("kursInfoIntent");
+            kurs.setText(kursName[1]);
         }
     }
 }
