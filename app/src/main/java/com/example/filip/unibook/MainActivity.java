@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,9 +20,10 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    Button loginBtn, registerBtn;
+    Button loginBtn;
     EditText email, password;
     ProgressBar pbar;
+    TextView registrera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
         loginBtn = findViewById(R.id.loginBtn);
-        registerBtn = findViewById(R.id.registreraBtn);
+        registrera = findViewById(R.id.txtRegistrera);
         email = findViewById(R.id.editTxtUsername);
         password = findViewById(R.id.editTxtPassword);
         pbar = findViewById(R.id.pBarLogin);
@@ -43,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        registerBtn.setOnClickListener(new View.OnClickListener() {
+        registrera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent registerIntent = new Intent(MainActivity.this, RegisterActivity.class);

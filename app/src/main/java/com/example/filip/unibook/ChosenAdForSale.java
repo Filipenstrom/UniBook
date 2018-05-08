@@ -53,7 +53,7 @@ public class ChosenAdForSale extends AppCompatActivity {
 
     public static final String TAG = "message";
     TextView title, pris, info, program, kurs, seller, chosenAdId;
-    ImageView pic;
+    ImageView pic, sellerpic;
     User user;
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
@@ -82,11 +82,13 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnReportAd = findViewById(R.id.btnReportAd);
         progressBar = findViewById(R.id.progressBarChosenAd);
         btnSendMessage = findViewById(R.id.btnSendMsgAd);
+        seller = findViewById(R.id.ivsellerprofile);
 
         progressBar.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
+
 
         DocumentReference docRef = rootRef.collection("Ads").document(id);
 
@@ -105,8 +107,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
-
-                        setImage(imageId);
 
                         checkFavourites(adId);
 
@@ -164,6 +164,17 @@ public class ChosenAdForSale extends AppCompatActivity {
             }
         });
 
+        sellerpic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdForSale.this, ProfilePageActivity.class);
+                String id = sellerId;
+                intent.putExtra("userid", id);
+                intent.putExtra("adid", adId);
+                startActivity(intent);
+            }
+        });
+
         btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -206,11 +217,6 @@ public class ChosenAdForSale extends AppCompatActivity {
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
 
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
-
         final long ONE_MEGABYTE = 1024 * 1024;
 
         storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
@@ -218,7 +224,7 @@ public class ChosenAdForSale extends AppCompatActivity {
             public void onSuccess(byte[] bytes) {
                 // Data for "images/island.jpg" is returns, use this as needed
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                pic.setImageBitmap(bitmap);
+                sellerpic.setImageBitmap(bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override

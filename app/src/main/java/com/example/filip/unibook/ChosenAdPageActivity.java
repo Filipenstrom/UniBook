@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -49,14 +51,15 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     public static final int PICK_IMAGE_REQUEST = 71;
     private Uri filePath;
     TextView kurs;
-    ImageView pic;
+    ImageView pic, delete;
     Context context = this;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
-    Button changeImg;
+    Button changeImg, listCourseBtn, listProgramBtn;
+    ConstraintLayout bottomLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,12 +70,16 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         pris = findViewById(R.id.etchosenAdPris);
         ISDN = findViewById(R.id.etchosenAdISDN);
         info = findViewById(R.id.etchosenAdInfo);
-        program = findViewById(R.id.etchosenAdProgram);
-        kurs = findViewById(R.id.etchosenAdCourse);
+        program = findViewById(R.id.txtProgram);
+        kurs = findViewById(R.id.txtCourse);
         pic = findViewById(R.id.ivchosenAdImage);
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
         changeImg = findViewById(R.id.btnChangeImgChosenAd);
+        bottomLayout = findViewById(R.id.bottomlayout);
+        delete = findViewById(R.id.ivdelete);
+        listProgramBtn = findViewById(R.id.listProgramBtn);
+        listCourseBtn = findViewById(R.id.listCourseBtn);
 
         changeImg.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,7 +91,36 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
         getAd();
-        //deleteAd();
+
+        bottomLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateData();
+            }
+        });
+
+        listProgramBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdPageActivity.this, ListAllProgramsActivity.class);
+                intent.putExtra("activityCode", 2);
+                startActivityForResult(intent, 1);
+            }
+        });
+
+        listCourseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ChosenAdPageActivity.this, ListAllCoursesFromProgramActivity.class);
+                String[] extras = new String[2];
+                extras[0] = "3";
+                extras[1] = program.getText().toString();
+                intent.putExtra("extras", extras);
+                startActivityForResult(intent, 2);
+            }
+        });
+
+        deleteAd();
     }
 
     public void getAd(){
@@ -94,9 +130,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
-
                             DocumentSnapshot doc = task.getResult();
-
 
                             ISDN.setText(doc.getString("ISDN"));
                             kurs.setText(doc.getString("course"));
@@ -112,9 +146,36 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
                     }
-
                 });
     }
+
+    public void deleteAd(){
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rootRef.collection("Ads").document(id).delete();
+                CollectionReference colRef = rootRef.collection("Favourites");
+                storage.getReferenceFromUrl(imageId).delete();
+
+                colRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        List<DocumentSnapshot> list = task.getResult().getDocuments();
+                        for(int i = 0; i< list.size();i++){
+                            DocumentSnapshot doc = list.get(i);
+                            if(doc.getString("adId").equals(id)){
+                                rootRef.collection("Favourites").document(doc.getId()).delete();
+                            }
+                        }
+
+                        Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+                        startActivity(intent);
+                    }
+                });
+            }
+        });
+    }
+
 
     public void setImage(String imageId){
 
@@ -136,6 +197,39 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             }
         });
     }
+
+    public void updateData() {
+
+        if (!kurs.getText().equals("")) {
+            DocumentReference docRef = rootRef.collection("Ads").document(id);
+            docRef.update("title", title.getText().toString());
+            docRef.update("ISDN", ISDN.getText().toString());
+            docRef.update("course", kurs.getText().toString());
+            docRef.update("info", info.getText().toString());
+            docRef.update("price", pris.getText().toString());
+            docRef.update("program", program.getText().toString());
+            uploadImage(docRef);
+            Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    /*
+        //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
+        public void deleteAd(){
+            Button deleteBtn = findViewById(R.id.btnDelete);
+
+            deleteBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rootRef.collection("Ads").document(id).delete();
+
+                    Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+        */
 
     public boolean validate(){
 
@@ -160,37 +254,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         return valid;
     }
-
-    public void updateData(View view) {
-
-        if(validate()) {
-            DocumentReference docRef = rootRef.collection("Ads").document(id);
-            docRef.update("title", title.getText().toString());
-            docRef.update("ISDN", ISDN.getText().toString());
-            docRef.update("course", kurs.getText().toString());
-            docRef.update("info", info.getText().toString());
-            docRef.update("price", pris.getText().toString());
-            docRef.update("program", program.getText().toString());
-            uploadImage(docRef);
-        }
-    }
-
-    /*
-        //Metod som tar bort den valda annonsen och skickar en tillbaka till listan
-        public void deleteAd(){
-            Button deleteBtn = findViewById(R.id.btnDelete);
-
-            deleteBtn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rootRef.collection("Ads").document(id).delete();
-
-                    Intent intent = new Intent(ChosenAdPageActivity.this, MyAdsActivity.class);
-                    startActivity(intent);
-                }
-            });
-        }
-        */
 
     //Metod för att välja profilbild
     public void choseImg(){
@@ -256,6 +319,17 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             {
                 e.printStackTrace();
             }
+        }
+
+        if(resultCode == 1) {
+            String programName = data.getStringExtra("programInfoIntent");
+            program.setText(programName);
+            kurs.setText("");
+        }
+
+        if(resultCode == 2) {
+            String[] kursName = data.getStringArrayExtra("kursInfoIntent");
+            kurs.setText(kursName[1]);
         }
     }
 }
