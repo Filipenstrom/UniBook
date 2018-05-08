@@ -176,6 +176,30 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         });
     }
 
+    public boolean validate(){
+
+        boolean valid = true;
+        if(title.length() > 50 || title.getText().toString().trim() == ""){
+            title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
+            valid = false;
+        }
+        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
+            pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
+            valid = false;
+        }
+        if(info.length() > 100 || info.getText().toString().trim() == ""){
+            info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
+            valid = false;
+        }
+        if(ISDN.length() > 30 || ISDN.getText().toString().trim() == ""){
+            ISDN.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
+            valid = false;
+        }
+
+        return valid;
+    }
+
 
     public void setImage(String imageId){
 
@@ -230,30 +254,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
             });
         }
         */
-
-    public boolean validate(){
-
-        boolean valid = true;
-        if(title.length() > 50 || title.getText().toString().trim() == ""){
-            title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
-            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
-            valid = false;
-        }
-        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
-            pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
-            valid = false;
-        }
-        if(info.length() > 100 || info.getText().toString().trim() == ""){
-            info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
-            valid = false;
-        }
-        if(ISDN.length() > 30 || ISDN.getText().toString().trim() == ""){
-            ISDN.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
-            valid = false;
-        }
-
-        return valid;
-    }
 
     //Metod för att välja profilbild
     public void choseImg(){

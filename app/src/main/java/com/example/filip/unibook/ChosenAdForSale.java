@@ -64,6 +64,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
+    Bitmap img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,8 @@ public class ChosenAdForSale extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
 
         Intent intent = getIntent();
+
+        img = intent.getParcelableExtra("img");
         id = intent.getStringExtra("id");
 
 
@@ -107,6 +110,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
+
 
                         checkFavourites(adId);
 
@@ -246,6 +250,7 @@ public class ChosenAdForSale extends AppCompatActivity {
 
                         sellerPhone = document.getString("phone");
                         sellerName = document.getString("name") + " " + document.getString("surname");
+                        setImage(document.getString("imageId"));
                         seller.setText(sellerName);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
@@ -343,4 +348,3 @@ public class ChosenAdForSale extends AppCompatActivity {
         }
     }
 }
-
