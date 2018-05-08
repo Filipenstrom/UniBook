@@ -9,7 +9,6 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -56,6 +55,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage;
     StorageReference storageReference;
+    Bitmap img;
     Button changeImg;
 
     @Override
@@ -83,6 +83,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
+
+        img = intent.getParcelableExtra("img");
         getAd();
         //deleteAd();
     }
@@ -97,7 +99,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
                             DocumentSnapshot doc = task.getResult();
 
-
                             ISDN.setText(doc.getString("ISDN"));
                             kurs.setText(doc.getString("course"));
                             info.setText(doc.getString("info"));
@@ -105,8 +106,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             program.setText(doc.getString("program"));
                             title.setText(doc.getString("title"));
                             imageId = doc.getString("imageId");
+                            pic.setImageBitmap(img);
 
-                            setImage(imageId);
                         }
                         else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -116,63 +117,16 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 });
     }
 
-    public void setImage(String imageId){
-
-        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                pic.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-    }
-
-    public boolean validate(){
-
-        boolean valid = true;
-        if(title.length() > 50 || title.getText().toString().trim() == ""){
-            title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
-            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
-            valid = false;
-        }
-        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
-            pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
-            valid = false;
-        }
-        if(info.length() > 100 || info.getText().toString().trim() == ""){
-            info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
-            valid = false;
-        }
-        if(ISDN.length() > 30 || ISDN.getText().toString().trim() == ""){
-            ISDN.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
-            valid = false;
-        }
-
-        return valid;
-    }
-
     public void updateData(View view) {
 
-        if(validate()) {
-            DocumentReference docRef = rootRef.collection("Ads").document(id);
-            docRef.update("title", title.getText().toString());
-            docRef.update("ISDN", ISDN.getText().toString());
-            docRef.update("course", kurs.getText().toString());
-            docRef.update("info", info.getText().toString());
-            docRef.update("price", pris.getText().toString());
-            docRef.update("program", program.getText().toString());
-            uploadImage(docRef);
-        }
+        DocumentReference docRef = rootRef.collection("Ads").document(id);
+        docRef.update("title", title.getText().toString());
+        docRef.update("ISDN", ISDN.getText().toString());
+        docRef.update("course", kurs.getText().toString());
+        docRef.update("info", info.getText().toString());
+        docRef.update("price", pris.getText().toString());
+        docRef.update("program", program.getText().toString());
+        uploadImage(docRef);
     }
 
     /*
