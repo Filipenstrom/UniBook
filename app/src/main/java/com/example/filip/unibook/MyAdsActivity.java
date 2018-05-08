@@ -3,7 +3,10 @@ package com.example.filip.unibook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.media.Image;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -29,6 +32,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,10 +61,19 @@ public class MyAdsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Intent showDetailActivity = new Intent(getApplicationContext(), ChosenAdPageActivity.class);
+
+                Intent showDetailActivity = new Intent(context, ChosenAdPageActivity.class);
+                ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
-                showDetailActivity.putExtra("id", id.getText().toString());
-                startActivity(showDetailActivity);
+
+                try{
+                    Bitmap bitmap = ((BitmapDrawable)adPic.getDrawable()).getBitmap();
+                    showDetailActivity.putExtra("img", bitmap);
+                    showDetailActivity.putExtra("id", id.getText().toString());
+                    startActivity(showDetailActivity);
+                }catch(Exception e){
+                    Log.d("Error", e.getMessage().toString());
+                }
             }
         });
     }

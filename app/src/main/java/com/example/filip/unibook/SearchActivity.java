@@ -5,13 +5,18 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -43,20 +48,20 @@ import org.w3c.dom.Document;
 
 public class SearchActivity extends AppCompatActivity {
 
-    private Button programSearchBtn, courseSearchBtn;
+    private ConstraintLayout programSearchBtn, courseSearchBtn;
     private SearchView searchView;
+    private TextView chosenProgramText, chosenCourseText;
     public static final String TAG = "message";
     private ListView listView;
+    private ImageView clearChosenProgram, clearChosenCourse;
     private ProgressBar progressbar;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     private Context context;
-    private List<DocumentSnapshot> programResult;
-    private byte[] img;
     private String[] items, ids, prices, programs, courses;
     List<byte[]> pics;
-    private String queryString;
     Client client;
     Index index;
+    JSONArray hits;
 
 
     @Override
@@ -70,15 +75,27 @@ public class SearchActivity extends AppCompatActivity {
 
         searchView = findViewById(R.id.searchViewBooks);
 
+        searchView.setQueryHint("Sök efter böcker...");
+
         programSearchBtn = findViewById(R.id.btnSearchGoToProgram);
 
         progressbar = findViewById(R.id.searchProgressBar);
 
         courseSearchBtn = findViewById(R.id.btnSearchGoToCourse);
 
-        context = getApplicationContext();
+        chosenProgramText = findViewById(R.id.txtChosenProgram);
 
-        queryString = "";
+        chosenProgramText.setHint("Välj Program");
+
+        chosenCourseText = findViewById(R.id.txtChosenCourse);
+
+        chosenCourseText.setHint("Välj Kurs");
+
+        clearChosenProgram = findViewById(R.id.imgClearProgram);
+
+        clearChosenCourse = findViewById(R.id.imgClearCourse);
+
+        context = getApplicationContext();
 
         client = new Client("K1KZR7ER1O", "6dea0396ee42fb485fc94cd182f21423");
         index = client.getIndex("ads");
@@ -117,7 +134,7 @@ public class SearchActivity extends AppCompatActivity {
 
                                     List<JSONObject> adsList = new ArrayList<>();
 
-                                    for(int i = 0;i < size;i++){
+                                    for (int i = 0; i < size; i++) {
 
                                         Map<String, Object> map = new HashMap<>();
                                         map.put("title", items[i]);
@@ -141,13 +158,49 @@ public class SearchActivity extends AppCompatActivity {
                     }
                 });
 
+        clearChosenProgram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                chosenProgramText.setText("");
+                chosenCourseText.setText("");
+                clearChosenProgram.setVisibility(View.INVISIBLE);
+                clearChosenCourse.setVisibility(View.INVISIBLE);
+
+                searchQuery(searchView.getQuery().toString());
+            }
+        });
+
+        clearChosenCourse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                chosenCourseText.setText("");
+                clearChosenCourse.setVisibility(View.INVISIBLE);
+
+                searchQuery(searchView.getQuery().toString());
+            }
+        });
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent chosenAdForSale = new Intent(context, ChosenAdForSale.class);
+                ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
-                chosenAdForSale.putExtra("id", id.getText().toString());
-                startActivity(chosenAdForSale);
+
+                try{
+
+                    Bitmap bitmap = ((BitmapDrawable)adPic.getDrawable()).getBitmap();
+                    chosenAdForSale.putExtra("img", bitmap);
+                    chosenAdForSale.putExtra("id", id.getText().toString());
+                    startActivity(chosenAdForSale);
+
+                }catch(Exception e){
+
+                    Log.d("Error", e.getMessage().toString());
+
+                }
             }
         });
 
@@ -155,22 +208,17 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public boolean onQueryTextSubmit(String query) {
 
-                queryString = query;
-
-                searchQuery();
+                searchQuery(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
 
-                queryString = newText;
-
-                searchQuery();
+                searchQuery(newText);
                 return false;
             }
         });
-
 
         programSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -178,21 +226,21 @@ public class SearchActivity extends AppCompatActivity {
                 Intent goToSearchProgram = new Intent(context, ListAllProgramsActivity.class);
                 goToSearchProgram.putExtra("activityCode", 1);
                 startActivityForResult(goToSearchProgram, 1);
-                courseSearchBtn.setText("");
+                chosenCourseText.setText("");
             }
         });
 
         courseSearchBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(programSearchBtn.getText().toString().equals("")){
+                if(chosenProgramText.getText().toString().equals("")){
                     Toast.makeText(SearchActivity.this, "Du måste välja program först",
                             Toast.LENGTH_LONG).show();
                 }else{
 
                     Intent goToSearchCourse = new Intent(context, ListAllCoursesFromProgramActivity.class);
 
-                    String chosenProgram = programSearchBtn.getText().toString();
+                    String chosenProgram = chosenProgramText.getText().toString();
 
                     String[] myExtras = new String[]{"1", chosenProgram};
                     goToSearchCourse.putExtra("extras", myExtras);
@@ -202,16 +250,17 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void searchQuery(){
+    public void searchQuery(String text){
 
-        Query query1 = new Query(queryString)
+        Query query1 = new Query(text)
                 .setAttributesToRetrieve("title", "id", "price")
+                .setRestrictSearchableAttributes("title")
                 .setHitsPerPage(50);
-        index.searchAsync(query1, new CompletionHandler() {
+        index.searchAsync(query1.setFacetFilters(new JSONArray().put("program: " + chosenProgramText.getText().toString()).put("course: " + chosenCourseText.getText().toString())), new CompletionHandler() {
             @Override
             public void requestCompleted(JSONObject content, AlgoliaException error) {
                 try {
-                    JSONArray hits = content.getJSONArray("hits");
+                    hits = content.getJSONArray("hits");
 
                     int size = hits.length();
 
@@ -234,66 +283,31 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    public void setImage(){
-
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReferenceFromUrl("gs://unibook-41e0f.appspot.com").child("images").child("152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-
-        /*
-        FirebaseStorage storage = FirebaseStorage.getInstance();
-        StorageReference storageRef = storage.getReference().child("images/152a1281-2366-4f3a-a50e-7d7c1e7019b4");
-        */
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                int size = bytes.length;
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        String programName = "";
+        String courseName = "";
         if(resultCode == 1){
 
-            String programName = data.getStringExtra("programNamn");
+            programName = data.getStringExtra("programNamn");
 
-            programSearchBtn.setText(programName);
+            chosenProgramText.setText(programName);
+            clearChosenProgram.setVisibility(View.VISIBLE);
 
-            if(queryString.equals("")){
+            searchQuery(searchView.getQuery().toString());
 
-                queryString = programName;
-            }else if(queryString.toLowerCase().equals("psykologi") || queryString.toLowerCase().equals("systemvetenskap")){
-
-                queryString = programName;
-            }else{
-
-                queryString = queryString + " " + programName;
-            }
-
-            searchQuery();
         }
         if(resultCode == 2){
 
-            String courseName = data.getStringExtra("kursNamn");
+            courseName = data.getStringExtra("kursNamn");
 
-            courseSearchBtn.setText(courseName);
+            chosenCourseText.setText(courseName);
+            clearChosenCourse.setVisibility(View.VISIBLE);
 
-            String[] search = queryString.split(" ");
+            searchQuery(searchView.getQuery().toString());
 
-            queryString = search[0] + " " + courseName;
-
-            searchQuery();
         }
     }
 }
