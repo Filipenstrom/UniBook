@@ -63,6 +63,7 @@ public class MessengerActivity extends AppCompatActivity {
     Context context = this;
     ListView listView;
     String iChatId;
+    String boktitel;
     String[] adapterids;
     Date[] adapterDate;
     int idcounter = 0;
@@ -88,17 +89,20 @@ public class MessengerActivity extends AppCompatActivity {
         sellerId = intent.getStringExtra("userid");
         //Sätter texten i toolbaren till den personen man chattar med.
         userTalkingTo.setText(intent.getStringExtra("userTalkingTo"));
+        userTalkingTo.setText(intent.getStringExtra("sellerName"));
         user = mAuth.getCurrentUser();
 
         Intent intentchatId = getIntent();
         iChatId = intentchatId.getStringExtra("chatId");
+        boktitel = intentchatId.getStringExtra("boktitel");
 
         displayChatMessage();
 
         if (iChatId == null) {
             createChat();
             chatId = sellerId;
-        } else {
+        }
+        else {
             chatId = iChatId;
             showMessages(iChatId);
         }
@@ -110,21 +114,6 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
-        //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
-        final DocumentReference docRef = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
-        docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot snapshot,
-                                @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    showMessages(chatId);
-                    return;
-                }
-                showMessages(chatId);
-            }
-        });
-
         if(intent.getStringExtra("userTalkingTo") != null) {
             setImage(intent.getStringExtra("userTalkingToId"));
         } else{
@@ -133,7 +122,21 @@ public class MessengerActivity extends AppCompatActivity {
     }
 
     public void displayChatMessage() {
-
+        try {
+            //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
+            final DocumentReference docRef = rootRef.collection("Chat").document(chatId).collection("Messages").document("latest");
+            docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                    @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
+                    showMessages(chatId);
+                }
+            });
+        } catch (Exception e){e.printStackTrace();}
     }
 
     public void setImage(String userId){
@@ -227,13 +230,13 @@ public class MessengerActivity extends AppCompatActivity {
 
                             for (int i = 0; i < size; i++) {
                                 DocumentSnapshot doc = chatLista.get(i);
-                                if (doc.getString("User1").equals(user.getUid().toString()) && doc.getString("User2").equals(sellerId)) {
+                                if (doc.getString("User1").equals(user.getUid().toString()) && doc.getString("User2").equals(sellerId) && boktitel.equals(doc.getString("BokTitel"))) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
                                     Toast.makeText(MessengerActivity.this, chatId,
                                             Toast.LENGTH_SHORT).show();
-                                } else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString())) {
+                                } else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString()) && boktitel.equals(doc.getString("BokTitel"))) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
@@ -288,6 +291,7 @@ public class MessengerActivity extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
                                 //showMessages(chatId);
+                                displayChatMessage();
                                 Log.d(TAG, "DocumentSnapshot successfully written!");
                             }
                         })

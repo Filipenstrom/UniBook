@@ -58,13 +58,14 @@ public class ChosenAdForSale extends AppCompatActivity {
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;
-    String sellerId, sellerPhone, adId, id, sellerName, imageId;
+    String sellerId, sellerPhone, adId, id, sellerName, imageId, boktitel, createdChatId;
     FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
     Bitmap img;
+    boolean chatCreated = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,11 +111,13 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
+                        boktitel = document.getString("title");
+                        //sellerName = document.getString("name") + " " + document.getString("surname");
                         pic.setImageBitmap(img);
 
                         checkFavourites(adId);
-
                         getSeller(sellerId);
+                        checkIfChatAlreadyExist();
 
                         progressBar.setVisibility(View.INVISIBLE);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
@@ -205,18 +208,20 @@ public class ChosenAdForSale extends AppCompatActivity {
             }
         });
 
-        btnSendMessage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(ChosenAdForSale.this, MessengerActivity.class);
-                String id = sellerId;
-                intent.putExtra("userid", id);
-                intent.putExtra("sellerName", sellerName);
-                startActivity(intent);
-            }
-        });
-
-        checkIfChatAlreadyExist();
+            btnSendMessage.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ChosenAdForSale.this, MessengerActivity.class);
+                    String id = sellerId;
+                    intent.putExtra("userid", id);
+                    intent.putExtra("sellerName", sellerName);
+                    intent.putExtra("boktitel", boktitel);
+                    if(chatCreated){
+                        intent.putExtra("chatId", createdChatId);
+                    }
+                    startActivity(intent);
+                }
+            });
     }
 
     public void setImage(String imageId){
@@ -326,13 +331,17 @@ public class ChosenAdForSale extends AppCompatActivity {
                     List<DocumentSnapshot> list = task.getResult().getDocuments();
                     for (DocumentSnapshot document : list) {
 
-                        if (document.getString("User1").equals(loggenIn.getUid().toString()) && document.getString("User2").equals(sellerId) && document.getString("BokTitel").equals(title)) {
+                        if (document.getString("User1").equals(loggenIn.getUid().toString()) && document.getString("User2").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
                             btnSendMessage.setText("En chat är redan startad");
-                            btnSendMessage.setClickable(false);
+                            //btnSendMessage.setClickable(false);
+                            chatCreated = true;
+                            createdChatId = document.getId();
                         }
-                        else if (document.getString("User2").equals(loggenIn.getUid().toString()) && document.getString("User1").equals(sellerId) && document.getString("BokTitel").equals(title)) {
+                        else if (document.getString("User2").equals(loggenIn.getUid().toString()) && document.getString("User1").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
                             btnSendMessage.setText("En chat är redan startad");
-                            btnSendMessage.setClickable(false);
+                            //btnSendMessage.setClickable(false);
+                            chatCreated = true;
+                            createdChatId = document.getId();
                         }
                     }
                 }else{
