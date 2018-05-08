@@ -124,7 +124,12 @@ public class MessengerActivity extends AppCompatActivity {
                 showMessages(chatId);
             }
         });
-        setImage(intent.getStringExtra("userTalkingToId"));
+
+        if(intent.getStringExtra("userTalkingTo") != null) {
+            setImage(intent.getStringExtra("userTalkingToId"));
+        } else{
+            setImage(intent.getStringExtra("userid"));
+        }
     }
 
     public void displayChatMessage() {
