@@ -60,6 +60,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     StorageReference storageReference;
     Button changeImg, listCourseBtn, listProgramBtn;
     ConstraintLayout bottomLayout;
+    Bitmap img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
+        img = intent.getParcelableExtra("img");
         getAd();
 
         bottomLayout.setOnClickListener(new View.OnClickListener() {
@@ -139,8 +141,8 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             program.setText(doc.getString("program"));
                             title.setText(doc.getString("title"));
                             imageId = doc.getString("imageId");
+                            pic.setImageBitmap(img);
 
-                            setImage(imageId);
                         }
                         else{
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -200,27 +202,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         return valid;
     }
 
-
-    public void setImage(String imageId){
-
-        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
-
-        final long ONE_MEGABYTE = 1024 * 1024;
-
-        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-            @Override
-            public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
-                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                pic.setImageBitmap(bitmap);
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
-            }
-        });
-    }
 
     public void updateData() {
 

@@ -26,7 +26,6 @@ import java.util.List;
 
 public class MyFavorites extends AppCompatActivity {
 
-    DatabaseHelper myDb;
     ListView listView;
     Context context = this;
     public static final String TAG = "TAG";
@@ -38,7 +37,6 @@ public class MyFavorites extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_favorites);
 
-        myDb = new DatabaseHelper(this);
         listView = findViewById(R.id.listViewMyFavorites);
 
 
@@ -53,8 +51,6 @@ public class MyFavorites extends AppCompatActivity {
         });
 
         getMyFavoriteAds();
-
-
     }
 
     public void getMyFavoriteAds(){
@@ -81,7 +77,6 @@ public class MyFavorites extends AppCompatActivity {
 
                     ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
                     listView.setAdapter(adapter);
-
                 }
 
                 else{
@@ -91,29 +86,4 @@ public class MyFavorites extends AppCompatActivity {
             }
         });
     }
-
-   /* public void getMyFavoriteAds(){
-        SharedPreferences prefs = new SharedPreferences(context);
-        User user = myDb.getUser(prefs.getusername());
-
-        ListView listView = findViewById(R.id.listViewMyFavorites);
-
-        List<Ad> annonser = myDb.getMyFavoriteAds(user.getId());
-        int numberOfAds = annonser.size();
-        String[] items = new String[numberOfAds];
-        String[] prices = new String[numberOfAds];
-        String[] ids = new String[numberOfAds];
-        List<byte[]> bytes = new ArrayList<>();
-
-        for (int i = 0; i < annonser.size(); i++) {
-            Ad annons = annonser.get(i);
-            ids[i] = annons.getId();
-            items[i] = annons.getTitle();
-            prices[i] = annons.getPrice();
-            bytes.add(annons.getPic());
-        }
-
-        ItemAdapter itemAdapter = new ItemAdapter(this, items, prices, bytes, ids);
-        listView.setAdapter(itemAdapter);
-    }*/
 }

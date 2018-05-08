@@ -83,7 +83,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnReportAd = findViewById(R.id.btnReportAd);
         progressBar = findViewById(R.id.progressBarChosenAd);
         btnSendMessage = findViewById(R.id.btnSendMsgAd);
-        seller = findViewById(R.id.ivsellerprofile);
+        sellerpic = findViewById(R.id.ivsellerprofile);
 
         progressBar.setVisibility(View.VISIBLE);
 
@@ -110,7 +110,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                         sellerId = document.getString("sellerId");
                         adId = document.getId();
                         imageId = document.getString("imageId");
-
+                        pic.setImageBitmap(img);
 
                         checkFavourites(adId);
 
