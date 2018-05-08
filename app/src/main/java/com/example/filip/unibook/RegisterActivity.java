@@ -101,15 +101,15 @@ public class RegisterActivity extends AppCompatActivity {
 
         boolean valid = true;
 
-        if(editName.length() > 15 || editName.getText().toString().trim() == ""){
+        if(editName.length() > 15 || editName.getText().toString().trim().equals("")){
             editName.setError("Fältet får inte vara tomt eller ha mer än 15 tecken.");
             valid = false;
         }
-        if(editSurname.length() > 20 || editSurname.getText().toString().trim() == ""){
+        if(editSurname.length() > 20 || editSurname.getText().toString().trim().equals("")){
             editSurname.setError("Fältet får inte vara tomt, får inte innehålla mer än 20 tecken.");
             valid = false;
         }
-        if(editEmail.length() > 50 || editEmail.getText().toString().trim() == "" ){
+        if(editEmail.length() > 50 || editEmail.getText().toString().trim().equals("")){
             editEmail.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
             valid = false;
         }
@@ -117,19 +117,19 @@ public class RegisterActivity extends AppCompatActivity {
             editEmail.setError("Du måste skriva en giltig emailadress.");
             valid = false;
         }
-        if(editPassword.length() > 15 || editPassword.getText().toString().trim() == ""){
+        if(editPassword.length() > 15 || editPassword.getText().toString().trim().equals("")){
             editPassword.setError("Fältet får inte vara tomt eller ha mer än 15 tecken.");
             valid = false;
         }
-        if(editAdress.length() > 25 || editAdress.getText().toString().trim() == ""){
+        if(editAdress.length() > 25 || editAdress.getText().toString().trim().equals("")){
             editPassword.setError("Fältet får inte vara tomt eller ha mer än 25 tecken.");
             valid = false;
         }
-        if(editPhone.length() > 25 || editPassword.getText().toString().trim() == "" || TextUtils.isDigitsOnly(editPhone.getText().toString())){
+        if(editPhone.length() > 25 || editPassword.getText().toString().trim().equals("") || !TextUtils.isDigitsOnly(editPhone.getText().toString())){
             editPassword.setError("Fältet får inte vara tomt, inte ha mer än 25 tecken och får endast innehålla siffror.");
             valid = false;
         }
-        if(editSchool.length() > 50 || editAdress.getText().toString().trim() == ""){
+        if(editSchool.length() > 50 || editAdress.getText().toString().trim().equals("")){
             editPassword.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
             valid = false;
         }
