@@ -181,20 +181,20 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     public boolean validate(){
 
         boolean valid = true;
-        if(title.length() > 50 || title.getText().toString().trim() == ""){
+        if(title.length() > 50 || title.getText().toString().trim().equals("")){
             title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
             //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
             valid = false;
         }
-        if(pris.length() > 50 || pris.getText().toString().trim() == "" || TextUtils.isDigitsOnly(pris.getText().toString())){
+        if(pris.length() > 50 || pris.getText().toString().trim().equals("") || !TextUtils.isDigitsOnly(pris.getText().toString())){
             pris.setError("Fältet får inte vara tomt, får inte innehålla mer än 50 tecken och måste vara siffror.");
             valid = false;
         }
-        if(info.length() > 100 || info.getText().toString().trim() == ""){
+        if(info.length() > 100 || info.getText().toString().trim().equals("")){
             info.setError("Fältet får inte vara tomt eller ha mer än 100 tecken.");
             valid = false;
         }
-        if(ISDN.length() > 30 || ISDN.getText().toString().trim() == ""){
+        if(ISDN.length() > 30 || ISDN.getText().toString().trim().equals("")){
             ISDN.setError("Fältet får inte vara tomt eller ha mer än 30 tecken.");
             valid = false;
         }
@@ -205,7 +205,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
     public void updateData() {
 
-        if (!kurs.getText().equals("")) {
+        if (validate()) {
             DocumentReference docRef = rootRef.collection("Ads").document(id);
             docRef.update("title", title.getText().toString());
             docRef.update("ISDN", ISDN.getText().toString());
