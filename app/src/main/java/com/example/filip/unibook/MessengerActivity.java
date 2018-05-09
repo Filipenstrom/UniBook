@@ -121,6 +121,7 @@ public class MessengerActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för att visa chattmeddelande
     public void displayChatMessage() {
         try {
             //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
@@ -139,6 +140,7 @@ public class MessengerActivity extends AppCompatActivity {
         } catch (Exception e){e.printStackTrace();}
     }
 
+    //Metod för att visa profilbilder från chats
     public void setImage(String userId){
         final DocumentReference docRef = rootRef.collection("Users").document(userId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {

@@ -38,6 +38,7 @@ public class LoggedInActivity extends AppCompatActivity {
             }
     }
 
+    //Metod för att gå till profilsida
     public void goToProfile() {
         LinearLayout profileBtn = findViewById(R.id.profileLinearLayout);
 
@@ -50,6 +51,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till sök-vyn
     public void goToSearch() {
         LinearLayout searchBtn = findViewById(R.id.searchLinearLayout);
 
@@ -62,6 +64,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till användarens annonser
     public void goToAdds() {
         LinearLayout addBtn = findViewById(R.id.adsLinearLayout);
         addBtn.setOnClickListener(new View.OnClickListener() {
@@ -73,6 +76,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till inställningar
     public void goToSettings() {
         LinearLayout settingsBtn = findViewById(R.id.settingsLinearLayout);
         settingsBtn.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +88,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till favoriter
     public void goToFavorites() {
         LinearLayout favoritesBtn = findViewById(R.id.favouritesLinearLayout);
         favoritesBtn.setOnClickListener(new View.OnClickListener() {
@@ -95,6 +100,7 @@ public class LoggedInActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till chatt
     public void goToMeddelande(){
         LinearLayout btnmessages =  findViewById(R.id.messagesLinearLayout);
         btnmessages.setOnClickListener(new View.OnClickListener() {

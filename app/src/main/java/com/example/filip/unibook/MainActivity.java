@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att logga in
     public void logIn(){
         pbar.setVisibility(View.VISIBLE);
         mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())

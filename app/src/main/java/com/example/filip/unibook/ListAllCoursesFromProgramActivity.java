@@ -41,6 +41,7 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
 
         extras = intent.getStringArrayExtra("extras");
 
+        //Vid klick väljs en kurs från ett program, på valt index i vyn och skickar data till CreateNewAdActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -67,6 +68,7 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
         getAllCourses();
     }
 
+    //Metod som hämtar alla kurser från ett valt program
     public void getAllCourses() {
 
         String programName = extras[1];

@@ -41,6 +41,7 @@ public class ListAllProgramsActivity extends AppCompatActivity {
 
         final int activityCode = intent.getIntExtra("activityCode", -1);
 
+        //Vid klick väljs ett program vid ett särskilt index och skickar data till vyn CreateNewAdActivity
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

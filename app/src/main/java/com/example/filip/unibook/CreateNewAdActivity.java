@@ -110,6 +110,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtProgram.setVisibility(View.VISIBLE);
     }
 
+    //Metod som validerar textfält
     public boolean validate(){
 
         boolean valid = true;
@@ -134,6 +135,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         return valid;
     }
 
+    //Metod som skapar en ny annons
     public void createAd(View view) {
         FirebaseUser user = mAuth.getCurrentUser();
 
@@ -208,6 +210,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }*/
     }
 
+    //Metod som laddar upp bild
     private void uploadImage() {
 
         if(filePath != null)
@@ -234,6 +237,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för att välja bild till annonsen
     public void choseImg(){
         Intent intent = new Intent();
         intent.setType("image/*");

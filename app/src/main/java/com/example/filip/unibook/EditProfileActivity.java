@@ -91,6 +91,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    //Metod som fäster info om profilen från databasen i textfälten
     public void insertUserInformation() {
         DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -121,6 +122,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    //Metod som uppdaterar profilinfo
     public void save() {
 
         if(validate()){
@@ -143,6 +145,7 @@ public class EditProfileActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för validering av textfält
     public boolean validate(){
 
         boolean valid = true;
@@ -180,6 +183,7 @@ public class EditProfileActivity extends AppCompatActivity {
         return valid;
     }
 
+    //Metod som sätter vald bild
     public void setImage(String imageId){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
@@ -209,6 +213,7 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    //Metod för att ladda upp bild
     private void uploadImage(final DocumentReference docRef) {
 
         if(filePath != null)

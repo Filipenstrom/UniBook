@@ -68,6 +68,7 @@ public class MyMessagesActivity extends AppCompatActivity {
 
         getChat();
 
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -83,6 +84,7 @@ public class MyMessagesActivity extends AppCompatActivity {
         });
     }
 
+    //Metod som hämtar chattar
     public void getChat() {
         CollectionReference chatRef = rootRef.collection("Chat");
         chatRef.get()
@@ -130,6 +132,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                 });
     }
 
+    //Metod som visar
     public void setImage(String[] userId){
         for(int i = 0; i<userId.length;i++) {
             final DocumentReference docRef = rootRef.collection("Users").document(userId[i]);

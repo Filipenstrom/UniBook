@@ -90,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity {
         register();
     }
 
+    //Metod för att registrera en ny användare
     public void register(){
         Button registerBtn = findViewById(R.id.registerBtn);
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +101,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att validera textfält
     public boolean validate(){
 
         boolean valid = true;
@@ -146,6 +148,7 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
 
+    //Metod som lägger till en ny användare i databasen
     public void addUser(){
         final String namn = editName.getText().toString();
         final String surname = editSurname.getText().toString();

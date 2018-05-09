@@ -128,6 +128,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         deleteAd();
     }
 
+    //Metod för att hämta den valda annonsen
     public void getAd(){
         final DocumentReference adsRef = rootRef.collection("Ads").document(id);
         adsRef.get()
@@ -154,6 +155,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                 });
     }
 
+    //Metod för att ta bort vald annons
     public void deleteAd(){
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -181,6 +183,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för validering av textfält
     public boolean validate(){
 
         boolean valid = true;
@@ -205,7 +208,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         return valid;
     }
 
-
+    //Metod för att uppdatera den valda annonsen
     public void updateData() {
 
         if (validate()) {

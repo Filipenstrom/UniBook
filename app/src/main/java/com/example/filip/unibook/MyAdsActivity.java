@@ -78,6 +78,7 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till vald annons
     public void goToCreateAd() {
         Button button = findViewById(R.id.btnSkapaAnnons);
         button.setOnClickListener(new View.OnClickListener() {
@@ -89,6 +90,7 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
+    //Metod som hämtar den inloggades egna annonser
     public void getAllMyAds(){
 
         CollectionReference favouritesRef =  rootRef.collection("Ads");

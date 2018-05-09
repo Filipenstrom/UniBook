@@ -40,6 +40,7 @@ public class MyFavorites extends AppCompatActivity {
         listView = findViewById(R.id.listViewMyFavorites);
 
 
+        //Vid klick skickas man vidare till den valda annonsen i listan
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -53,6 +54,7 @@ public class MyFavorites extends AppCompatActivity {
         getMyFavoriteAds();
     }
 
+    //Metod för att hämta den inloggades favoriter
     public void getMyFavoriteAds(){
         CollectionReference favouritesRef =  rootRef.collection("Favourites");
 
