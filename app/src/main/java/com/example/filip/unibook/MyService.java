@@ -77,6 +77,76 @@ public class MyService extends Service {
         }
     }
 
+    public void getAdsNotification(final String[] notifications){
+        CollectionReference adsRef = rootRef.collection("Ads");
+
+        adsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    int size = task.getResult().size();
+
+
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (int i = 0; i < task.getResult().size(); i++) {
+                        DocumentSnapshot doc = list.get(i);
+                        String notisProgram = doc.getString("program");
+                        String notisKurs = doc.getString("course");
+
+                        for(int j = 0; j < notifications.length; j++){
+                            if(notisProgram.equals(notifications[j])){
+                                Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
+                                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                            }
+                            else if(notisKurs.equals(notifications[j])){
+                                Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
+                                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                            }
+                        }
+                    }
+
+
+                }
+
+                else{
+
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
+    public void checkForNotification(){
+        CollectionReference usersRef =  rootRef.collection("Users").document(user.getUid().toString()).collection("notifications");
+
+
+        usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    int size = task.getResult().size();
+                    String[] notifications = new String[size];
+
+
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (int i = 0; i < task.getResult().size(); i++) {
+                        DocumentSnapshot doc = list.get(i);
+                        String notis = doc.getString("notification");
+                        notifications[i] = notis;
+                    }
+
+
+                }
+
+                else{
+
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
+            }
+        });
+    }
+
     public void checkForNotis() {
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);

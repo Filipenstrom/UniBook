@@ -10,8 +10,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -39,9 +41,9 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public static final String TAG = "Bra meddelande";
     EditText editName, editSurname, editEmail, editAdress, editPhone, editSchool;
+    TextView changePic;
     ImageView imageView;
     Button button;
-    Button changePic;
     private Uri filePath;
     public static final int PICK_IMAGE_REQUEST = 71;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
@@ -50,6 +52,7 @@ public class EditProfileActivity extends AppCompatActivity {
     FirebaseStorage storage;
     StorageReference storageReference;
     String imageRandomNumber, imageId;
+    String regexEmail = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,13 +66,15 @@ public class EditProfileActivity extends AppCompatActivity {
         editSchool = findViewById(R.id.etSchool);
         editAdress =  findViewById(R.id.etAdress);
         button = findViewById(R.id.btnSave);
-        changePic = findViewById(R.id.btnChangePic);
+        changePic = findViewById(R.id.txtChangePic);
         imageView = findViewById(R.id.ivProfile);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
 
         insertUserInformation();
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,15 +123,61 @@ public class EditProfileActivity extends AppCompatActivity {
 
     public void save() {
 
-        DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
-        docRef.update("name", editName.getText().toString());
-        docRef.update("surname", editSurname.getText().toString());
-        docRef.update("email", editEmail.getText().toString());
-        docRef.update("adress", editAdress.getText().toString());
-        docRef.update("phone", editPhone.getText().toString());
-        docRef.update("school", editSchool.getText().toString());
+        if(validate()){
 
-        uploadImage(docRef);
+            DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());
+            docRef.update("name", editName.getText().toString());
+            docRef.update("surname", editSurname.getText().toString());
+            docRef.update("email", editEmail.getText().toString());
+            docRef.update("adress", editAdress.getText().toString());
+            docRef.update("phone", editPhone.getText().toString());
+            docRef.update("school", editSchool.getText().toString());
+
+            uploadImage(docRef);
+
+            Toast.makeText(EditProfileActivity.this, "Profilen uppdaterad",
+                    Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
+            startActivity(intent);
+        }
+    }
+
+    public boolean validate(){
+
+        boolean valid = true;
+
+        if(editName.length() > 15 || editName.getText().toString().trim().equals("")) {
+            editName.setError("Fältet får inte vara tomt eller ha mer än 15 tecken.");
+            valid = false;
+        }
+        if(editSurname.length() > 20 || editSurname.getText().toString().trim().equals("")){
+            editSurname.setError("Fältet får inte vara tomt, får inte innehålla mer än 20 tecken.");
+            valid = false;
+        }
+        if(editEmail.length() > 50 || editEmail.getText().toString().trim().equals("")){
+            editEmail.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+        if(!editEmail.getText().toString().trim().matches(regexEmail)){
+            editEmail.setError("Du måste skriva en giltig emailadress.");
+            valid = false;
+        }
+
+        if(editAdress.length() > 25 || editAdress.getText().toString().trim().equals("")){
+            editAdress.setError("Fältet får inte vara tomt eller ha mer än 25 tecken.");
+            valid = false;
+        }
+        if(editPhone.length() > 25 || editPhone.getText().toString().trim().equals("") || !TextUtils.isDigitsOnly(editPhone.getText().toString())){
+            editPhone.setError("Fältet får inte vara tomt, inte ha mer än 25 tecken och får endast innehålla siffror.");
+            valid = false;
+        }
+        if(editSchool.length() > 50 || editAdress.getText().toString().trim().equals("")){
+            editSchool.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+
+        return valid;
     }
 
     public void setImage(String imageId){
@@ -177,22 +228,7 @@ public class EditProfileActivity extends AppCompatActivity {
                                         @Override
                                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                                            docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber).addOnSuccessListener(new OnSuccessListener<Void>() {
-                                                @Override
-                                                public void onSuccess(Void aVoid) {
-                                                    Toast.makeText(EditProfileActivity.this, "Profilen uppdaterad",
-                                                            Toast.LENGTH_SHORT).show();
-                                                    Intent intent = new Intent(EditProfileActivity.this, ProfilePageActivity.class);
-                                                    startActivity(intent);
-                                                }
-                                            });
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-
-                                            Toast.makeText(EditProfileActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                            docRef.update("imageId", "gs://unibook-41e0f.appspot.com/images/" + imageRandomNumber);
                                         }
                                     });
                         }

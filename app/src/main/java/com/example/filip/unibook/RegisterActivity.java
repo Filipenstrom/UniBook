@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -54,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
     StorageReference storageReference;
     String imageRandomNumber;
     String regexEmail = "^[A-Za-z](.*)([@]{1})(.{1,})(\\.)(.{1,})";
-
+    boolean imgChosen = false;
 
 
     @Override
@@ -73,6 +75,7 @@ public class RegisterActivity extends AppCompatActivity {
         editSchool = findViewById(R.id.edittxtSchool);
         mAuth = FirebaseAuth.getInstance();
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
         storage = FirebaseStorage.getInstance();
         storageReference = storage.getReference();
@@ -131,6 +134,11 @@ public class RegisterActivity extends AppCompatActivity {
         }
         if(editSchool.length() > 50 || editAdress.getText().toString().trim().equals("")){
             editPassword.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+        if(imgChosen == false){
+            Toast.makeText(RegisterActivity.this, "Du måste välja en bild",
+                    Toast.LENGTH_LONG).show();
             valid = false;
         }
 
@@ -194,7 +202,6 @@ public class RegisterActivity extends AppCompatActivity {
                     });
         }
     }
-
 
     //Metod som lägger in data i Firestore om den skapade användaren.
     public void createUser(String namn, String surname, String email, String adress, String phone, String school, String password) {
@@ -268,6 +275,7 @@ public class RegisterActivity extends AppCompatActivity {
         if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null )
         {
+            imgChosen = true;
             filePath = data.getData();
             try {
                 Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
