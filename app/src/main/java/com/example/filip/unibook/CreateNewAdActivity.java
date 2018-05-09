@@ -26,12 +26,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.lang.ref.Reference;
 import java.util.UUID;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -136,6 +138,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         FirebaseUser user = mAuth.getCurrentUser();
 
         CollectionReference userRef = rootRef.collection("Ads");
+        DocumentReference userRefLatest = rootRef.collection("Ads").document("latest");
         //CollectionReference userRef = rootRef.collection("User").document();
 
         String bokTitel = titel.getText().toString();
@@ -178,7 +181,28 @@ public class CreateNewAdActivity extends AppCompatActivity {
                             Log.w(TAG, "Error writing document", e);
                         }
                     });
+
+              userRefLatest
+                      .set(mapOne)
+                      .addOnSuccessListener(new OnSuccessListener<Void>() {
+                          @Override
+                          public void onSuccess(Void aVoid) {
+                              Toast.makeText(CreateNewAdActivity.this, "Annons skapad", Toast.LENGTH_SHORT).show();
+                              Log.d(TAG, "DocumentSnapshot successfully written!");
+                              Intent intent = new Intent(CreateNewAdActivity.this, MyAdsActivity.class);
+                              startActivity(intent);
+                          }
+                      })
+                      .addOnFailureListener(new OnFailureListener() {
+                          @Override
+                          public void onFailure(@NonNull Exception e) {
+                              Log.w(TAG, "Error writing document", e);
+                          }
+                      });
+
         }
+
+
        /* else{
             Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
         }*/

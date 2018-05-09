@@ -27,6 +27,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.ref.Reference;
 import java.sql.Ref;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -47,7 +48,6 @@ public class MyService extends Service {
         @Override
         public void run() {
             Log.e("Log", "Running");
-            //checkForNotis();
             checkForNewMessage();
         }
     };
@@ -57,6 +57,7 @@ public class MyService extends Service {
         super.onCreate();
         mTimer = new Timer();
         mTimer.schedule(timerTask, 2000, 2 * 8000);
+        getNotification();
     }
 
     @Override
@@ -77,126 +78,61 @@ public class MyService extends Service {
         }
     }
 
-    public void getAdsNotification(final String[] notifications){
-        CollectionReference adsRef = rootRef.collection("Ads");
-
-        adsRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+    public void checkForNewAds(final List<String> notifications){
+        DocumentReference adsRef = rootRef.collection("Ads").document("latest");
+        adsRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    int size = task.getResult().size();
-
-
-
-                    List<DocumentSnapshot> list = task.getResult().getDocuments();
-                    for (int i = 0; i < task.getResult().size(); i++) {
-                        DocumentSnapshot doc = list.get(i);
-                        String notisProgram = doc.getString("program");
-                        String notisKurs = doc.getString("course");
-
-                        for(int j = 0; j < notifications.length; j++){
-                            if(notisProgram.equals(notifications[j])){
-                                Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
-                                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-                            }
-                            else if(notisKurs.equals(notifications[j])){
-                                Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
-                                notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-                            }
-                        }
-                    }
-
-
+            public void onEvent(@Nullable DocumentSnapshot snapshot,
+                                @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w("TAG", "Listen failed.", e);
+                    return;
                 }
+                List<String> notiser = notifications;
+                DocumentSnapshot doc = snapshot;
+                String notisProgram = doc.getString("program");
+                String notisKurs = doc.getString("course");
 
-                else{
-
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                for(int i = 0; i<notiser.size();i++){
+                    if(notisProgram.equals(notiser.get(i))){
+                        Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
+                        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                    }
+                    else if(notisKurs.equals(notiser.get(i))){
+                        Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
+                        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                    }
                 }
             }
         });
     }
 
-    public void checkForNotification(){
-        CollectionReference usersRef =  rootRef.collection("Users").document(user.getUid().toString()).collection("notifications");
-
+    public List<String> getNotification(){
+        CollectionReference usersRef =  rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
+        final List<String> notifications = new ArrayList<>();
 
         usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     int size = task.getResult().size();
-                    String[] notifications = new String[size];
-
 
                     List<DocumentSnapshot> list = task.getResult().getDocuments();
                     for (int i = 0; i < task.getResult().size(); i++) {
                         DocumentSnapshot doc = list.get(i);
-                        String notis = doc.getString("notification");
-                        notifications[i] = notis;
+                        String notis = doc.getString("Notification");
+                        notifications.add(notis);
                     }
 
-
+                    checkForNewAds(notifications);
                 }
 
                 else{
-
-                    Log.d(TAG, "Error getting documents: ", task.getException());
+                    Log.d("TAG", "Error getting documents: ", task.getException());
                 }
             }
         });
-    }
-
-    public void checkForNotis() {
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sp = new SharedPreferences(this);
-        User user = db.getUser(sp.getusername());
-        List<String> notis = db.getNotis(user.getId());
-        List<Ad> ads = db.getAllAdsNotis("");
-
-        try {
-            //Loopa igenom alla ads.
-            for (int i = 0; i < ads.size(); i++) {
-                //Loopa igenom alla notiser på en ad.
-                for (int i2 = 0; i2 < notis.size(); i2++) {
-                    Ad ad;
-                    if (ads.size() == 1) {
-                        ad = ads.get(i);
-                    } else {
-                        //Gör bara kollen på de senast tillagda böckerna
-                        ad = ads.get(db.getNotisCounter(notis.get(i2)));
-                    }
-                    //Kolla om det lagts till nya böcker sen senaste notisen visades, om inte visa ingen ny notis.
-                    if (ads.size() > db.getNotisCounter(ad.getProgram())) {
-                        String program = ad.getProgram();
-                        String course = ad.getCourse();
-                        //Om notisen matchar ett program på en ny bok, visa notis.
-                        if (notis.get(i2).trim().equals(program) || notis.get(i2).trim().equals(course)) {
-                            Notification notification = new Notification(this, program + " i kursen " + course, "Tryck för att öppna UniBook");
-                            notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-
-                            //Ändra notiscounter på rätt notis.
-                            if(notis.get(i2).equals(program)) {
-                                db.setNotisCounter(ad.getProgram(), ads.size());
-                                break;
-                            }
-                            else if(notis.get(i2).equals(course)){
-                                db.setNotisCounter(ad.getCourse(), ads.size());
-                                break;
-                            }
-                        }
-                        //Om boken inte matchar notisen gå vidare till nästa bok.
-                        else {
-                            int counter = db.getNotisCounter(notis.get(i)) + 1;
-                            db.setNotisCounter(notis.get(i2), counter);
-                        }
-                    }
-                    break;
-                }
-            }
-        } catch (Exception e) {
-            Log.d("Broken", "Index out of bounds");
-        }
+        return notifications;
     }
 
     public void checkForNewMessage() {
