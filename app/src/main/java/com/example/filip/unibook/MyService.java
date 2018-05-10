@@ -11,8 +11,11 @@ import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,7 +31,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.lang.ref.Reference;
 import java.sql.Ref;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -49,6 +54,7 @@ public class MyService extends Service {
         public void run() {
             Log.e("Log", "Running");
             checkForNewMessage();
+            getNotification();
         }
     };
 
@@ -57,7 +63,7 @@ public class MyService extends Service {
         super.onCreate();
         mTimer = new Timer();
         mTimer.schedule(timerTask, 2000, 2 * 8000);
-        getNotification();
+
     }
 
     @Override
@@ -78,7 +84,8 @@ public class MyService extends Service {
         }
     }
 
-    public void checkForNewAds(final List<String> notifications){
+    //Metod som kollar efter nya annonser som sedan visas som notifikationer
+    public void checkForNewAds(final List<String> notifications, final List<String> adIds, final List<String> notisIds){
         DocumentReference adsRef = rootRef.collection("Ads").document("latest");
         adsRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
@@ -92,24 +99,53 @@ public class MyService extends Service {
                 DocumentSnapshot doc = snapshot;
                 String notisProgram = doc.getString("program");
                 String notisKurs = doc.getString("course");
+                String adId = doc.getId();
 
-                for(int i = 0; i<notiser.size();i++){
-                    if(notisProgram.equals(notiser.get(i))){
-                        Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
-                        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
-                    }
-                    else if(notisKurs.equals(notiser.get(i))){
-                        Notification notification = new Notification(getApplicationContext(), notisProgram + " i kursen " + notisKurs, "Tryck för att öppna UniBook");
-                        notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                for (int i = 0; i < notiser.size(); i++) {
+                    if (!user.getUid().equals(doc.getString("sellerId"))) {
+
+                        if (notisProgram.equals(notiser.get(i)) && !adId.equals(adIds.get(i))) {
+                            Notification notification = new Notification(getApplicationContext(), "En ny bok tillhörande programmet " + notisProgram , "och tillhörande kursen " + notisKurs + " har lagts upp. Tryck för att öppna UniBook");
+                            notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                            updateNotification(adId, notisIds.get(i));
+
+                        } else if (notisKurs.equals(notiser.get(i))) {
+                            Notification notification = new Notification(getApplicationContext(), "En ny bok tillhörande programmet " + notisProgram, " och tillhörande kursen "+ notisKurs + " har lagts upp. Tryck för att öppna UniBook");
+                            notification.notificationManagerCompat.notify(2, notification.mBuilder.build());
+                        }
                     }
                 }
             }
         });
     }
 
+    //Metod som gör att en notifikation endast visas en gång.
+    public void updateNotification(String notification, String notisId){
+        DocumentReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications").document(notisId);
+        Map<String, Object> mapOne = new HashMap<>();
+        mapOne.put("AdId", notification);
+
+        usersRef.set(mapOne)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                        Log.d("TAG", "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w("TAG", "Error writing document", e);
+                    }
+                });
+    }
+
     public List<String> getNotification(){
         CollectionReference usersRef =  rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
         final List<String> notifications = new ArrayList<>();
+        final List<String>adIds = new ArrayList<>();
+        final List<String> notisIds = new ArrayList<>();
 
         usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -122,9 +158,12 @@ public class MyService extends Service {
                         DocumentSnapshot doc = list.get(i);
                         String notis = doc.getString("Notification");
                         notifications.add(notis);
+                        adIds.add(doc.getString("AdId"));
+                        notisIds.add(doc.getId().toString());
+
                     }
 
-                    checkForNewAds(notifications);
+                    checkForNewAds(notifications, adIds, notisIds);
                 }
 
                 else{

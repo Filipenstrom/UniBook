@@ -3,24 +3,41 @@ package com.example.filip.unibook;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NotificationActivity extends AppCompatActivity {
 
     TextView addedNotis;
     TextView newNotis;
     TextView newNotisCourse;
-    DatabaseHelper db;
-    SharedPreferences sp;
-    User user;
     Context context = this;
+    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+    FirebaseUser user = mAuth.getCurrentUser();
+    private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +45,10 @@ public class NotificationActivity extends AppCompatActivity {
         setContentView(R.layout.activity_notification);
         addedNotis = findViewById(R.id.txtnotisText);
         newNotis = findViewById(R.id.etnotisAd);
-        db = new DatabaseHelper(this);
-        sp = new SharedPreferences(this);
-        user = db.getUser(sp.getusername());
+
 
         usersNotices();
+
 
         Button btnaddNotis =  findViewById(R.id.btnaddNotis);
         Button btnaddNotisCourse =  findViewById(R.id.btnAddNotisCourse);
@@ -40,57 +56,100 @@ public class NotificationActivity extends AppCompatActivity {
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNotisProg();
+                validateProgram();
             }
         });
 
         btnaddNotisCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                saveNotisCourse();
+                validateCourse();
             }
         });
     }
 
+    public void validateProgram(){
+        CollectionReference programRef = rootRef.collection("Program");
+
+        programRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> lista = task.getResult().getDocuments();
+
+                    for(int i = 0; i < lista.size(); i++){
+                        DocumentSnapshot documentSnapshot = lista.get(i);
+                        if(documentSnapshot.getString("Name").equals(newNotis.getText().toString())){
+                            saveNotis();
+                            break;
+                        }
+                        else if(i == lista.size()-1){
+                            newNotis.setError("Det finns inget program med detta namn. Vänligen testa med ett annat namn.");
+                        }
+
+                    }
+
+                }
+            }
+        });
+    }
+
+    public void validateCourse(){
+        CollectionReference courseRef = rootRef.collection("Courses");
+
+        courseRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> lista = task.getResult().getDocuments();
+
+                    for(int i = 0; i < lista.size(); i++){
+                        DocumentSnapshot documentSnapshot = lista.get(i);
+                        if(documentSnapshot.getString("name").equals(newNotis.getText().toString())){
+                            saveNotis();
+                            break;
+                        }
+                        else if(i == lista.size()-1){
+                            newNotis.setError("Det finns ingen kurs med detta namn. Vänligen testa med ett annat namn.");
+                        }
+                    }
+
+                }
+            }
+        });
+    }
+
+
     //Spara ner en ny notis. Om det inte finns ett program som heter så som användaren skrivit in ska det inte sparas.
-    public void saveNotisProg(){
-        List<Program> allprogram = db.getPrograms();
-        List<Ad> allads = db.getAllAdsNotis("");
-
-        if(allads != null){
-
-        for(int i = 0;i<allprogram.size();i++) {
-            if (allprogram.get(i).getName().equals(newNotis.getText().toString().trim())) {
-                db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
-                usersNotices();
-                Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
-                break;
-            } else if (allprogram.size() == (i + 1)) {
-                Toast.makeText(NotificationActivity.this, "Det finns inget program som heter så.", Toast.LENGTH_LONG).show();
-            }
-          }
-        }
-    }
-
-    //Spara ner en ny notis. Om det inte finns en kurs som heter så som användaren skrivit in ska det inte sparas.
-    public void saveNotisCourse(){
-        List<Course> allcourses = db.getCourses("");
-        List<Ad> allads = db.getAllAdsNotis("");
+    public void saveNotis(){
+        CollectionReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
+        String notisTitel = newNotis.getText().toString();
 
 
+        Map<String, Object> mapOne = new HashMap<>();
+        mapOne.put("Notification", notisTitel);
+        mapOne.put("AdId", "");
 
-        for(int i = 0;i<allcourses.size();i++) {
-            if (allcourses.get(i).getName().equals(newNotis.getText().toString().trim())) {
-                db.addNotis(newNotis.getText().toString(), user.getId().toString(), allads.size());
-                usersNotices();
-                Toast.makeText(NotificationActivity.this, "En ny notis har sparats.", Toast.LENGTH_LONG).show();
-                break;
-            } else if (allcourses.size() == (i + 1)) {
-                Toast.makeText(NotificationActivity.this, "Det finns ingen kurs som heter så.", Toast.LENGTH_LONG).show();
-            }
-          }
+
+        usersRef.document().set(mapOne)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                            Toast.makeText(getApplicationContext(), "Notifikation skapad.", Toast.LENGTH_SHORT).show();
+                            Log.d("TAG", "DocumentSnapshot successfully written!");
+                            Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+                            startActivity(intent);
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w("TAG", "Error writing document", e);
+                        }
+                    });
 
     }
+
 
     //Lista redan sparade notiser som användaren har gjort.
     public void usersNotices(){

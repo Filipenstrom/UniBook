@@ -20,6 +20,7 @@ public class SettingsActivity extends AppCompatActivity {
         goToNotiser();
     }
 
+    //Metod för att logga ut
     public void logOut(){
         Button btnlogout =  findViewById(R.id.btnlogOut);
         btnlogout.setOnClickListener(new View.OnClickListener() {
@@ -33,6 +34,7 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    //Metod för att gå till notiser
     public void goToNotiser(){
         Button btnnotiser =  findViewById(R.id.btnnotiser);
         btnnotiser.setOnClickListener(new View.OnClickListener() {
