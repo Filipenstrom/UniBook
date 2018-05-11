@@ -13,6 +13,7 @@
         android:layout_marginTop="30dp"
         android:background="@color/colorOrange"
         android:text="Logga ut"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnnotiser" />
@@ -24,6 +25,7 @@
         android:layout_marginTop="30dp"
         android:background="@color/colorOrange"
         android:text="Notiser"
+        android:textColor="@android:color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

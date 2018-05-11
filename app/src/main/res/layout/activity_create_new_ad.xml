@@ -25,6 +25,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorOrange"
             android:text="Välj Bild"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/imgViewBokbild" />
@@ -82,6 +83,7 @@
             android:layout_marginTop="16dp"
             android:background="@color/colorOrange"
             android:text="Välj Program"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/editTxtISDN" />
@@ -104,6 +106,7 @@
             android:layout_marginTop="16dp"
             android:background="@color/colorOrange"
             android:text="Välj Kurs"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/txtViewProgram" />
@@ -129,6 +132,7 @@
             android:background="@android:color/holo_green_dark"
             android:onClick="createAd"
             android:text="Spara"
+            android:textColor="@android:color/white"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewCourses" />
 
@@ -141,6 +145,7 @@
             android:layout_marginTop="12dp"
             android:background="@android:color/holo_red_dark"
             android:text="Avbryt"
+            android:textColor="@android:color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textViewCourses" />
 

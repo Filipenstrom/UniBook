@@ -39,19 +39,22 @@ public class NotificationActivity extends AppCompatActivity {
     FirebaseUser user = mAuth.getCurrentUser();
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
         addedNotis = findViewById(R.id.txtnotisText);
         newNotis = findViewById(R.id.etnotisAd);
+        addedNotis.setText(" ");
 
-
-        usersNotices();
-
+       // usersNotices();
+        listNotifications();
 
         Button btnaddNotis =  findViewById(R.id.btnaddNotis);
         Button btnaddNotisCourse =  findViewById(R.id.btnAddNotisCourse);
+        Button deleteBtn = findViewById(R.id.btnDeleteNotification);
+
 
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,13 +62,19 @@ public class NotificationActivity extends AppCompatActivity {
                 validateProgram();
             }
         });
-
         btnaddNotisCourse.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 validateCourse();
             }
         });
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearNotifications();
+            }
+        });
+
     }
 
     public void validateProgram(){
@@ -79,9 +88,12 @@ public class NotificationActivity extends AppCompatActivity {
 
                     for(int i = 0; i < lista.size(); i++){
                         DocumentSnapshot documentSnapshot = lista.get(i);
-                        if(documentSnapshot.getString("Name").equals(newNotis.getText().toString())){
+                        if(documentSnapshot.getString("Name").equals(newNotis.getText().toString()) && checkProgramAndCourse()){
                             saveNotis();
                             break;
+                        }
+                        else if(!checkProgramAndCourse()){
+                            newNotis.setError("Du har redan anmält notifikationer för detta program.");
                         }
                         else if(i == lista.size()-1){
                             newNotis.setError("Det finns inget program med detta namn. Vänligen testa med ett annat namn.");
@@ -102,21 +114,41 @@ public class NotificationActivity extends AppCompatActivity {
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     List<DocumentSnapshot> lista = task.getResult().getDocuments();
-
                     for(int i = 0; i < lista.size(); i++){
                         DocumentSnapshot documentSnapshot = lista.get(i);
-                        if(documentSnapshot.getString("name").equals(newNotis.getText().toString())){
-                            saveNotis();
-                            break;
-                        }
-                        else if(i == lista.size()-1){
-                            newNotis.setError("Det finns ingen kurs med detta namn. Vänligen testa med ett annat namn.");
+                            if(documentSnapshot.getString("name").equals(newNotis.getText().toString()) && checkProgramAndCourse()){
+                                saveNotis();
+                                break;
+                            }
+                            else if(!checkProgramAndCourse()){
+                                newNotis.setError("Du har redan anmält notifikationer för denna kurs.");
+                            }
+                            else if(i == lista.size()-1){
+                                newNotis.setError("Det finns ingen kurs med detta namn. Vänligen testa med ett annat namn.");
+                            }
                         }
                     }
 
                 }
-            }
+
         });
+    }
+
+    private boolean checkProgramAndCourse(){
+
+        String[] notifications = addedNotis.getText().toString().trim().split(",");
+        int counter = 0;
+        boolean valid = false;
+        for(int i = 0; i < notifications.length; i++) {
+            if(!newNotis.getText().toString().equals(notifications[i])){
+                counter++;
+            }
+        }
+        if(counter == notifications.length){
+            valid = true;
+        }
+
+        return valid;
     }
 
 
@@ -137,8 +169,7 @@ public class NotificationActivity extends AppCompatActivity {
                         public void onSuccess(Void aVoid) {
                             Toast.makeText(getApplicationContext(), "Notifikation skapad.", Toast.LENGTH_SHORT).show();
                             Log.d("TAG", "DocumentSnapshot successfully written!");
-                            Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
-                            startActivity(intent);
+                            listNotifications();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -152,7 +183,7 @@ public class NotificationActivity extends AppCompatActivity {
 
 
     //Lista redan sparade notiser som användaren har gjort.
-    public void usersNotices(){
+   /* public void usersNotices(){
         DatabaseHelper db = new DatabaseHelper(this);
         SharedPreferences sp = new SharedPreferences(this);
         User user = db.getUser(sp.getusername());
@@ -164,8 +195,44 @@ public class NotificationActivity extends AppCompatActivity {
                 allnoti += noti.get(i) + ", ";
             }
         } else{
-            allnoti = "Du har inga sparade notiser.";
+            allnoti = "Du har inga sparade notifikationer.";
         }
         addedNotis.setText(allnoti);
+    }*/
+
+    public void clearNotifications(){
+        CollectionReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
+        usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<DocumentSnapshot> lista = task.getResult().getDocuments();
+                for(int i = 0; i < lista.size(); i++){
+                    DocumentSnapshot documentSnapshot = lista.get(i);
+                    rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications").document(documentSnapshot.getId()).delete();
+                    listNotifications();
+                }
+                addedNotis.setText("");
+            }
+        });
+    }
+
+    public void listNotifications(){
+        CollectionReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
+        usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                List<DocumentSnapshot> lista = task.getResult().getDocuments();
+                for(int i = 0; i < lista.size(); i++){
+                    DocumentSnapshot documentSnapshot = lista.get(i);
+                    if(i == 0){
+                        addedNotis.setText(documentSnapshot.getString("Notification"));
+                    }
+                    else {
+                        String text = addedNotis.getText().toString() + ", " + documentSnapshot.getString("Notification");
+                        addedNotis.setText(text);
+                    }
+                }
+            }
+        });
     }
 }

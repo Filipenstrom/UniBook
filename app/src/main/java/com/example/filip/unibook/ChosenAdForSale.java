@@ -65,6 +65,7 @@ public class ChosenAdForSale extends AppCompatActivity {
     FirebaseUser loggenIn = mAuth.getCurrentUser();
     private int CALL_PERMISSION_CODE = 1;
     Bitmap img;
+    String priceText;
     boolean chatCreated = false;
 
     @Override
@@ -102,7 +103,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document != null && document.exists()) {
-
+                        priceText = document.getString("price");
                         title.setText(document.getString("title"));
                         pris.setText(document.getString("price") + " :-");
                         info.setText(document.getString("info"));
@@ -141,7 +142,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                     Map<String, Object> map = new HashMap<>();
                     map.put("userId", loggenIn.getUid().toString());
                     map.put("adId", adId);
-                    map.put("price", pris.getText().toString());
+                    map.put("price", priceText);
                     map.put("title", title.getText().toString());
                     map.put("imageId", imageId);
 
