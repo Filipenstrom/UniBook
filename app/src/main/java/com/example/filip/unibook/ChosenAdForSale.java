@@ -54,7 +54,6 @@ public class ChosenAdForSale extends AppCompatActivity {
     public static final String TAG = "message";
     TextView title, pris, info, program, kurs, seller, chosenAdId;
     ImageView pic, sellerpic;
-    User user;
     Button favoriteBtn, btnCallAd, btnReportAd, btnSendMessage;
     ProgressBar progressBar;
     Context context;

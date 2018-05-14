@@ -25,7 +25,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
 
     public static final String TAG = "message";
     Context context = this;
-    DatabaseHelper myDb;
     ListView listView;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
 
@@ -35,7 +34,6 @@ public class ListAllProgramsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_all_programs);
 
         listView = findViewById(R.id.programListView);
-        myDb = new DatabaseHelper(this);
 
         Intent intent = getIntent();
 

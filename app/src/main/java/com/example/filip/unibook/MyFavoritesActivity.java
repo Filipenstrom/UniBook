@@ -21,10 +21,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class MyFavorites extends AppCompatActivity {
+public class MyFavoritesActivity extends AppCompatActivity {
 
     ListView listView;
     Context context = this;
@@ -44,7 +43,7 @@ public class MyFavorites extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent showDetailActivity = new Intent(MyFavorites.this, ChosenAdForSale.class);
+                Intent showDetailActivity = new Intent(MyFavoritesActivity.this, ChosenAdForSale.class);
                 TextView adId = view.findViewById(R.id.txtAdID);
                 showDetailActivity.putExtra("id", adId.getText().toString());
                 startActivity(showDetailActivity);

@@ -161,7 +161,7 @@ public class CreateNewAdActivity extends AppCompatActivity {
         mapOne.put("sellerId", user.getUid().toString());
 
 
-        //if(!bokTitel.trim().equals("") || !bokPris.trim().equals("") || !bokInfo.trim().equals("") || !bokISDN.trim().equals("") ||  !bokTillhorKurs.trim().equals("")) {
+
           if(validate()){
 
             uploadImage();
@@ -203,11 +203,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
                       });
 
         }
-
-
-       /* else{
-            Toast.makeText(CreateNewAdActivity.this, "Något gick fel", Toast.LENGTH_LONG).show();
-        }*/
     }
 
     //Metod som laddar upp bild
@@ -224,7 +219,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
 
-                            //Toast.makeText(CreateNewAdActivity.this, "Uploaded", Toast.LENGTH_SHORT).show();
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {

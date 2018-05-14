@@ -27,9 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
-                SharedPreferences sharedPreferences = new SharedPreferences(context);
-                sharedPreferences.setUserID("");
                 startActivity(intent);
+                finish();
             }
         });
     }

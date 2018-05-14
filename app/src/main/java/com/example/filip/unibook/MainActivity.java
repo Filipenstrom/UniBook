@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         loginBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                validate();
                 logIn();
             }
         });
@@ -55,39 +56,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Metod för att logga in
-    public void logIn(){
+    public void logIn() {
         pbar.setVisibility(View.VISIBLE);
-        mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
 
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d("message", "signInWithEmail:success");
-                            FirebaseUser user = mAuth.getCurrentUser();
+        if (validate()) {
 
-                            Intent logInIntent = new Intent(MainActivity.this, LoggedInActivity.class);
-                            pbar.setVisibility(View.INVISIBLE);
-                            startActivity(logInIntent);
-                            //updateUI(user);
-                        } else {
 
-                            // If sign in fails, display a message to the user.
-                            Log.w("message", "signInWithEmail:failure", task.getException());
+            mAuth.signInWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
 
-                            if(task.getException().getMessage().equals("The password is invalid or the user does not have a password.")) {
+                                // Sign in success, update UI with the signed-in user's information
+                                Log.d("message", "signInWithEmail:success");
+                                FirebaseUser user = mAuth.getCurrentUser();
+
+                                Intent logInIntent = new Intent(MainActivity.this, LoggedInActivity.class);
                                 pbar.setVisibility(View.INVISIBLE);
-                                Toast.makeText(MainActivity.this, "Fel lösenord",
-                                        Toast.LENGTH_SHORT).show();
-                            }else {
-                                pbar.setVisibility(View.INVISIBLE);
-                                Toast.makeText(MainActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
+                                startActivity(logInIntent);
+                                //updateUI(user);
+                            } else {
+
+                                // If sign in fails, display a message to the user.
+                                Log.w("message", "signInWithEmail:failure", task.getException());
+
+                                if (task.getException().getMessage().equals("The password is invalid or the user does not have a password.")) {
+                                   /* pbar.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(MainActivity.this, "Fel lösenord",
+                                            Toast.LENGTH_SHORT).show();*/
+                                    password.setError("Fel lösenord.");
+                                } else {
+                                    pbar.setVisibility(View.INVISIBLE);
+                                    Toast.makeText(MainActivity.this, "Authentication failed.",
+                                            Toast.LENGTH_SHORT).show();
+                                }
                             }
                         }
-                    }
-                });
+
+                    });
+        }
+    }
+
+    public boolean validate(){
+
+        boolean valid = true;
+        if(email.length() > 50 || email.getText().toString().trim().equals("")){
+            email.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+        if(password.length() > 50 || password.getText().toString().trim().equals("")){
+            password.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
+            valid = false;
+        }
+
+        return  valid;
     }
 
     @Override
