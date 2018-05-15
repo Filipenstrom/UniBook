@@ -158,11 +158,6 @@ public class RegisterActivity extends AppCompatActivity {
         final String phone = editPhone.getText().toString();
         final String school = editSchool.getText().toString();
 
-        /*if(namn.trim().equals("") || surname.trim().equals("") || email.trim().equals("") || password.trim().equals("") || adress.trim().equals("") || phone.trim().equals("") || school.trim().equals("")) {
-
-            Toast.makeText(RegisterActivity.this,"Alla fält måste vara ifyllda", Toast.LENGTH_LONG).show();
-        }else {*/
-
         if(validate()){
             mAuth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
