@@ -41,7 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ChosenAdForSale extends AppCompatActivity {
+public class ChosenAdForSaleActivity extends AppCompatActivity {
 
     public static final String TAG = "message";
     TextView title, pris, info, program, kurs, seller, chosenAdId;
@@ -142,7 +142,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void aVoid) {
-                                    Toast.makeText(ChosenAdForSale.this, "Favorit tillagd",
+                                    Toast.makeText(ChosenAdForSaleActivity.this, "Favorit tillagd",
                                             Toast.LENGTH_LONG).show();
 
                                     favoriteBtn.setText("Ta bort favorit");
@@ -165,7 +165,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         sellerpic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ChosenAdForSale.this, ProfilePageActivity.class);
+                Intent intent = new Intent(ChosenAdForSaleActivity.this, ProfilePageActivity.class);
                 String id = sellerId;
                 intent.putExtra("userid", id);
                 intent.putExtra("adid", adId);
@@ -176,7 +176,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(ChosenAdForSale.this, ReportAdActivity.class);
+                Intent intent = new Intent(ChosenAdForSaleActivity.this, ReportAdActivity.class);
                 intent.putExtra("id", adId);
                 startActivity(intent);
             }
@@ -186,7 +186,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         btnCallAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(ChosenAdForSale.this,
+                if(ContextCompat.checkSelfPermission(ChosenAdForSaleActivity.this,
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
 
                     Intent callIntent = new Intent(Intent.ACTION_CALL);
@@ -203,7 +203,7 @@ public class ChosenAdForSale extends AppCompatActivity {
             btnSendMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(ChosenAdForSale.this, MessengerActivity.class);
+                    Intent intent = new Intent(ChosenAdForSaleActivity.this, MessengerActivity.class);
                     String id = sellerId;
                     intent.putExtra("userid", id);
                     intent.putExtra("sellerName", sellerName);
@@ -303,7 +303,7 @@ public class ChosenAdForSale extends AppCompatActivity {
 
                         if (document.getString("adId").equals(adId)) {
                             favouritesRef.document(document.getId()).delete();
-                            Toast.makeText(ChosenAdForSale.this, "Favorit borttagen",
+                            Toast.makeText(ChosenAdForSaleActivity.this, "Favorit borttagen",
                                     Toast.LENGTH_LONG).show();
                             favoriteBtn.setText("Lägg till favorit");
                         }
@@ -355,7 +355,7 @@ public class ChosenAdForSale extends AppCompatActivity {
                     .setPositiveButton("ok", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(ChosenAdForSale.this, new String[]{Manifest.permission.CALL_PHONE}, CALL_PERMISSION_CODE);
+                            ActivityCompat.requestPermissions(ChosenAdForSaleActivity.this, new String[]{Manifest.permission.CALL_PHONE}, CALL_PERMISSION_CODE);
                         }
                     })
                     .setNegativeButton("cancel", new DialogInterface.OnClickListener() {

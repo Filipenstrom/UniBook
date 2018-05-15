@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    //Metod för att validera textfält
     public boolean validate(){
 
         boolean valid = true;
