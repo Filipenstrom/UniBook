@@ -141,7 +141,6 @@ public class CreateNewAdActivity extends AppCompatActivity {
 
         CollectionReference userRef = rootRef.collection("Ads");
         DocumentReference userRefLatest = rootRef.collection("Ads").document("latest");
-        //CollectionReference userRef = rootRef.collection("User").document();
 
         String bokTitel = titel.getText().toString();
         String bokPris = pris.getText().toString();
@@ -224,14 +223,14 @@ public class CreateNewAdActivity extends AppCompatActivity {
                     .addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
-                            //Toast.makeText(CreateNewAdActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CreateNewAdActivity.this, "Något gick fel. Vänligen försök igen. ", Toast.LENGTH_SHORT).show();
                         }
                     });
 
         }
     }
 
-    //Metod för att välja bild till annonsen
+    //Metod för att välja bild i telefonens galleri
     public void choseImg(){
         Intent intent = new Intent();
         intent.setType("image/*");

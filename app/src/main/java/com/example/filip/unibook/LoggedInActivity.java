@@ -20,7 +20,6 @@ public class LoggedInActivity extends AppCompatActivity {
         goToSearch();
         goToFavorites();
         goToMeddelande();
-        //checkForNotis();
 
 
             if (!isMyServiceRunning()) {

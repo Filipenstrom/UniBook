@@ -51,7 +51,6 @@ public class MyAdsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_ads);
-
         listView = findViewById(R.id.listViewMyAds);
 
         goToCreateAd();
@@ -78,7 +77,7 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
-    //Metod för att gå till vald annons
+    //Metod för att gå till vyn för att skapa en annons
     public void goToCreateAd() {
         Button button = findViewById(R.id.btnSkapaAnnons);
         button.setOnClickListener(new View.OnClickListener() {
