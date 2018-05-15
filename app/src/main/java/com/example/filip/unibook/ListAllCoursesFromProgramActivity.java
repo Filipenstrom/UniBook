@@ -34,11 +34,8 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_all_courses_from_program);
-
         listView = findViewById(R.id.coursesListView);
-
         Intent intent = getIntent();
-
         extras = intent.getStringArrayExtra("extras");
 
         //Vid klick väljs en kurs från ett program, på valt index i vyn och skickar data till CreateNewAdActivity

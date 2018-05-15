@@ -43,7 +43,7 @@ public class MyFavoritesActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent showDetailActivity = new Intent(MyFavoritesActivity.this, ChosenAdForSale.class);
+                Intent showDetailActivity = new Intent(MyFavoritesActivity.this, ChosenAdForSaleActivity.class);
                 TextView adId = view.findViewById(R.id.txtAdID);
                 showDetailActivity.putExtra("id", adId.getText().toString());
                 startActivity(showDetailActivity);

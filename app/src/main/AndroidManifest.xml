@@ -35,7 +35,7 @@
         <activity android:name=".SearchActivity" />
         <activity android:name=".ReportAdActivity" />
         <activity android:name=".ListAllProgramsActivity" />
-        <activity android:name=".ChosenAdForSale" />
+        <activity android:name=".ChosenAdForSaleActivity" />
         <activity android:name=".NotificationActivity" />
         <activity android:name=".ListAllCoursesFromProgramActivity" />
 
