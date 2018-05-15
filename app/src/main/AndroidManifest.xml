@@ -55,7 +55,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".MyFavorites" />
+        <activity android:name=".MyFavoritesActivity" />
         <activity android:name=".MessengerActivity" />
         <activity android:name=".MyMessagesActivity"></activity>
     </application>
