@@ -249,7 +249,6 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void uploadImage() {
-
         if(filePath != null)
         {
             imageRandomNumber = UUID.randomUUID().toString();

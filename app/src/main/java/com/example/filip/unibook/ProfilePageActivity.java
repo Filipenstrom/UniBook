@@ -104,6 +104,7 @@ public class ProfilePageActivity extends AppCompatActivity {
 
     }
 
+    //Hämtar och sätter all information om en användare.
     public void insertUserInformation(String userid, final String sellerid) {
         DocumentReference docRef = rootRef.collection("Users").document(userid);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -136,6 +137,9 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    //Kollar hur många likes en användare har och skriver ut en text om det är en pålitlig
+    // eller icke pålitlig användare. BNeroende på hur många likes
+    //eller dislikes man fått.
     public void checkLike(String sellerid, final String userid) {
         CollectionReference docRef = rootRef.collection("Likes").document(sellerid).collection("UsersThatLiked");
         docRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -176,6 +180,7 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    //Metod som körs när man likear eller dislikear en användare.
     public void like(final String sellerid, final String userid, boolean like) {
         CollectionReference colRef = rootRef.collection("Likes").document(sellerid).collection("UsersThatLiked");
         Map<String, Object> mapOne = new HashMap<>();
@@ -206,9 +211,8 @@ public class ProfilePageActivity extends AppCompatActivity {
                 });
     }
 
-
+    //Sätter profilbilden på användaren.
     public void setImage(String imageId){
-
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
 
         final long ONE_MEGABYTE = 1024 * 1024;

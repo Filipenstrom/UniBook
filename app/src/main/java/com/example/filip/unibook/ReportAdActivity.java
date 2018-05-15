@@ -61,7 +61,6 @@ public class ReportAdActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if (document != null && document.exists()) {
-
                                 loggedInUserName = document.getString("name") + " " + document.getString("surname");
                                 loggedInUserMail = document.getString("email");
 
@@ -80,7 +79,6 @@ public class ReportAdActivity extends AppCompatActivity {
         btnReportAd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 CollectionReference reportsRef = rootRef.collection("Reports");
 
                 Map<String, Object> mapTwo = new HashMap<>();
@@ -114,8 +112,8 @@ public class ReportAdActivity extends AppCompatActivity {
         });
     }
 
+    //Fyller upp textfält med ID och titel.
     public void fillInfo(){
-
         DocumentReference docRef = rootRef.collection("Ads").document(id);
 
         docRef.get()

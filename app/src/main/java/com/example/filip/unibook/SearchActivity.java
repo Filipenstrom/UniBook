@@ -107,7 +107,6 @@ public class SearchActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-
                             final int size = task.getResult().size();
 
                             items = new String[size];
@@ -120,7 +119,6 @@ public class SearchActivity extends AppCompatActivity {
                             List<DocumentSnapshot> minLista = task.getResult().getDocuments();
 
                             for(int i = 0;i < size;i++){
-
                                 DocumentSnapshot doc = minLista.get(i);
                                 ids[i] = doc.getId().toString();
                                 items[i] = doc.getString("title");
@@ -128,10 +126,10 @@ public class SearchActivity extends AppCompatActivity {
                                 programs[i] = doc.getString("program");
                                 courses[i] = doc.getString("course");
                             }
+
                             index.clearIndexAsync(new CompletionHandler() {
                                 @Override
                                 public void requestCompleted(JSONObject jsonObject, AlgoliaException e) {
-
                                     List<JSONObject> adsList = new ArrayList<>();
 
                                     for (int i = 0; i < size; i++) {
@@ -145,9 +143,11 @@ public class SearchActivity extends AppCompatActivity {
 
                                         adsList.add(new JSONObject(map));
                                     }
+
                                     index.addObjectsAsync(new JSONArray(adsList), null);
                                 }
                             });
+
                             ItemAdapter itemAdapter = new ItemAdapter(context, items, prices, ids);
                             listView.setAdapter(itemAdapter);
 
