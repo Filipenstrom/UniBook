@@ -65,8 +65,6 @@ public class MessageAdapter extends BaseAdapter {
         TextView dateTxtSender = v.findViewById(R.id.txtMessageTimeSender);
         TextView  nameTxtSender = v.findViewById(R.id.txtMessageUserSender);
         TextView nameTxt = v.findViewById(R.id.txtMessageUser);
-        //ImageView adsPic = (ImageView) v.findViewById(R.id.ivAdsListPicture);
-
 
         String message = items[i];
         String name = id[i];
@@ -115,21 +113,5 @@ public class MessageAdapter extends BaseAdapter {
         }
 
         return v;
-
-        //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
-    }
-
-    //Funkar inte
-    public String checkLastToWrite(String lastname, String newname){
-        String sendbackname = "";
-        if(!lastname.equals("") || !newname.equals("")){
-            if(lastname.equals(newname)){
-                sendbackname = "";
-            }
-            else{
-                sendbackname = newname;
-            }
-        }
-        return sendbackname;
     }
 }
