@@ -82,9 +82,6 @@ public class MainActivity extends AppCompatActivity {
                                 Log.w("message", "signInWithEmail:failure", task.getException());
 
                                 if (task.getException().getMessage().equals("The password is invalid or the user does not have a password.")) {
-                                   /* pbar.setVisibility(View.INVISIBLE);
-                                    Toast.makeText(MainActivity.this, "Fel lösenord",
-                                            Toast.LENGTH_SHORT).show();*/
                                     password.setError("Fel lösenord.");
                                 } else {
                                     pbar.setVisibility(View.INVISIBLE);
