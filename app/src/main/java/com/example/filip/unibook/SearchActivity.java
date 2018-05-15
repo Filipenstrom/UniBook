@@ -88,6 +88,7 @@ public class SearchActivity extends AppCompatActivity {
 
         progressbar.setVisibility(View.VISIBLE);
 
+        //Alla annonser hämtas och fylls upp. Annonserna läggs även till på Algolia så att man kan söka efter annonser.
         adsRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -236,6 +237,7 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    //Sökfunktion som söker efter annonser, man kan filtrera på program och kurser eller söka fritext.
     public void searchQuery(String text){
 
         Query query1 = new Query(text)
@@ -269,6 +271,7 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    //Resultatet från när man valt att filtrera på program eller kurs.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
