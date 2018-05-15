@@ -2,7 +2,6 @@ package com.example.filip.unibook;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,16 +22,10 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.TimeZone;
 
-public class ReportAd extends AppCompatActivity {
+public class ReportAdActivity extends AppCompatActivity {
 
     public static final String TAG = "message";
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
@@ -104,7 +97,7 @@ public class ReportAd extends AppCompatActivity {
                             @Override
                             public void onSuccess(Void aVoid) {
 
-                                Toast.makeText(ReportAd.this, "Anmälan skapad",
+                                Toast.makeText(ReportAdActivity.this, "Anmälan skapad",
                                         Toast.LENGTH_LONG).show();
 
                                 finish();
