@@ -31,9 +31,7 @@ import java.util.Map;
 
 public class NotificationActivity extends AppCompatActivity {
 
-    TextView addedNotis;
-    TextView newNotis;
-    TextView newNotisCourse;
+    TextView addedNotis, newNotis;
     Context context = this;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
@@ -48,13 +46,11 @@ public class NotificationActivity extends AppCompatActivity {
         newNotis = findViewById(R.id.etnotisAd);
         addedNotis.setText(" ");
 
-       // usersNotices();
         listNotifications();
 
         Button btnaddNotis =  findViewById(R.id.btnaddNotis);
         Button btnaddNotisCourse =  findViewById(R.id.btnAddNotisCourse);
         Button deleteBtn = findViewById(R.id.btnDeleteNotification);
-
 
         btnaddNotis.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,9 +70,9 @@ public class NotificationActivity extends AppCompatActivity {
                 clearNotifications();
             }
         });
-
     }
 
+    //Kollar så att det programmet man vill ha notifikationer för faktiskt finns.
     public void validateProgram(){
         CollectionReference programRef = rootRef.collection("Program");
 
@@ -98,14 +94,13 @@ public class NotificationActivity extends AppCompatActivity {
                         else if(i == lista.size()-1){
                             newNotis.setError("Det finns inget program med detta namn. Vänligen testa med ett annat namn.");
                         }
-
                     }
-
                 }
             }
         });
     }
 
+    //Kollar så att den kursen man vill ha notifikationer för faktiskt finns.
     public void validateCourse(){
         CollectionReference courseRef = rootRef.collection("Courses");
 
@@ -128,14 +123,13 @@ public class NotificationActivity extends AppCompatActivity {
                             }
                         }
                     }
-
                 }
 
         });
     }
 
+    //Kollar så att man inte försöker lägga till en notifikation som man redan har.
     private boolean checkProgramAndCourse(){
-
         String[] notifications = addedNotis.getText().toString().trim().split(",");
         int counter = 0;
         boolean valid = false;
@@ -181,25 +175,7 @@ public class NotificationActivity extends AppCompatActivity {
 
     }
 
-
-    //Lista redan sparade notiser som användaren har gjort.
-   /* public void usersNotices(){
-        DatabaseHelper db = new DatabaseHelper(this);
-        SharedPreferences sp = new SharedPreferences(this);
-        User user = db.getUser(sp.getusername());
-        List<String> noti = db.getNotis(user.getId());
-        String allnoti = "";
-
-        if(noti.size() > 0) {
-            for (int i = 0; i < noti.size(); i++) {
-                allnoti += noti.get(i) + ", ";
-            }
-        } else{
-            allnoti = "Du har inga sparade notifikationer.";
-        }
-        addedNotis.setText(allnoti);
-    }*/
-
+    //Tar bort alla notifikationer en användare har.
     public void clearNotifications(){
         CollectionReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
         usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -216,6 +192,7 @@ public class NotificationActivity extends AppCompatActivity {
         });
     }
 
+    //Hämtar och visar upp alla kurser och program en användare valt att få notifikationer om.
     public void listNotifications(){
         CollectionReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
         usersRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {

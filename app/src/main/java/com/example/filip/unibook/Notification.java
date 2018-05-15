@@ -46,14 +46,13 @@ public final class Notification{
         notificationManagerCompat = NotificationManagerCompat.from(context);
     }
 
+    //Sätter vilken channel notifikationen ska skickas via.
     public void setChannel(Context c){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             CharSequence name = "UniBook";
             String description = "Bok har lagts upp";
-            //int importance = NotificationManagerCompat.IMPORTANCE_DEFAULT;
             NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription(description);
-            // Register the channel with the system
             NotificationManager notificationManager =  c.getSystemService(NotificationManager.class);
             notificationManager.createNotificationChannel(channel);
         }

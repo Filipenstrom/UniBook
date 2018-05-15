@@ -43,11 +43,11 @@ import java.util.TimerTask;
 
 public class MyService extends Service {
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
-    String chatId;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     FirebaseUser user = mAuth.getCurrentUser();
     String[] chats;
 
+    //Kör metoderna efter en satt tid.
     private Timer mTimer;
     TimerTask timerTask = new TimerTask() {
         @Override
@@ -141,6 +141,7 @@ public class MyService extends Service {
                 });
     }
 
+    //Hämtar de notifikationer som en användare valt.
     public List<String> getNotification(){
         CollectionReference usersRef =  rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications");
         final List<String> notifications = new ArrayList<>();
@@ -151,8 +152,6 @@ public class MyService extends Service {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
-                    int size = task.getResult().size();
-
                     List<DocumentSnapshot> list = task.getResult().getDocuments();
                     for (int i = 0; i < task.getResult().size(); i++) {
                         DocumentSnapshot doc = list.get(i);
@@ -160,22 +159,20 @@ public class MyService extends Service {
                         notifications.add(notis);
                         adIds.add(doc.getString("AdId"));
                         notisIds.add(doc.getId().toString());
-
                     }
-
                     checkForNewAds(notifications, adIds, notisIds);
                 }
-
                 else{
                     Log.d("TAG", "Error getting documents: ", task.getException());
                 }
             }
         });
+
         return notifications;
     }
 
+    //Hämtar chattar där den inloggade användaren är med.
     public void checkForNewMessage() {
-        //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
         final CollectionReference colRef = rootRef.collection("Chat");
         colRef.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -185,17 +182,18 @@ public class MyService extends Service {
                             List<DocumentSnapshot> list = task.getResult().getDocuments();
 
                             if (list.size() > 0) {
-
                                 chats = new String[task.getResult().size()];
 
                                 for (int i = 0; i < list.size(); i++) {
                                     DocumentSnapshot documentSnapshot = list.get(i);
+
                                     if (documentSnapshot.getString("User1").equals(user.getUid().toString())) {
                                         chats[i] = documentSnapshot.getId().toString();
                                     } else if (documentSnapshot.getString("User2").equals(user.getUid().toString())) {
                                         chats[i] = documentSnapshot.getId().toString();
                                     }
 
+                                    //checkLatest ska bara köras om användaren faktiskt valt att få notifikationer.
                                     if (chats[i] != null) {
                                         checkLatest(chats[i]);
                                     }
@@ -206,6 +204,7 @@ public class MyService extends Service {
                 });
     }
 
+    //Kollar om det finns nya meddelande i någon av de chattarna som hämtats med checkForNewMessage().
     public void checkLatest(String chatsWithUser){
         final DocumentReference colRef = rootRef.collection("Chat").document(chatsWithUser).collection("Messages").document("latest");
         colRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -231,6 +230,7 @@ public class MyService extends Service {
         });
     }
 
+    //Skickar en notis.
     public void sendNoti(String name, String message){
         String notimeg = name + " har skickat ett meddelande: " + message;
         Notification notification = new Notification(this, notimeg, "Tryck för att öppna UniBook");

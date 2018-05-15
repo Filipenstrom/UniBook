@@ -48,27 +48,21 @@ import java.util.TimeZone;
 public class MessengerActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
-    ImageView sendbtn;
-    ImageView profilepic;
+    ImageView sendbtn, profilepic;
     EditText messageTxt;
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
     TextView userTalkingTo;
-    String sellerId;
-    String loggedinusername;
-    String imageId;
+    String sellerId, loggedinusername, imageId, chatId, iChatId, boktitel;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser user;
-    String chatId;
     Context context = this;
     ListView listView;
-    String iChatId;
-    String boktitel;
     String[] adapterids;
     Date[] adapterDate;
+    String[] userids;
     int idcounter = 0;
     int size;
-    String[] userids;
 
 
 
@@ -77,7 +71,6 @@ public class MessengerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_messenger);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
 
         messageTxt = findViewById(R.id.etMessage);
         listView = findViewById(R.id.listViewMessages);
@@ -98,10 +91,13 @@ public class MessengerActivity extends AppCompatActivity {
 
         displayChatMessage();
 
+        //Om iChatId är null betyder det att användaren vill skapa en ny chat med en annan användare.
+        //Createchat() körs då och en ny chat skapas.
         if (iChatId == null) {
             createChat();
             chatId = sellerId;
         }
+        //Annars hämtas en chat som redan är skapad mellan två användare.
         else {
             chatId = iChatId;
             showMessages(iChatId);
@@ -114,6 +110,7 @@ public class MessengerActivity extends AppCompatActivity {
             }
         });
 
+        //Sätter profilbilden på användaren man pratar med.
         if(intent.getStringExtra("userTalkingTo") != null) {
             setImage(intent.getStringExtra("userTalkingToId"));
         } else{
@@ -121,7 +118,8 @@ public class MessengerActivity extends AppCompatActivity {
         }
     }
 
-    //Metod för att visa chattmeddelande
+    //Metod som kollar om ett nytt meddelande skickats. Om det är fallet så uppdaterar den listan så att
+    //det nya meddelandet skickas.
     public void displayChatMessage() {
         try {
             //Uppdatera meddelandelistan när ett nytt meddelande lagts till i databasen.
@@ -140,7 +138,7 @@ public class MessengerActivity extends AppCompatActivity {
         } catch (Exception e){e.printStackTrace();}
     }
 
-    //Metod för att visa profilbilder från chats
+    //Metod som hämtar profilbilden på användaren man pratar med.
     public void setImage(String userId){
         final DocumentReference docRef = rootRef.collection("Users").document(userId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -173,7 +171,7 @@ public class MessengerActivity extends AppCompatActivity {
         });
     }
 
-    //Skapa en chatt till en annons. Körs enbart när man går in på en annons som är till salu och trycker på skicka meddelande.
+    //Skapa en chatt till en annons mellan användaren som lagt upp annonsen och den som är inloggad. Körs enbart när man går in på en annons som är till salu och trycker på skicka meddelande.
     public void createChat() {
         DocumentReference loggedInRef = rootRef.collection("Users").document(user.getUid().toString());
         loggedInRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -226,7 +224,6 @@ public class MessengerActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-
                             List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
                             int size = task.getResult().size();
 
@@ -236,19 +233,15 @@ public class MessengerActivity extends AppCompatActivity {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
-                                    Toast.makeText(MessengerActivity.this, chatId,
-                                            Toast.LENGTH_SHORT).show();
-                                } else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString()) && boktitel.equals(doc.getString("BokTitel"))) {
+                                    Toast.makeText(MessengerActivity.this, chatId, Toast.LENGTH_SHORT).show();
+                                }
+                                else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString()) && boktitel.equals(doc.getString("BokTitel"))) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
-                                    Toast.makeText(MessengerActivity.this, chatId,
-                                            Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MessengerActivity.this, chatId, Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            //CourseAdapter adapter = new CourseAdapter(context, courseName, ids, courseCode);
-                            //ArrayAdapter<String> adapter = new ArrayAdapter<>(context, android.R.layout.simple_selectable_list_item, courseName);
-                            //listView.setAdapter(adapter);
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
@@ -259,7 +252,6 @@ public class MessengerActivity extends AppCompatActivity {
     //Skickar ett meddelande till en användare och sparar det i databasen.
     public void sendMessage(final String chatId) {
         DocumentReference userRef = rootRef.collection("Users").document(user.getUid().toString());
-        //CollectionReference userRef = rootRef.collection("User").document();
 
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -323,7 +315,7 @@ public class MessengerActivity extends AppCompatActivity {
         });
     }
 
-    //Visar alla meddelande i medelandelistan.
+    //Hämtar och visar alla meddelande tillhörande en chat i meddelandelistan.
     public void showMessages(String chatId) {
         idcounter = 0;
         CollectionReference chatRef = rootRef.collection("Chat").document(chatId).collection("Messages");

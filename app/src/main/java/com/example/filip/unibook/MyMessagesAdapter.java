@@ -124,9 +124,6 @@ public class MyMessagesAdapter extends BaseAdapter {
             }
         });
 
-
         return v;
-
-        //adsPic.setImageBitmap(BitmapFactory.decodeByteArray(pics, 0, pics.length));
     }
 }

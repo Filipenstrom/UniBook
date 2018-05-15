@@ -39,17 +39,13 @@ public class MyMessagesActivity extends AppCompatActivity {
 
     public static final String TAG = "TAG";
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    String sellerId;
     private FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
     FirebaseStorage storage = FirebaseStorage.getInstance();
     FirebaseUser user;
     ImageView profilepic;
-    String chatId;
-    String userTalkingToId;
-    String imageId;
+    String chatId, userTalkingToId, imageId, name;
     ListView listView;
     Context context = this;
-    String name;
     String[] id;
     String[] names;
     String[] userid;
@@ -68,13 +64,11 @@ public class MyMessagesActivity extends AppCompatActivity {
 
         getChat();
 
-
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 TextView chatId = (TextView) view.findViewById(R.id.txtChatId);
                 TextView userTalkingTo = view.findViewById(R.id.txtUserTalkingTo);
-                //TextView txtCourseId = view.findViewById(R.id.txtViewCoursesId);
                 Intent data = new Intent(MyMessagesActivity.this, MessengerActivity.class);
                 data.putExtra("chatId", chatId.getText().toString());
                 data.putExtra("userTalkingTo", userTalkingTo.getText().toString());
@@ -84,7 +78,7 @@ public class MyMessagesActivity extends AppCompatActivity {
         });
     }
 
-    //Metod som hämtar chattar
+    //Metod som hämtar alla chattar som den inloggade användaren är med i.
     public void getChat() {
         CollectionReference chatRef = rootRef.collection("Chat");
         chatRef.get()
@@ -107,6 +101,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                                     chatId = chatIdholder;
                                     id[i] = doc.getId().toString();
                                     boktitel[i] = doc.getString("BokTitel");
+
                                     if(!doc.getString("User1").equals(user.getUid())){
                                         counter = i;
                                         names[counter] = doc.getString("User2Name");
@@ -132,7 +127,7 @@ public class MyMessagesActivity extends AppCompatActivity {
                 });
     }
 
-    //Metod som visar
+    //Metod som sätter bilden på den användare man pratar med.
     public void setImage(String[] userId){
         for(int i = 0; i<userId.length;i++) {
             final DocumentReference docRef = rootRef.collection("Users").document(userId[i]);
