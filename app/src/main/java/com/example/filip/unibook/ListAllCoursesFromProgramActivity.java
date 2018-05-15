@@ -54,6 +54,7 @@ public class ListAllCoursesFromProgramActivity extends AppCompatActivity {
                     finish();
 
                 } else {
+
                     Intent intent = new Intent(ListAllCoursesFromProgramActivity.this, CreateNewAdActivity.class);
                     String kursId = txtCourseId.getText().toString();
                     String kursNamn = txtCourse.getText().toString();

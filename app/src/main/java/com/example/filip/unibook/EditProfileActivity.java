@@ -122,7 +122,7 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
-    //Metod som uppdaterar profilinfo
+    //Metod som uppdaterar profilinformation
     public void save() {
 
         if(validate()){
@@ -193,14 +193,13 @@ public class EditProfileActivity extends AppCompatActivity {
         storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 imageView.setImageBitmap(bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
+                Toast.makeText(EditProfileActivity.this, "Något gick fel. Vänligen försök igen.", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -213,7 +212,7 @@ public class EditProfileActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
-    //Metod för att ladda upp bild
+    //Metod för att ladda upp bild till databasen
     private void uploadImage(final DocumentReference docRef) {
 
         if(filePath != null)

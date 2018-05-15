@@ -189,7 +189,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         boolean valid = true;
         if(title.length() > 50 || title.getText().toString().trim().equals("")){
             title.setError("Fältet får inte vara tomt eller ha mer än 50 tecken.");
-            //Toast.makeText(CreateNewAdActivity.this, "Titel får inte vara tom eller ha mer än 50 tecken", Toast.LENGTH_SHORT).show();
             valid = false;
         }
         if(pris.length() > 50 || pris.getText().toString().trim().equals("") || !TextUtils.isDigitsOnly(pris.getText().toString())){
@@ -233,6 +232,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE_REQUEST);
     }
 
+    //Metod som laddar upp den valda bilden till databasen
     private void uploadImage(final DocumentReference docRef) {
 
         if(filePath != null)
@@ -265,7 +265,7 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-                                    Toast.makeText(ChosenAdPageActivity.this, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ChosenAdPageActivity.this, "Något gick fel. Vänligen försök igen.", Toast.LENGTH_SHORT).show();
                                 }
                             });
                 }

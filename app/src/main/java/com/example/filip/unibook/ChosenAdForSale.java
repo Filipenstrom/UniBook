@@ -104,7 +104,6 @@ public class ChosenAdForSale extends AppCompatActivity {
                         adId = document.getId();
                         imageId = document.getString("imageId");
                         boktitel = document.getString("title");
-                        //sellerName = document.getString("name") + " " + document.getString("surname");
                         pic.setImageBitmap(img);
 
                         checkFavourites(adId);
@@ -189,12 +188,13 @@ public class ChosenAdForSale extends AppCompatActivity {
             public void onClick(View v) {
                 if(ContextCompat.checkSelfPermission(ChosenAdForSale.this,
                         Manifest.permission.CALL_PHONE) == PackageManager.PERMISSION_GRANTED) {
-                    //Toast.makeText(ChosenAdForSale.this, "You have already granted this permission", Toast.LENGTH_SHORT).show();
 
                     Intent callIntent = new Intent(Intent.ACTION_CALL);
                     callIntent.setData(Uri.parse("tel:" + sellerPhone));
                     startActivity(callIntent);
-                }else{
+                }
+
+                else{
                     requestCallPermission();
                 }
             }
@@ -216,6 +216,7 @@ public class ChosenAdForSale extends AppCompatActivity {
             });
     }
 
+    //Metod som fäster bilden till annonsen i en image view.
     public void setImage(String imageId){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
@@ -225,18 +226,18 @@ public class ChosenAdForSale extends AppCompatActivity {
         storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
             @Override
             public void onSuccess(byte[] bytes) {
-                // Data for "images/island.jpg" is returns, use this as needed
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
                 sellerpic.setImageBitmap(bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception exception) {
-                // Handle any errors
+                Log.d("Error", exception.getMessage());
             }
         });
     }
 
+    //Metod som hämtar säljaren till annonsen
     public void getSeller(String sellerId){
 
         DocumentReference userRef = rootRef.collection("Users").document(sellerId);
@@ -263,6 +264,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
+    //Metod som kollar om annonsen tillhör favoriter
     public void checkFavourites(final String adId){
 
         CollectionReference favouritesRef =  rootRef.collection("Favourites");
@@ -286,6 +288,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
+    //Metod som tar bort eller lägger till annons som favorit
     public void removeFavourite(final String adId){
 
         final CollectionReference favouritesRef =  rootRef.collection("Favourites");
@@ -312,9 +315,10 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
+    //Metod som kollar om man redan har startat en chat med säljaren
+    //Vid klick på knapp så kommer man till chatten.
     public void checkIfChatAlreadyExist(){
         CollectionReference chatRef =  rootRef.collection("Chat");
-        //Query query = favouritesRef.whereEqualTo("userId", loggenIn.getUid().toString());
         chatRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -325,13 +329,11 @@ public class ChosenAdForSale extends AppCompatActivity {
 
                         if (document.getString("User1").equals(loggenIn.getUid().toString()) && document.getString("User2").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
                             btnSendMessage.setText("En chat är redan startad");
-                            //btnSendMessage.setClickable(false);
                             chatCreated = true;
                             createdChatId = document.getId();
                         }
                         else if (document.getString("User2").equals(loggenIn.getUid().toString()) && document.getString("User1").equals(sellerId) && document.getString("BokTitel").equals(boktitel)) {
                             btnSendMessage.setText("En chat är redan startad");
-                            //btnSendMessage.setClickable(false);
                             chatCreated = true;
                             createdChatId = document.getId();
                         }
@@ -343,6 +345,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         });
     }
 
+    //Metod för att be om att ringa annonsör
     private void requestCallPermission(){
         if(ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CALL_PHONE)) {
 
@@ -367,6 +370,7 @@ public class ChosenAdForSale extends AppCompatActivity {
         }
     }
 
+    //Resultatet som skickas tillbaka från requesten ovan
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if(requestCode == CALL_PERMISSION_CODE) {
