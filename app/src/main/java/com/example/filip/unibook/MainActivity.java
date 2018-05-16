@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         // super.onBackPressed(); commented this line in order to disable back press
         //Write your code here
-        
+
     }
 
     //Metod för att logga in
