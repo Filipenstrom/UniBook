@@ -7,6 +7,7 @@
     tools:context="com.example.filip.unibook.MainActivity"
     android:background="@color/colorBackground">
 
+
     <ScrollView
         android:id="@+id/loginScrollView"
         android:layout_width="0dp"
