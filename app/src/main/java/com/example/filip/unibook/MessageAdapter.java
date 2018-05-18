@@ -76,7 +76,7 @@ public class MessageAdapter extends BaseAdapter {
         if(userids != null) {
             String Uid = userids[i];
             String[] dateTextSplit = date[i].toString().split(" ");
-            String dateText = dateTextSplit[1] + " " + dateTextSplit[2] + " " + dateTextSplit[3];
+            String dateText = dateTextSplit[2] + " " + dateTextSplit[3];
 
             if (Uid.equals(user.getUid().toString())) {
                 Drawable drawable = res.getDrawable(R.drawable.bubblesenderorange);
