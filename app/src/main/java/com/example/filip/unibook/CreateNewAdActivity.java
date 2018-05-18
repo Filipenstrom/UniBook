@@ -110,6 +110,14 @@ public class CreateNewAdActivity extends AppCompatActivity {
         txtProgram.setVisibility(View.VISIBLE);
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), MyAdsActivity.class);
+        startActivity(intent);
+    }
+
     //Metod som validerar textfält
     public boolean validate(){
 

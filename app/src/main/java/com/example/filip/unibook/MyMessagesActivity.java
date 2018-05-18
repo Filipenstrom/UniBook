@@ -78,6 +78,14 @@ public class MyMessagesActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
+    }
+
     //Metod som hämtar alla chattar som den inloggade användaren är med i.
     public void getChat() {
         CollectionReference chatRef = rootRef.collection("Chat");

@@ -46,11 +46,20 @@ public class MyFavoritesActivity extends AppCompatActivity {
                 Intent showDetailActivity = new Intent(MyFavoritesActivity.this, ChosenAdForSaleActivity.class);
                 TextView adId = view.findViewById(R.id.txtAdID);
                 showDetailActivity.putExtra("id", adId.getText().toString());
+                showDetailActivity.putExtra("caller", "Favorites");
                 startActivity(showDetailActivity);
             }
         });
 
         getMyFavoriteAds();
+    }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
     }
 
     //Metod för att hämta den inloggades favoriter

@@ -28,6 +28,12 @@ public class LoggedInActivity extends AppCompatActivity {
             }
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+    }
+
     //Metod för att gå till profilsida
     public void goToProfile() {
         LinearLayout profileBtn = findViewById(R.id.profileLinearLayout);

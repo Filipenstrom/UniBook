@@ -237,6 +237,14 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
+    }
+
     //Sökfunktion som söker efter annonser, man kan filtrera på program och kurser eller söka fritext.
     public void searchQuery(String text){
 

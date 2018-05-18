@@ -72,6 +72,14 @@ public class NotificationActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
+    }
+
     //Kollar så att det programmet man vill ha notifikationer för faktiskt finns.
     public void validateProgram(){
         CollectionReference programRef = rootRef.collection("Program");

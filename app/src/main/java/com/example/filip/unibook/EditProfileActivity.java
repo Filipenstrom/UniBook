@@ -91,6 +91,14 @@ public class EditProfileActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), ProfilePageActivity.class);
+        startActivity(intent);
+    }
+
     //Metod som fäster info om profilen från databasen i textfälten
     public void insertUserInformation() {
         DocumentReference docRef = rootRef.collection("Users").document(user.getUid().toString());

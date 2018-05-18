@@ -81,8 +81,12 @@ public class MessengerActivity extends AppCompatActivity {
         final Intent intent = getIntent();
         sellerId = intent.getStringExtra("userid");
         //Sätter texten i toolbaren till den personen man chattar med.
-        userTalkingTo.setText(intent.getStringExtra("userTalkingTo"));
-        userTalkingTo.setText(intent.getStringExtra("sellerName"));
+        if(intent.getStringExtra("userTalkingTo") != null) {
+            userTalkingTo.setText(intent.getStringExtra("userTalkingTo"));
+        }
+        else {
+            userTalkingTo.setText(intent.getStringExtra("sellerName"));
+        }
         user = mAuth.getCurrentUser();
 
         Intent intentchatId = getIntent();
@@ -116,6 +120,14 @@ public class MessengerActivity extends AppCompatActivity {
         } else{
             setImage(intent.getStringExtra("userid"));
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), MyMessagesActivity.class);
+        startActivity(intent);
     }
 
     //Metod som kollar om ett nytt meddelande skickats. Om det är fallet så uppdaterar den listan så att

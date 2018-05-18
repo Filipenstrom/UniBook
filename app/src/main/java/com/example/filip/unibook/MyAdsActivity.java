@@ -77,6 +77,14 @@ public class MyAdsActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
+    }
+
     //Metod för att gå till vyn för att skapa en annons
     public void goToCreateAd() {
         Button button = findViewById(R.id.btnSkapaAnnons);

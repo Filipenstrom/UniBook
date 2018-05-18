@@ -43,7 +43,13 @@ public class SettingsActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
+    }
 
     //Metod för att logga ut
     public void logOut(){
@@ -51,13 +57,11 @@ public class SettingsActivity extends AppCompatActivity {
                 Intent intent = new Intent(SettingsActivity.this, MainActivity.class);
                 startActivity(intent);
                 finish();
-
     }
 
     //Metod för att gå till notiser
     public void goToNotiser(){
                 Intent intent = new Intent(SettingsActivity.this, NotificationActivity.class);
                 startActivity(intent);
-
     }
 }

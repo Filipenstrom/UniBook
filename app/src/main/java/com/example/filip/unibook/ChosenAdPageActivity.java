@@ -1,5 +1,6 @@
 package com.example.filip.unibook;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -127,6 +128,15 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         deleteAd();
     }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), MyAdsActivity.class);
+        startActivity(intent);
+    }
+
 
     //Metod för att hämta den valda annonsen
     public void getAd(){

@@ -201,6 +201,14 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        startActivity(intent);
+    }
+
     //Metod som lägger in data i Firestore om den skapade användaren.
     public void createUser(String namn, String surname, String email, String adress, String phone, String school, String password) {
         FirebaseUser user = mAuth.getCurrentUser();

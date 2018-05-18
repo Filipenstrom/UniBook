@@ -110,6 +110,13 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
                         getSeller(sellerId);
                         checkIfChatAlreadyExist();
 
+                        if(sellerId.equals(loggenIn.getUid().toString())) {
+                            btnSendMessage.setVisibility(View.INVISIBLE);
+                            btnCallAd.setVisibility(View.INVISIBLE);
+                            btnReportAd.setVisibility(View.INVISIBLE);
+                            favoriteBtn.setVisibility(View.INVISIBLE);
+                        }
+
                         progressBar.setVisibility(View.INVISIBLE);
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());
                     } else {
@@ -203,18 +210,39 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
             btnSendMessage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(ChosenAdForSaleActivity.this, MessengerActivity.class);
-                    String id = sellerId;
-                    intent.putExtra("userid", id);
-                    intent.putExtra("sellerName", sellerName);
-                    intent.putExtra("boktitel", boktitel);
-                    if(chatCreated){
-                        intent.putExtra("chatId", createdChatId);
+                    if(!sellerId.equals(loggenIn.getUid().toString())) {
+                        Intent intent = new Intent(ChosenAdForSaleActivity.this, MessengerActivity.class);
+                        String id = sellerId;
+                        intent.putExtra("userid", id);
+                        intent.putExtra("sellerName", sellerName);
+                        intent.putExtra("boktitel", boktitel);
+                        if (chatCreated) {
+                            intent.putExtra("chatId", createdChatId);
+                        }
+                        startActivity(intent);
                     }
-                    startActivity(intent);
+                    else{
+                        Toast.makeText(ChosenAdForSaleActivity.this, "Du kan inte starta en chat med dig själv.", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
     }
+
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent extraintent = getIntent();
+        if(extraintent.getStringExtra("caller") != null) {
+            Intent intent = new Intent(getApplicationContext(), MyFavoritesActivity.class);
+            startActivity(intent);
+        }
+        else{
+            Intent intent = new Intent(getApplicationContext(), SearchActivity.class);
+            startActivity(intent);
+        }
+    }
+
 
     //Metod som fäster bilden till annonsen i en image view.
     public void setImage(String imageId){

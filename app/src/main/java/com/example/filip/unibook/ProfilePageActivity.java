@@ -98,6 +98,14 @@ public class ProfilePageActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onBackPressed() {
+        // super.onBackPressed(); commented this line in order to disable back press
+        //Write your code here
+        Intent intent = new Intent(getApplicationContext(), LoggedInActivity.class);
+        startActivity(intent);
+    }
+
     public void goToEditProfile(View view){
         Intent intent = new Intent(ProfilePageActivity.this, EditProfileActivity.class);
         startActivity(intent);
