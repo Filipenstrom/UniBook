@@ -109,18 +109,20 @@ public class MyAdsActivity extends AppCompatActivity {
 
                     int size = task.getResult().size();
 
-                    String[] items = new String[size];
-                    String[] ids = new String[size];
-                    String[] prices = new String[size];
+                    String[] items = new String[size-1];
+                    String[] ids = new String[size-1];
+                    String[] prices = new String[size-1];
 
                     List<DocumentSnapshot> minLista = task.getResult().getDocuments();
 
                     for(int i = 0;i < size;i++){
 
                         DocumentSnapshot doc = minLista.get(i);
-                        ids[i] = doc.getId().toString();
-                        items[i] = doc.getString("title");
-                        prices[i] = doc.getString("price");
+                        if(!doc.getId().equals("latest")) {
+                            ids[i] = doc.getId().toString();
+                            items[i] = doc.getString("title");
+                            prices[i] = doc.getString("price");
+                        }
                     }
                     ItemAdapter adapter = new ItemAdapter(context, items, prices, ids);
                     listView.setAdapter(adapter);
