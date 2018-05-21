@@ -76,7 +76,7 @@ public class ItemAdapter extends BaseAdapter {
         String adid = id[i];
 
         nameTextView.setText(name);
-        priceTextView.setText(cost + ":-");
+        priceTextView.setText(cost);
         idsTextView.setText(adid);
 
         final DocumentReference docRef = rootRef.collection("Ads").document(adid);
