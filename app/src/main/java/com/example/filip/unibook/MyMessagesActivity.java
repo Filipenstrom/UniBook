@@ -50,7 +50,7 @@ public class MyMessagesActivity extends AppCompatActivity {
     String[] names;
     String[] userid;
     String[] boktitel;
-    int counter;
+    int counter = 0;
 
 
     @Override
@@ -97,32 +97,40 @@ public class MyMessagesActivity extends AppCompatActivity {
 
                             List<DocumentSnapshot> chatLista = task.getResult().getDocuments();
                             int size = task.getResult().size();
-                            id = new String[size];
-                            userid = new String[size];
-                            names = new String[size];
-                            boktitel = new String[size];
+                            int arraysize = 0;
+
+                            for (int i = 0;i<size;i++){
+                                DocumentSnapshot doc = chatLista.get(i);
+                                if(doc.getString("User1").equals(user.getUid().toString()) || doc.getString("User2").equals(user.getUid().toString())) {
+                                    arraysize++;
+                                }
+                            }
+
+                            id = new String[arraysize];
+                            userid = new String[arraysize];
+                            names = new String[arraysize];
+                            boktitel = new String[arraysize];
 
                             for(int i = 0;i < size;i++){
                                 DocumentSnapshot doc = chatLista.get(i);
                                 if(doc.getString("User1").equals(user.getUid().toString()) || doc.getString("User2").equals(user.getUid().toString())) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
-                                    id[i] = doc.getId().toString();
-                                    boktitel[i] = doc.getString("BokTitel");
+                                    id[counter] = doc.getId().toString();
+                                    boktitel[counter] = doc.getString("BokTitel");
 
                                     if(!doc.getString("User1").equals(user.getUid())){
-                                        counter = i;
                                         names[counter] = doc.getString("User2Name");
                                         userTalkingToId = doc.getString("User1");
                                         userid[counter] = userTalkingToId;
+                                        counter++;
                                     }
                                     else {
-                                        counter = i;
                                         names[counter] = doc.getString("User1Name");
                                         userTalkingToId = doc.getString("User2");
                                         userid[counter] = userTalkingToId;
+                                        counter++;
                                     }
-
                                     MyMessagesAdapter adapter = new MyMessagesAdapter(context, names, id, userid, boktitel, null);
                                     listView.setAdapter(adapter);
                                 }
