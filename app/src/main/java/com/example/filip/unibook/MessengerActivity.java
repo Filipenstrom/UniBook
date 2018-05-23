@@ -246,13 +246,11 @@ public class MessengerActivity extends AppCompatActivity {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
-                                    Toast.makeText(MessengerActivity.this, chatId, Toast.LENGTH_SHORT).show();
                                 }
                                 else if (doc.getString("User1").equals(sellerId) && doc.getString("User2").equals(user.getUid().toString()) && boktitel.equals(doc.getString("BokTitel"))) {
                                     String chatIdholder = doc.getId().toString();
                                     chatId = chatIdholder;
                                     showMessages(chatId);
-                                    Toast.makeText(MessengerActivity.this, chatId, Toast.LENGTH_SHORT).show();
                                 }
                             }
                         } else {

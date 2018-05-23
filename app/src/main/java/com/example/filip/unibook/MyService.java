@@ -120,7 +120,7 @@ public class MyService extends Service {
     }
 
     //Metod som gör att en notifikation endast visas en gång.
-    public void updateNotification(String notification, String notisId){
+  /*  public void updateNotification(String notification, String notisId){
         DocumentReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications").document(notisId);
         Map<String, Object> mapOne = new HashMap<>();
         mapOne.put("AdId", notification);
@@ -139,6 +139,11 @@ public class MyService extends Service {
                         Log.w("TAG", "Error writing document", e);
                     }
                 });
+    }*/
+
+    public void updateNotification(final String notification, String notisId){
+        final DocumentReference usersRef = rootRef.collection("Users").document(user.getUid().toString()).collection("Notifications").document(notisId);
+        usersRef.update("AdId", notification);
     }
 
     //Hämtar de notifikationer som en användare valt.
