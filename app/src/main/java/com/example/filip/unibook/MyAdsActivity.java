@@ -60,7 +60,6 @@ public class MyAdsActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-
                 Intent showDetailActivity = new Intent(context, ChosenAdPageActivity.class);
                 ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
@@ -99,7 +98,6 @@ public class MyAdsActivity extends AppCompatActivity {
 
     //Metod som hämtar den inloggades egna annonser
     public void getAllMyAds(){
-
         CollectionReference favouritesRef =  rootRef.collection("Ads");
         Query query = favouritesRef.whereEqualTo("sellerId", user.getUid().toString());
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
