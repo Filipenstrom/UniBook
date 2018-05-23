@@ -72,7 +72,7 @@ public class ItemAdapter extends BaseAdapter {
         final ImageView imageView = v.findViewById(R.id.ivAdsListPicture);
 
         String name = items[i];
-        String cost = prices[i];
+        String cost = prices[i] + ":-";
         String adid = id[i];
 
         nameTextView.setText(name);
