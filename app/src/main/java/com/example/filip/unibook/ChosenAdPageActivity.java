@@ -62,7 +62,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
     StorageReference storageReference;
     Button changeImg, listCourseBtn, listProgramBtn;
     ConstraintLayout bottomLayout;
-    Bitmap img;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +94,6 @@ public class ChosenAdPageActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
         id = intent.getStringExtra("id");
-        img = intent.getParcelableExtra("img");
         getAd();
 
         bottomLayout.setOnClickListener(new View.OnClickListener() {
@@ -155,7 +153,10 @@ public class ChosenAdPageActivity extends AppCompatActivity {
                             program.setText(doc.getString("program"));
                             title.setText(doc.getString("title"));
                             imageId = doc.getString("imageId");
-                            pic.setImageBitmap(img);
+
+                            setImage(doc.getString("imageId"), pic);
+
+
 
                         }
                         else{
@@ -215,6 +216,27 @@ public class ChosenAdPageActivity extends AppCompatActivity {
         }
 
         return valid;
+    }
+
+    //Metod som fäster bilden till annonsen i en image view.
+    public void setImage(String imageId, final ImageView view){
+
+        StorageReference storageRef = storage.getReferenceFromUrl(imageId);
+
+        final long ONE_MEGABYTE = 1024 * 1024;
+
+        storageRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
+            @Override
+            public void onSuccess(byte[] bytes) {
+                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+                view.setImageBitmap(bitmap);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception exception) {
+                Log.d("Error", exception.getMessage());
+            }
+        });
     }
 
     //Metod för att uppdatera den valda annonsen
