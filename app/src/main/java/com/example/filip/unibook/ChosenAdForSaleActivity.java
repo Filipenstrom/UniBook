@@ -82,7 +82,7 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
-        img = intent.getParcelableExtra("img");
+        //img = intent.getParcelableExtra("img");
         id = intent.getStringExtra("id");
 
 
@@ -104,7 +104,9 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
                         adId = document.getId();
                         imageId = document.getString("imageId");
                         boktitel = document.getString("title");
-                        pic.setImageBitmap(img);
+                        //pic.setImageBitmap(img);
+
+                        setImage(document.getString("imageId"), pic);
 
                         checkFavourites(adId);
                         getSeller(sellerId);
@@ -245,7 +247,7 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
 
 
     //Metod som fäster bilden till annonsen i en image view.
-    public void setImage(String imageId){
+    public void setImage(String imageId, final ImageView view){
 
         StorageReference storageRef = storage.getReferenceFromUrl(imageId);
 
@@ -255,7 +257,7 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
             @Override
             public void onSuccess(byte[] bytes) {
                 Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                sellerpic.setImageBitmap(bitmap);
+                view.setImageBitmap(bitmap);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -278,7 +280,7 @@ public class ChosenAdForSaleActivity extends AppCompatActivity {
 
                         sellerPhone = document.getString("phone");
                         sellerName = document.getString("name") + " " + document.getString("surname");
-                        setImage(document.getString("imageId"));
+                        setImage(document.getString("imageId"), sellerpic);
                         seller.setText(sellerName);
 
                         Log.d(TAG, "DocumentSnapshot data: " + document.getData());

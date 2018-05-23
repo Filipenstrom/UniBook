@@ -173,21 +173,11 @@ public class SearchActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent chosenAdForSale = new Intent(context, ChosenAdForSaleActivity.class);
-                ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
 
-                try{
+                chosenAdForSale.putExtra("id", id.getText().toString());
+                startActivity(chosenAdForSale);
 
-                    Bitmap bitmap = ((BitmapDrawable)adPic.getDrawable()).getBitmap();
-                    chosenAdForSale.putExtra("img", bitmap);
-                    chosenAdForSale.putExtra("id", id.getText().toString());
-                    startActivity(chosenAdForSale);
-
-                }catch(Exception e){
-
-                    Log.d("Error", e.getMessage().toString());
-
-                }
             }
         });
 

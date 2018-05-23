@@ -61,17 +61,10 @@ public class MyAdsActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Intent showDetailActivity = new Intent(context, ChosenAdPageActivity.class);
-                ImageView adPic = view.findViewById(R.id.ivAdsListPicture);
                 TextView id = view.findViewById(R.id.txtAdID);
 
-                try{
-                    Bitmap bitmap = ((BitmapDrawable)adPic.getDrawable()).getBitmap();
-                    showDetailActivity.putExtra("img", bitmap);
-                    showDetailActivity.putExtra("id", id.getText().toString());
-                    startActivity(showDetailActivity);
-                }catch(Exception e){
-                    Log.d("Error", e.getMessage().toString());
-                }
+                showDetailActivity.putExtra("id", id.getText().toString());
+                startActivity(showDetailActivity);
             }
         });
     }
